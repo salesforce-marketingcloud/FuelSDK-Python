@@ -223,9 +223,11 @@ class ET_Get(ET_Constructor):
             obj['Filter'] = search_filter
             obj['attributes'] = { 'Filter' : { 'xsi:type' : 'tns:SimpleFilterPart' } }
             ws_simpleFilterPart = authStub.soap_client.factory.create('SimpleFilterPart')
-            ws_simpleFilterPart.Property = search_filter['Property']
-            ws_simpleFilterPart.SimpleOperator = search_filter['SimpleOperator']
-            ws_simpleFilterPart.DateValue = search_filter['DateValue']
+            
+            for prop in ws_simpleFilterPart:
+                if prop[0] in search_filter:
+                    ws_simpleFilterPart[prop[0]] = search_filter[prop[0]]
+           
             ws_retrieveRequest.Filter = ws_simpleFilterPart
 
         ws_retrieveRequest.ObjectType = objType
