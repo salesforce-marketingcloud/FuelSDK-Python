@@ -21,9 +21,8 @@ class ET_Client(object):
     client_id = None
     client_secret = None
     appsignature = None
-    wsdl = None
-    
-    path = None
+
+    wsdl_file_url = None
     
     authToken = None
     internalAuthToken = None
@@ -33,7 +32,8 @@ class ET_Client(object):
     authObj = None
     soap_client = None
         
-    def __init__(self, get_wsdl = False, debug = False, params = None):
+    ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
+    def __init__(self, get_server_wsdl = False, debug = False, params = None):
         self.debug = debug
         if(debug):
             logging.basicConfig(level=logging.INFO)
@@ -48,14 +48,11 @@ class ET_Client(object):
         self.client_id = config.get('Web Services', 'clientid')
         self.client_secret = config.get('Web Services', 'clientsecret')
         self.appsignature = config.get('Web Services', 'appsignature')
-        self.wsdl = config.get('Web Services', 'defaultwsdl')
+        wsdl_server_url = config.get('Web Services', 'defaultwsdl')
         
         try:
-            self.path = os.path.dirname(os.path.abspath(__file__))
+            self.wsdl_file_url = self.load_wsdl(wsdl_server_url, get_server_wsdl)
             
-            if(get_wsdl):
-                pass    #get the wsdl from the server
-                
             ## get the JWT from the params if passed in...or go to the server to get it                
             if(params is not None and 'jwt' in params):
                 #jwt.decode(params['jwt'], "secret")
@@ -63,8 +60,34 @@ class ET_Client(object):
             else:
                 self.refresh_token()
         except Exception as e:
-            print e.message
+            print str(e.message)
 
+    ## retrieve the url of the ExactTarget wsdl...either file: or http:
+    ## depending on if it already exists locally or server flag is set and
+    ## server has a newer copy
+    def load_wsdl(self, wsdl_url, get_server_wsdl = False):
+        path = os.path.dirname(os.path.abspath(__file__))
+        file_location = os.path.join(path, 'ExactTargetWSDL.xml')
+        file_url = 'file:///' + file_location 
+        
+        if not os.path.exists(file_location):   #if there is no local copy then go get it...
+            self.retrieve_server_wsdl(wsdl_url, file_location)
+        elif get_server_wsdl:
+            r = requests.head(wsdl_url)
+            if r is not None and 'last-modified' in r.headers:
+                server_wsdl_updated = time.strptime(r.headers['last-modified'], '%a, %d %b %Y %H:%M:%S %Z')
+                file_wsdl_updated = time.gmtime(os.path.getmtime(file_location))
+                if server_wsdl_updated > file_wsdl_updated:
+                    self.retrieve_server_wsdl(wsdl_url, file_location)
+            
+        return file_url
+            
+    ### get the WSDL from the server and save it locally
+    def retrieve_server_wsdl(self, wsdl_url, file_location):
+        r = requests.get(wsdl_url)
+        f = open(file_location, 'w')
+        f.write(r.text)
+        
     ## Called from many different places right before executing a SOAP call
     def refresh_token(self, force_refresh = False):
         #If we don't already have a token or the token expires within 5 min(300 seconds), get one
@@ -92,13 +115,13 @@ class ET_Client(object):
             
                 self.authObj = {'oAuth' : {'oAuthToken' : self.internalAuthToken}}            
                 self.authObj['attributes'] = { 'oAuth' : { 'xmlns' : 'http://exacttarget.com' }}                        
-            
+
                 ##read the WSDL from the filesystem and 
                 ##recreate the suds SOAP client with the updated token information
                 ##setting faults=False will return the http code (200 etc.) but any errors will need to be handled in code
-                self.soap_client = suds.client.Client('file:///' + os.path.join(self.path, 'ExactTargetWSDL.xml'), faults=False)
+                self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False)
                 self.soap_client.set_options(location=self.endpoint)
-                                                
+
                 element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
                 element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
                 element_oAuth.append(element_oAuthToken)
