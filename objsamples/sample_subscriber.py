@@ -20,8 +20,8 @@ try:
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Result Count: ' + str(postResponse.results.length)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Result Count: ' + str(len(postResponse.results))
+    print 'Results: ' + str(postResponse.results)
     
     # Retrieve newly created Subscriber
     print '>>> Retrieve newly created Subscriber'
@@ -42,12 +42,12 @@ try:
     patchSub = ET_Client.ET_Subscriber()
     patchSub.authStub = stubObj
     patchSub.props = {"EmailAddress" : SubscriberTestEmail, "Status" : "Unsubscribed"}
-    patchResponse = patchSub.patch
+    patchResponse = patchSub.patch()
     print 'Patch Status: ' + str(patchResponse.status)
     print 'Code: ' + str(patchResponse.code)
     print 'Message: ' + str(patchResponse.message)
-    print 'Result Count: ' + str(patchResponse.results.length)
-    print 'Results: ' + str(patchResponse.results.inspect)
+    print 'Result Count: ' + str(len(patchResponse.results))
+    print 'Results: ' + str(patchResponse.results)
     
     # Retrieve Subscriber that should have status unsubscribed now
     print '>>> Retrieve Subscriber that should have status unsubscribed now'
@@ -68,11 +68,11 @@ try:
     deleteSub = ET_Client.ET_Subscriber()
     deleteSub.authStub = stubObj
     deleteSub.props = {"EmailAddress" : SubscriberTestEmail}
-    deleteResponse = deleteSub.delete
+    deleteResponse = deleteSub.delete()
     print 'Delete Status: ' + str(deleteResponse.status)
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)
-    print 'Results Length: ' + str(deleteResponse.results.length)
+    print 'Results Length: ' + str(len(deleteResponse.results))
     print 'Results: ' + str(deleteResponse.results)
     
     # Retrieve Subscriber to confirm deletion
@@ -121,5 +121,3 @@ try:
 except Exception as e:
     print 'Caught exception: ' + str(e.message)
     print e.backtrace
-end
-

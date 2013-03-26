@@ -21,14 +21,14 @@ try:
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Result Count: ' + str(postResponse.results.length)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Result Count: ' + str(len(postResponse.results))
+    print 'Results: ' + str(postResponse.results)
     
     
     # Make sure the list created correctly before 
-    if postResponse.status then 
+    if postResponse.status: 
         
-        newListID = postResponse.results[0][:new_id]
+        newListID = postResponse.results[0]['new_id']
     
         # Create Subscriber On List 
         print '>>> Create Subscriber On List'
@@ -40,27 +40,27 @@ try:
         print 'Code: ' + str(postResponse.code)
         print 'Message: ' + str(postResponse.message)
         print 'Result Count: ' + str(postResponse.results.length)
-        print 'Results: ' + str(postResponse.results.inspect
-        
-        if postResponse.status == false then 
+        print 'Results: ' + str(postResponse.results)
+       
+        if postResponse.status is False: 
             # If the subscriber already exists in the account then we need to do an update.
             # Update Subscriber On List 
-            if postResponse.results[0][:error_code] == "12014" then     
+            if postResponse.results[0]['error_code'] == "12014":     
                 # Update Subscriber to add to List
                 print '>>> Update Subscriber to add to List'
                 patchSub = ET_Client.ET_Subscriber()
                 patchSub.authStub = stubObj
                 patchSub.props = {"EmailAddress" : SubscriberTestEmail, "Lists" :[{"ID" : newListID}]}
-                patchResponse = patchSub.patch
+                patchResponse = patchSub.patch()
                 print 'Patch Status: ' + str(postResponse.status)
                 print 'Code: ' + str(postResponse.code)
                 print 'Message: ' + str(postResponse.message)
                 print 'Result Count: ' + str(postResponse.results.length)
-                print 'Results: ' + str(postResponse.results.inspect)
+                print 'Results: ' + str(postResponse.results)
         
         # Retrieve all Subscribers on the List
         print '>>> Retrieve all Subscribers on the List'
-        getListSubs = ET_Client.ET_ListSubscriber()
+        getListSubs = ET_Client.ET_List_Subscriber()
         getListSubs.authStub = stubObj
         getListSubs.props = ["ObjectID","SubscriberKey","CreatedDate","Client.ID","Client.PartnerClientKey","ListID","Status"]
         getListSubs.search_filter = {'Property' : 'ListID','SimpleOperator' : 'equals','Value' : newListID}
@@ -77,11 +77,11 @@ try:
         deleteSub = ET_Client.ET_List()
         deleteSub.authStub = stubObj
         deleteSub.props = {"ID" : newListID}
-        deleteResponse = deleteSub.delete
+        deleteResponse = deleteSub.delete()
         print 'Delete Status: ' + str(deleteResponse.status)
         print 'Code: ' + str(deleteResponse.code)
         print 'Message: ' + str(deleteResponse.message)
-        print 'Results Length: ' + str(deleteResponse.results.length)
+        print 'Results Length: ' + str(len(deleteResponse.results))
         print 'Results: ' + str(deleteResponse.results)
 
 except Exception as e:

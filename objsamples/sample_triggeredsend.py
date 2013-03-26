@@ -26,7 +26,7 @@ try:
     NameOfTestTS = "TEXTEXT"
     
     # Pause a TriggeredSend
-    '''
+    
     print '>>> Pause a TriggeredSend'
     patchTrig = ET_Client.ET_TriggeredSend()
     patchTrig.authStub = stubObj
@@ -36,8 +36,8 @@ try:
     print 'Code: ' + str(patchResponse.code)
     print 'Message: ' + str(patchResponse.message)
     print 'Result Count: ' + str(len(patchResponse.results))
-    print 'Results: ' + str(patchResponse.results.inspect)
-    '''
+    print 'Results: ' + str(patchResponse.results)
+    
     
     # Retrieve Single TriggeredSend
     print '>>> Retrieve Single TriggeredSend'
@@ -64,7 +64,7 @@ try:
     print 'Code: ' + str(patchResponse.code)
     print 'Message: ' + str(patchResponse.message)
     print 'Result Count: ' + str(patchResponse.results.length)
-    print 'Results: ' + str(patchResponse.results.inspect)
+    print 'Results: ' + str(patchResponse.results)
     '''
     
     # Retrieve Single TriggeredSend After setting back to active
@@ -93,7 +93,7 @@ try:
     print 'Code: ' + str(sendResponse.code)
     print 'Message: ' + str(sendResponse.message)
     print 'Result Count: ' + str(sendResponse.results.length)
-    print 'Results: ' + str(sendResponse.results.inspect)
+    print 'Results: ' + str(sendResponse.results)
     
     # Generate a unique identifier for the TriggeredSend customer key since they cannot be re-used even after deleted
     TSNameForCreateThenDelete = str(uuid.uuid4())
@@ -108,7 +108,7 @@ try:
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
     print 'Result Count: ' + str(postResponse.results.length)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Results: ' + str(postResponse.results)
     
     # Delete a TriggeredSend Definition 
     print '>>> Delete a TriggeredSend Definition '
@@ -120,7 +120,7 @@ try:
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)
     print 'Result Count: ' + str(deleteResponse.results.length)
-    print 'Results: ' + str(deleteResponse.results.inspect)
+    print 'Results: ' + str(deleteResponse.results)
 
 except Exception as e:
     print 'Caught exception: ' + e.message
