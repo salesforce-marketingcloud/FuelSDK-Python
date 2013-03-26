@@ -848,46 +848,4 @@ class ET_List(ET_CUDSupport):
 class ET_List_Subscriber(ET_GetSupport):
     def __init__(self):
         super(ET_List_Subscriber, self).__init__()
-        self.objType = 'ListSubscriber'    
-
-
-
-
-
-
-
-
-
-class ET_SentEvent(ET_GetSupport):
-    def __init__(self):
-        super(ET_SentEvent, self).__init__()
-        self.objType = 'SentEvent'
-
-class ET_OpenEvent(ET_GetSupport):
-    def __init__(self):
-        super(ET_OpenEvent, self).__init__()
-        self.objType = 'OpenEvent'
-
-class ET_UnsubEvent(ET_GetSupport):
-    def __init__(self):
-        super(ET_UnsubEvent, self).__init__()
-        self.objType = 'UnsubEvent'
-
-
-class ET_TriggeredSend(ET_CUDSupport):
-    subscribers = None
-    
-    def __init__(self):
-        super(ET_TriggeredSend, self).__init__()
-        self.objType = 'TriggeredSendDefinition'
-
-    def send(self):
-        tscall = {"TriggeredSendDefinition" : self.props, "Subscribers" : self.subscribers}
-        self.obj = ET_Post(self.authStub, "TriggeredSend", tscall)
-
-
-class ET_Subscriber(ET_CUDSupport):
-    def __init__(self):
-        super(ET_Subscriber, self).__init__()
-        self.objType = 'Subscriber'
-
+        self.objType = 'ListSubscriber'
