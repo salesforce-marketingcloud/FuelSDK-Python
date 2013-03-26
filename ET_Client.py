@@ -156,14 +156,13 @@ class ET_Constructor(object):
     code = None
     status = False
     message = None
-    body = None
     more_results = False                
     request_id = None
     
     def __init__(self, response = None, rest = False):
         if response is not None and not rest:   #soap call
             self.code = response[0] #suds puts the code in tuple position 0
-            self.body = response[1]  
+            body = response[1]  
             
             if self.code == 200:
                 self.status = True
@@ -180,6 +179,25 @@ class ET_Constructor(object):
                 self.results = response.json()
             except:
                 self.message = response.json()
+                
+
+        if self.status:
+            if body['OverallStatus'] != "OK" and body['OverallStatus'] != "MoreDataAvailable":
+                self.status = False    
+                self.message = body['OverallStatus']
+
+            if 'Results' in body:
+                if type(body['Results']) is list and len(body['Results']) == 1:
+                    self.results = body['Results'][0]
+                else:
+                    self.results = body['Results']
+
+
+            if body['OverallStatus'] == "MoreDataAvailable":
+                self.more_results = True                                         
+
+            # Store the Last Request ID for use with continue
+            self.request_id = body['RequestID']                
 
 ########
 ##
@@ -189,7 +207,6 @@ class ET_Constructor(object):
 class ET_Describe(ET_Constructor):
     def __init__(self, authStub, objType = None):
         status = False
-        body = [0][0]
         try:
             authStub.refresh_token()
             print authStub.soap_client
@@ -203,7 +220,7 @@ class ET_Describe(ET_Constructor):
                 super(response)
             
             if status:
-                objDef = body['definition_response_msg']['object_definition']
+                objDef = response.body['definition_response_msg']['object_definition']
                 
                 s1 = None
                 if objDef:
@@ -211,7 +228,7 @@ class ET_Describe(ET_Constructor):
                 else:
                     s1 = False
                 overallStatus = s1
-                results = body['definition_response_msg']['object_definition']['properties']            
+                results = response.body['definition_response_msg']['object_definition']['properties']            
 
 ########
 ##
@@ -260,20 +277,6 @@ class ET_Get(ET_Constructor):
         if response is not None:
             super(ET_Get, self).__init__(response)
 
-        if self.status:
-            if self.body['OverallStatus'] != "OK" and self.body['OverallStatus'] != "MoreDataAvailable":
-                self.status = False    
-                self.message = self.body['OverallStatus']
-                        
-            if self.body['OverallStatus'] == "MoreDataAvailable":
-                self.more_results = True                                         
-            
-            if 'Results' in self.body:
-                self.results = self.body['Results']
-            
-            # Store the Last Request ID for use with continue
-            self.request_id = self.body['RequestID']
-
 ########
 ##
 ##    Call the Exact Target web service Create method
@@ -302,36 +305,6 @@ class ET_Post(ET_Constructor):
              
         if(response is not None):
             super(ET_Post, self).__init__(response)
-            
-        if self.status:
-            if self.body['OverallStatus'] != "OK" and self.body['OverallStatus'] != "MoreDataAvailable":
-                self.status = False    
-                self.message = self.body['OverallStatus']
-                        
-            if self.body['OverallStatus'] == "MoreDataAvailable":
-                self.more_results = True                                         
-            
-            if 'Results' in self.body:
-                if type(self.body['Results']) is list and len(self.body['Results']) == 1:
-                    self.results = self.body['Results'][0]
-                else:
-                    self.results = self.body['Results']
-            
-            # Store the Last Request ID for use with continue
-            self.request_id = self.body['RequestID']
-
-            '''
-                if @@body[:create_response][:overall_status] != "OK"                
-                    @status = false
-                end 
-                
-                #@results = @@body[:create_response][:results]
-                if !@@body[:create_response][:results].nil? then
-                    if !@@body[:create_response][:results].is_a? Hash then
-                        @results = @results + @@body[:create_response][:results]
-                    else 
-                        @results.push(@@body[:create_response][:results])
-            '''
 
 ########
 ##
@@ -361,20 +334,6 @@ class ET_Patch(ET_Constructor):
              
         if(response is not None):
             super(ET_Patch, self).__init__(response)
-            
-        if self.status:
-            if self.body['OverallStatus'] != "OK" and self.body['OverallStatus'] != "MoreDataAvailable":
-                self.status = False    
-                self.message = self.body['OverallStatus']
-                        
-            if self.body['OverallStatus'] == "MoreDataAvailable":
-                self.more_results = True                                         
-            
-            if 'Results' in self.body:
-                self.results = self.body['Results']
-            
-            # Store the Last Request ID for use with continue
-            self.request_id = self.body['RequestID']
 
 ########
 ##
@@ -404,20 +363,6 @@ class ET_Delete(ET_Constructor):
              
         if(response is not None):
             super(ET_Delete, self).__init__(response)
-            
-        if self.status:
-            if self.body['OverallStatus'] != "OK" and self.body['OverallStatus'] != "MoreDataAvailable":
-                self.status = False    
-                self.message = self.body['OverallStatus']
-                        
-            if self.body['OverallStatus'] == "MoreDataAvailable":
-                self.more_results = True                                         
-            
-            if 'Results' in self.body:
-                self.results = self.body['Results']
-            
-            # Store the Last Request ID for use with continue
-            self.request_id = self.body['RequestID']
 
 ########
 ##
@@ -428,7 +373,6 @@ class ET_Continue(ET_Constructor):
     def __init__(self, authStub, request_id):
         status = None
         results = []
-        body = [0][0]
         authStub.refresh_token()    
         obj = {'ContinueRequest' : request_id}        
         response = authStub.soap_client.call('retrieve', {'message' : {'RetrieveRequest' : obj}})                    
@@ -436,21 +380,21 @@ class ET_Continue(ET_Constructor):
         super(response)
 
         if status:
-            if body['retrieve_response_msg']['overall_status'] != "OK" and body['retrieve_response_msg']['overall_status'] != "MoreDataAvailable":
+            if response.body['retrieve_response_msg']['overall_status'] != "OK" and response.body['retrieve_response_msg']['overall_status'] != "MoreDataAvailable":
                 status = False    
-                message = body['retrieve_response_msg']['overall_status']                            
+                message = response.body['retrieve_response_msg']['overall_status']                            
 
             moreResults = False                
-            if body['retrieve_response_msg']['overall_status'] == "MoreDataAvailable":
+            if response.body['retrieve_response_msg']['overall_status'] == "MoreDataAvailable":
                 moreResults = True
             
-            if (type(body['retrieve_response_msg']['results']) is not dict and body['retrieve_response_msg']['results'] is not None):
-                results = results + body['retrieve_response_msg']['results']
-            elif  (body['retrieve_response_msg']['results'] is not None):
-                results.push(body['retrieve_response_msg']['results'])
+            if (type(response.body['retrieve_response_msg']['results']) is not dict and response.body['retrieve_response_msg']['results'] is not None):
+                results = results + response.body['retrieve_response_msg']['results']
+            elif  (response.body['retrieve_response_msg']['results'] is not None):
+                results.push(response.body['retrieve_response_msg']['results'])
 
             # Store the Last Request ID for use with continue
-            request_id = body['retrieve_response_msg']['request_id']
+            request_id = response.body['retrieve_response_msg']['request_id']
 
 ########
 ##
