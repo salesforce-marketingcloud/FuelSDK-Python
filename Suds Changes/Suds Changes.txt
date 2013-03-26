@@ -1,0 +1,7 @@
+
+Changes were made in two Suds modules to fix the problem where sending empty xml elements in the soap request causes issues for the Exact Target server. Basically, the code was modified to not send an element if no data exists for the element. The modified files are below. See the noted *.report.html files below for a report on the changes.
+
+{python path}\Lib\site-packages\suds\mx\appender.py
+	# See appender.py.report.html
+{python path}\Lib\site-packages\suds\bindings\document.py
+	# See document.py.report.html

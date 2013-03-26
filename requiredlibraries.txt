@@ -1,0 +1,4 @@
+distribute==0.6.35
+pyjwt==0.1.5
+requests==1.1.0
+suds==0.4
