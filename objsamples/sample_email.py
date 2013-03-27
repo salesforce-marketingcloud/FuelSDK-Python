@@ -88,7 +88,7 @@ try:
     deleteHTMLBody = ET_Client.ET_Email()
     deleteHTMLBody.authStub = stubObj
     deleteHTMLBody.props = {"CustomerKey" : NameOfTestEmail, "Name":NameOfTestEmail, "HTMLBody": "<b>Some HTML HTMLBody Goes here. NOW WITH NEW HTMLBody</b>"}
-    deleteResponse = deleteHTMLBody.delete
+    deleteResponse = deleteHTMLBody.delete()
     print 'Delete Status: ' + str(deleteResponse.status)
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)

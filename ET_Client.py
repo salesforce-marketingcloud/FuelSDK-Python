@@ -802,6 +802,10 @@ class ET_UnsubEvent(ET_GetSupport):
         super(ET_UnsubEvent, self).__init__()
         self.objType = 'UnsubEvent'
 
+class ET_Email(ET_CUDSupport):
+    def __init__(self):
+        super(ET_Email, self).__init__()
+        self.objType = 'Email'
 
 class ET_TriggeredSend(ET_CUDSupport):
     subscribers = None
