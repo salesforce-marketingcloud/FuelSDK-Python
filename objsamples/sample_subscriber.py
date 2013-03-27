@@ -9,7 +9,7 @@ try:
     # NOTE: These examples only work in accounts where the SubscriberKey functionality is not enabled
     #       SubscriberKey will need to be included in the props if that feature is enabled
     
-    SubscriberTestEmail = "RubySDKExample@bh.exacttarget.com"
+    SubscriberTestEmail = "PythonSDKExample@bh.exacttarget.com"
 
     # Create Subscriber 
     print '>>> Create Subscriber'

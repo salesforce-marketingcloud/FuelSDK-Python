@@ -9,14 +9,14 @@ try:
     # NOTE: These examples only work in accounts where the SubscriberKey functionality is not enabled
     #       SubscriberKey will need to be included in the props if that feature is enabled
     
-    NewListName = "RubySDKListSubscriber"
-    SubscriberTestEmail = "RubySDKListSubscriber@bh.exacttarget.com"
+    NewListName = "PythonSDKListSubscriber"
+    SubscriberTestEmail = "PythonSDKListSubscriber@bh.exacttarget.com"
     
     # Create List 
     print '>>> Create List'
     postList = ET_Client.ET_List()
     postList.authStub = stubObj
-    postList.props = {"ListName" : NewListName, "Description" : "This list was created with the RubySDK", "Type" : "Private" }
+    postList.props = {"ListName" : NewListName, "Description" : "This list was created with the PythonSDK", "Type" : "Private" }
     postResponse = postList.post()
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
@@ -39,7 +39,7 @@ try:
         print 'Post Status: ' + str(postResponse.status)
         print 'Code: ' + str(postResponse.code)
         print 'Message: ' + str(postResponse.message)
-        print 'Result Count: ' + str(postResponse.results.length)
+        print 'Result Count: ' + str(len(postResponse.results))
         print 'Results: ' + str(postResponse.results)
        
         if postResponse.status is False: 
@@ -55,7 +55,7 @@ try:
                 print 'Patch Status: ' + str(postResponse.status)
                 print 'Code: ' + str(postResponse.code)
                 print 'Message: ' + str(postResponse.message)
-                print 'Result Count: ' + str(postResponse.results.length)
+                print 'Result Count: ' + str(len(postResponse.results))
                 print 'Results: ' + str(postResponse.results)
         
         # Retrieve all Subscribers on the List

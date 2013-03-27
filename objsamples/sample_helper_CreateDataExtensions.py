@@ -8,11 +8,11 @@ try:
     
     ## Example using CreateDataExtensions() method
 
-    # Declare a Ruby Hash which contain all of the details for a DataExtension
+    # Declare a Python dict which contain all of the details for a DataExtension
     deOne = {"Name" : "HelperDEOne","CustomerKey" : "HelperDEOne"}
     deOne['columns'] = [{"Name" : "Name", "FieldType" : "Text", "IsPrimaryKey" : "true", "MaxLength" : "100", "IsRequired" : "true"},{"Name" : "OtherField", "FieldType" : "Text"}]
     
-    # Declare a 2nd Ruby Hash which contain all of the details for a DataExtension
+    # Declare a 2nd Python dict which contain all of the details for a DataExtension
     deTwo = {"Name" : "HelperDETwo","CustomerKey" : "HelperDETwo"}
     deTwo['columns'] = [{"Name" : "Name", "FieldType" : "Text", "IsPrimaryKey" : "true", "MaxLength" : "100", "IsRequired" : "true"},{"Name" : "OtherField", "FieldType" : "Text"}]
     
@@ -21,7 +21,7 @@ try:
     print 'CreateDataExtensions Status: ' + str(createDEResponse.status)
     print 'Code: ' + str(createDEResponse.code)
     print 'Message: ' + str(createDEResponse.message)
-    print 'Results Length: ' + str(createDEResponse.results.length)
+    print 'Results Length: ' + str(len(createDEResponse.results))
     print 'Results: ' + str(createDEResponse.results)
     
     # Cleaning uprint the newly created DEs
@@ -34,7 +34,7 @@ try:
     print 'Delete Status: ' + str(delResponse.status)
     print 'Code: ' + str(delResponse.code)
     print 'Message: ' + str(delResponse.message)
-    print 'Results: ' + str(delResponse.results.inspect)
+    print 'Results: ' + str(delResponse.results)
     
     # Delete deTwo
     print '>>> Delete deTwo'
@@ -45,7 +45,7 @@ try:
     print 'Delete Status: ' + str(delResponse.status)
     print 'Code: ' + str(delResponse.code)
     print 'Message: ' + str(delResponse.message)
-    print 'Results: ' + str(delResponse.results.inspect)
+    print 'Results: ' + str(delResponse.results)
 
 except Exception as e:
     print 'Caught exception: ' + e.message

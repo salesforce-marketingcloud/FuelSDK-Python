@@ -39,7 +39,7 @@ try:
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Results: ' + str(postResponse.results)
 
     # Update DE to add new field
     print '>>> Update DE to add new field'
@@ -51,7 +51,7 @@ try:
     print 'Patch Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Results: ' + str(postResponse.results)
 
 
 
@@ -81,7 +81,7 @@ try:
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Results: ' + str(postResponse.results)
 
     # Add a row to a data extension (Using Name)
     print '>>> Add a row to a data extension'
@@ -93,7 +93,7 @@ try:
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Results: ' + str(postResponse.results)
 
     # Retrieve all rows
     print '>>> Retrieve all rows'
@@ -120,7 +120,7 @@ try:
     print 'Patch Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Results: ' + str(postResponse.results)
 
     # Retrieve only updated row
     print '>>> Retrieve only updated row'
@@ -148,7 +148,7 @@ try:
     print 'Delete Status: ' + str(deleteResponse.status)
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)
-    print 'Results: ' + str(deleteResponse.results.inspect)
+    print 'Results: ' + str(deleteResponse.results)
 
     # Delete a Data Extension
     print '>>> Delete a  Data Extension'
@@ -159,7 +159,7 @@ try:
     print 'Post Status: ' + str(delResponse.status)
     print 'Code: ' + str(delResponse.code)
     print 'Message: ' + str(delResponse.message)
-    print 'Results: ' + str(delResponse.results.inspect)
+    print 'Results: ' + str(delResponse.results)
 
 
     # Retrieve lots of rows with moreResults

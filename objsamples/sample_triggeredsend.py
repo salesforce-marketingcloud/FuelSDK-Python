@@ -63,7 +63,7 @@ try:
     print 'Patch Status: ' + str(patchResponse.status)
     print 'Code: ' + str(patchResponse.code)
     print 'Message: ' + str(patchResponse.message)
-    print 'Result Count: ' + str(patchResponse.results.length)
+    print 'Result Count: ' + str(len(patchResponse.results))
     print 'Results: ' + str(patchResponse.results)
     '''
     
@@ -92,7 +92,7 @@ try:
     print 'Send Status: ' + str(sendResponse.status)
     print 'Code: ' + str(sendResponse.code)
     print 'Message: ' + str(sendResponse.message)
-    print 'Result Count: ' + str(sendResponse.results.length)
+    print 'Result Count: ' + str(len(sendResponse.results))
     print 'Results: ' + str(sendResponse.results)
     
     # Generate a unique identifier for the TriggeredSend customer key since they cannot be re-used even after deleted
@@ -107,7 +107,7 @@ try:
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Result Count: ' + str(postResponse.results.length)
+    print 'Result Count: ' + str(len(postResponse.results))
     print 'Results: ' + str(postResponse.results)
     
     # Delete a TriggeredSend Definition 
@@ -119,7 +119,7 @@ try:
     print 'Delete Status: ' + str(deleteResponse.status)
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)
-    print 'Result Count: ' + str(deleteResponse.results.length)
+    print 'Result Count: ' + str(len(deleteResponse.results))
     print 'Results: ' + str(deleteResponse.results)
 
 except Exception as e:

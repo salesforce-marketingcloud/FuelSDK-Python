@@ -29,19 +29,19 @@ try:
         print 'RequestID: ' + str(getResponse.request_id)
         print 'Results Length: ' + str(len(getResponse.results))
 
-    NameOfTestEmail = "RubySDKEmail"
+    NameOfTestEmail = "PythonSDKEmail"
 
     # Create Email 
     print '>>> Create Email'
     postHTMLBody = ET_Client.ET_Email()
     postHTMLBody.authStub = stubObj
-    postHTMLBody.props = {"CustomerKey" : NameOfTestEmail, "Name":NameOfTestEmail, "Subject" : "Created Using the RubySDK", "HTMLBody": "<b>Some HTML Goes here</b>"}
+    postHTMLBody.props = {"CustomerKey" : NameOfTestEmail, "Name":NameOfTestEmail, "Subject" : "Created Using the PythonSDK", "HTMLBody": "<b>Some HTML Goes here</b>"}
     postResponse = postHTMLBody.post()
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Result Count: ' + str(postResponse.results.length)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Result Count: ' + str(len(postResponse.results))
+    print 'Results: ' + str(postResponse.results)
 
     # Retrieve newly created Email
     print '>>> Retrieve newly created Email'
@@ -66,8 +66,8 @@ try:
     print 'Patch Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
-    print 'Result Count: ' + str(postResponse.results.length)
-    print 'Results: ' + str(postResponse.results.inspect)
+    print 'Result Count: ' + str(len(postResponse.results))
+    print 'Results: ' + str(postResponse.results)
 
     # Retrieve updated Email
     print '>>> Retrieve updated Email'
@@ -92,8 +92,8 @@ try:
     print 'Delete Status: ' + str(deleteResponse.status)
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)
-    print 'Result Count: ' + str(deleteResponse.results.length)
-    print 'Results: ' + str(deleteResponse.results.inspect)
+    print 'Result Count: ' + str(len(deleteResponse.results))
+    print 'Results: ' + str(deleteResponse.results)
     
     # Retrieve Email to confirm deletion
     print '>>> Retrieve Email to confirm deletion'
