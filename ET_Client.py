@@ -2,7 +2,6 @@ import requests
 import suds.client
 import suds.wsse
 from suds.sax.element import Element
-import jwt
 import logging
 
 import os
@@ -357,35 +356,19 @@ class ET_Delete(ET_Constructor):
 
 ########
 ##
-##    Call the Exact Target web service Continue method...probably just reuse Get with a flag for continue??
+##    Call the Exact Target web service RetrieveRequest passing in ContinueRequest param
 ##
 ########
 class ET_Continue(ET_Constructor):
     def __init__(self, authStub, request_id):
-        status = None
-        results = []
-        authStub.refresh_token()    
-        obj = {'ContinueRequest' : request_id}        
-        response = authStub.soap_client.call('retrieve', {'message' : {'RetrieveRequest' : obj}})                    
+        authStub.refresh_token()
 
-        super(response)
+        ws_continueRequest = authStub.soap_client.factory.create('RetrieveRequest')
+        ws_continueRequest.ContinueRequest = request_id
+        response = authStub.soap_client.service.Retrieve(ws_continueRequest)        
 
-        if status:
-            if response.body['retrieve_response_msg']['overall_status'] != "OK" and response.body['retrieve_response_msg']['overall_status'] != "MoreDataAvailable":
-                status = False    
-                message = response.body['retrieve_response_msg']['overall_status']                            
-
-            moreResults = False                
-            if response.body['retrieve_response_msg']['overall_status'] == "MoreDataAvailable":
-                moreResults = True
-            
-            if (type(response.body['retrieve_response_msg']['results']) is not dict and response.body['retrieve_response_msg']['results'] is not None):
-                results = results + response.body['retrieve_response_msg']['results']
-            elif  (response.body['retrieve_response_msg']['results'] is not None):
-                results.push(response.body['retrieve_response_msg']['results'])
-
-            # Store the Last Request ID for use with continue
-            request_id = response.body['retrieve_response_msg']['request_id']
+        if response is not None:
+            super(ET_Continue, self).__init__(response)
 
 ########
 ##
@@ -395,7 +378,7 @@ class ET_Continue(ET_Constructor):
 class ET_BaseObject(object):
     authStub = None
     obj = None
-    lastRequestID = None
+    last_request_id = None
     endpoint = None
     props = None
     extProps = None
@@ -422,14 +405,20 @@ class ET_GetSupport(ET_BaseObject):
             search_filter = m_filter
 
         obj = ET_Get(self.authStub, self.objType, props, search_filter)
+        if obj is not None:
+            self.last_request_id = obj.request_id
         return obj
     
     def info(self):
         obj = ET_Describe(self.authStub, self.objType)
+        if obj is not None:
+            self.last_request_id = obj.request_id
         return obj
     
     def getMoreResults(self):
-        obj = ET_Continue(self.authStub, self.request_id)
+        obj = ET_Continue(self.authStub, self.last_request_id)
+        if obj is not None:
+            self.last_request_id = obj.request_id
         return obj
 
 ########
@@ -562,6 +551,8 @@ class ET_CUDSupport(ET_GetSupport):
                 self.props[k.capitalize] = v
         
         obj = ET_Post(self.authStub, self.objType, self.props)
+        if obj is not None:
+            self.last_request_id = obj.request_id
         return obj
     
     def patch(self):
@@ -571,6 +562,8 @@ class ET_CUDSupport(ET_GetSupport):
         end
         '''
         obj = ET_Patch(self.authStub, self.objType, self.props)
+        if obj is not None:
+            self.last_request_id = obj.request_id
         return obj
 
     def delete(self):
@@ -579,6 +572,8 @@ class ET_CUDSupport(ET_GetSupport):
             @props = props
         '''
         obj = ET_Delete(self.authStub, self.objType, self.props)
+        if obj is not None:
+            self.last_request_id = obj.request_id
         return obj
 
 ########
