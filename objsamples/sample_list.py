@@ -1,3 +1,5 @@
+import sys
+sys.path.append("../")
 import ET_Client
 #require 'securerandom'
 
