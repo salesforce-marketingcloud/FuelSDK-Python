@@ -182,22 +182,28 @@ class ET_Constructor(object):
                 
 
         if self.status:
-            if body['OverallStatus'] != "OK" and body['OverallStatus'] != "MoreDataAvailable":
-                self.status = False    
+            if 'OverallStatus' in body:
                 self.message = body['OverallStatus']
+                if body['OverallStatus'] == "MoreDataAvailable":
+                    self.more_results = True
+                elif body['OverallStatus'] != "OK":
+                    self.status = False    
 
-            if 'Results' in body:
-                if type(body['Results']) is list and len(body['Results']) == 1:
-                    self.results = body['Results'][0]
+            body_container_tag = None
+            if 'Results' in body:   #most SOAP responses are wrapped in 'Results'
+                body_container_tag = 'Results'
+            elif 'ObjectDefinition' in body:   #Describe SOAP response is in 'ObjectDefinition'
+                body_container_tag = 'ObjectDefinition'
+                
+            if body_container_tag is not None:
+                if type(body[body_container_tag]) is list and len(body[body_container_tag]) == 1:
+                    self.results = body[body_container_tag][0]
                 else:
-                    self.results = body['Results']
+                    self.results = body[body_container_tag]
 
-
-            if body['OverallStatus'] == "MoreDataAvailable":
-                self.more_results = True                                         
-
-            # Store the Last Request ID for use with continue
-            self.request_id = body['RequestID']                
+        # Store the Last Request ID for use with continue
+        if 'RequestID' in body:
+            self.request_id = body['RequestID']
 
 ########
 ##
@@ -205,30 +211,19 @@ class ET_Constructor(object):
 ##
 ########
 class ET_Describe(ET_Constructor):
-    def __init__(self, authStub, objType = None):
-        status = False
-        try:
-            authStub.refresh_token()
-            print authStub.soap_client
-            arrayOfObjectDefinitionRequest = authStub.soap_client.factory.create('ArrayOfObjectDefinitionRequest')
-            print arrayOfObjectDefinitionRequest
-            objectDefinitionRequest = authStub.soap_client.factory.create('ObjectDefinitionRequest')
-            print objectDefinitionRequest
-            response = authStub.soap_client.service.Describe({'DescribeRequests' : {'ObjectDefinitionRequest' : {'ObjectType' : objType} } } )                
-        finally:
-            if response is not None:
-                super(response)
-            
-            if status:
-                objDef = response.body['definition_response_msg']['object_definition']
-                
-                s1 = None
-                if objDef:
-                    s1 = True
-                else:
-                    s1 = False
-                overallStatus = s1
-                results = response.body['definition_response_msg']['object_definition']['properties']            
+    def __init__(self, authStub, objType):        
+        authStub.refresh_token()
+
+        ws_describeRequest = authStub.soap_client.factory.create('ArrayOfObjectDefinitionRequest')
+
+        ObjectDefinitionRequest = { 'ObjectType' : objType}
+        ws_describeRequest.ObjectDefinitionRequest = [ObjectDefinitionRequest]
+
+        response = authStub.soap_client.service.Describe(ws_describeRequest)        
+
+        if response is not None:
+            self.message = 'Describe: ' + objType
+            super(ET_Describe, self).__init__(response)
 
 ########
 ##
@@ -238,30 +233,26 @@ class ET_Describe(ET_Constructor):
 class ET_Get(ET_Constructor):
     def __init__(self, authStub, objType, props = None, search_filter = None):        
         authStub.refresh_token()
-        if props is None:
-            resp = ET_Describe(authStub, objType)
-            if resp:
-                props = []
-                '''
-                resp.results.map { |p|
-                    if p[:is_retrievable] then
-                        props << p[:name]
-                    end
-                }
-                '''
-                
+        
+        if props is None:   #if there are no properties to retrieve for the objType then return a Description of objType
+            describe = ET_Describe(authStub, objType)
+            self.results = describe.results
+            self.code = describe.code
+            self.status = describe.status
+            self.message = describe.message
+            self.more_results = describe.more_results                
+            self.request_id = describe.request_id
+            return
+
         ws_retrieveRequest = authStub.soap_client.factory.create('RetrieveRequest')
                 
         if props is not None:
             if type(props) is dict: # If the properties is a hash, then we just want to use the keys
-                obj = {'ObjectType' : objType, 'Properties' : props.keys}
+                ws_retrieveRequest.Properties = props.keys
             else:
-                obj = {'ObjectType' : objType, 'Properties' : props}
-            ws_retrieveRequest.Properties = props
-            
+                ws_retrieveRequest.Properties = props
+
         if search_filter is not None:
-            obj['Filter'] = search_filter
-            obj['attributes'] = { 'Filter' : { 'xsi:type' : 'tns:SimpleFilterPart' } }
             ws_simpleFilterPart = authStub.soap_client.factory.create('SimpleFilterPart')
             
             for prop in ws_simpleFilterPart:
@@ -434,9 +425,8 @@ class ET_GetSupport(ET_BaseObject):
         return obj
     
     def info(self):
-        authStub = None;
-        obj = None;
-        obj = ET_Describe(authStub, obj)
+        obj = ET_Describe(self.authStub, self.objType)
+        return obj
     
     def getMoreResults(self):
         obj = ET_Continue(self.authStub, self.request_id)
