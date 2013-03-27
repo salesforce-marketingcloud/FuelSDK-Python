@@ -195,10 +195,7 @@ class ET_Constructor(object):
                 body_container_tag = 'ObjectDefinition'
                 
             if body_container_tag is not None:
-                if type(body[body_container_tag]) is list and len(body[body_container_tag]) == 1:
-                    self.results = body[body_container_tag][0]
-                else:
-                    self.results = body[body_container_tag]
+                self.results = body[body_container_tag]
 
         # Store the Last Request ID for use with continue
         if 'RequestID' in body:
@@ -817,6 +814,7 @@ class ET_TriggeredSend(ET_CUDSupport):
     def send(self):
         tscall = {"TriggeredSendDefinition" : self.props, "Subscribers" : self.subscribers}
         self.obj = ET_Post(self.authStub, "TriggeredSend", tscall)
+        return self.obj
 
 
 class ET_Subscriber(ET_CUDSupport):
