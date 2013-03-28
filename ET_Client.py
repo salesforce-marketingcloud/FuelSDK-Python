@@ -159,47 +159,51 @@ class ET_Constructor(object):
     request_id = None
     
     def __init__(self, response = None, rest = False):
-        if response is not None and not rest:   #soap call
-            self.code = response[0] #suds puts the code in tuple position 0
-            body = response[1]  
-            
-            if self.code == 200:
-                self.status = True
-            else:
-                self.status = False            
-        elif response is not None:  #rest call
-            self.code = response.status_code            
-            if self.code == 200:
-                self.status = True
-            else:
-                self.status = False 
+        
+        if response is not None:    #if a response was returned from the web service call
+            if rest:    # result is from a REST web service call...
+                self.code = response.status_code            
+                if self.code == 200:
+                    self.status = True
+                else:
+                    self.status = False 
                         
-            try:
-                self.results = response.json()
-            except:
-                self.message = response.json()
+                try:
+                    self.results = response.json()
+                except:
+                    self.message = response.json()
                 
-
-        if self.status:
-            if 'OverallStatus' in body:
-                self.message = body['OverallStatus']
-                if body['OverallStatus'] == "MoreDataAvailable":
-                    self.more_results = True
-                elif body['OverallStatus'] != "OK":
-                    self.status = False    
-
-            body_container_tag = None
-            if 'Results' in body:   #most SOAP responses are wrapped in 'Results'
-                body_container_tag = 'Results'
-            elif 'ObjectDefinition' in body:   #Describe SOAP response is in 'ObjectDefinition'
-                body_container_tag = 'ObjectDefinition'
+                #additional parsing will happen in the child object that called in to here.
                 
-            if body_container_tag is not None:
-                self.results = body[body_container_tag]
+            else:   #soap call
+                self.code = response[0] #suds puts the code in tuple position 0
+                body = response[1]  #and the result in tuple position 1
 
-        # Store the Last Request ID for use with continue
-        if 'RequestID' in body:
-            self.request_id = body['RequestID']
+                # Store the Last Request ID for use with continue
+                if 'RequestID' in body:
+                    self.request_id = body['RequestID']
+
+                if self.code == 200:
+                    self.status = True
+
+                    if 'OverallStatus' in body:
+                        self.message = body['OverallStatus']
+                        if body['OverallStatus'] == "MoreDataAvailable":
+                            self.more_results = True
+                        elif body['OverallStatus'] != "OK":
+                            self.status = False    
+        
+                    body_container_tag = None
+                    if 'Results' in body:   #most SOAP responses are wrapped in 'Results'
+                        body_container_tag = 'Results'
+                    elif 'ObjectDefinition' in body:   #Describe SOAP response is in 'ObjectDefinition'
+                        body_container_tag = 'ObjectDefinition'
+                        
+                    if body_container_tag is not None:
+                        self.results = body[body_container_tag]                    
+
+                else:
+                    self.status = False
 
 ########
 ##
