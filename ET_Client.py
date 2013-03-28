@@ -537,12 +537,6 @@ class ET_CUDSupport(ET_GetSupport):
         super(ET_CUDSupport, self).__init__()
         
     def post(self):
-        '''
-        if props and props.is_a? Hash then
-            @props = props
-        end
-        '''
-        
         if self.extProps is not None:
             for k, v in self.extProps.iteritems():
                 self.props[k.capitalize] = v
@@ -553,21 +547,12 @@ class ET_CUDSupport(ET_GetSupport):
         return obj
     
     def patch(self):
-        '''
-        if props and props.is_a? Hash then
-            @props = props
-        end
-        '''
         obj = ET_Patch(self.authStub, self.objType, self.props)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
 
     def delete(self):
-        '''
-        if props and props.is_a? Hash then
-            @props = props
-        '''
         obj = ET_Delete(self.authStub, self.objType, self.props)
         if obj is not None:
             self.last_request_id = obj.request_id

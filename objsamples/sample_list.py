@@ -22,17 +22,17 @@ try:
 	print 'Results: ' + str(postResponse.results)
 	
 	
-	# Make sure the list created correctly before 
-	if postResponse.status:
+	# Make sure the list created correctly and the 1st dict in it has a NewID...
+	if postResponse.status and 'NewID' in postResponse.results[0]:
 		
-		newListID = postResponse.results['NewID']
+		newListID = postResponse.results[0]['NewID']
 	
 		# Retrieve newly created List by ID
 		print '>>> Retrieve newly created List'
 		getList = ET_Client.ET_List()
 		getList.authStub = stubObj	
 		getList.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Client.PartnerClientKey","ListName","Description","Category","Type","CustomerKey","ListClassification","AutomatedEmail.ID"]
-		getList.filter = {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
+		getList.search_filter =  {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
 		getResponse = getList.get()
 		print 'Retrieve Status: ' + str(getResponse.status)
 		print 'Code: ' + str(getResponse.code)
@@ -58,7 +58,7 @@ try:
 		getList = ET_Client.ET_List()
 		getList.authStub = stubObj	
 		getList.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Client.PartnerClientKey","ListName","Description","Category","Type","CustomerKey","ListClassification","AutomatedEmail.ID"]
-		getList.filter = {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
+		getList.search_filter =  {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
 		getResponse = getList.get()
 		print 'Retrieve Status: ' + str(getResponse.status)
 		print 'Code: ' + str(getResponse.code)
@@ -84,7 +84,7 @@ try:
 		getList = ET_Client.ET_List()
 		getList.authStub = stubObj	
 		getList.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Client.PartnerClientKey","ListName","Description","Category","Type","CustomerKey","ListClassification","AutomatedEmail.ID"]
-		getList.filter = {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
+		getList.search_filter =  {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
 		getResponse = getList.get()
 		print 'Retrieve Status: ' + str(getResponse.status)
 		print 'Code: ' + str(getResponse.code)
