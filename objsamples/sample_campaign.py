@@ -7,7 +7,7 @@ try:
     # In order for this sample to run, it needs to have an asset that it can associate the campaign to
     ExampleAssetType = "LIST"
     ExampleAssetItemID = "1953114"
-    
+
     # Retrieve all Campaigns
     print '>>> Retrieve all Campaigns'
     getCamp = ET_Client.ET_Campaign()
@@ -17,11 +17,11 @@ try:
     print 'Code: ' + str(getResponse.code)
     print 'Message: ' + str(getResponse.message)
     print 'MoreResults: ' + str(getResponse.more_results)
-    print 'Results(Items) Length: ' + str(len(getResponse.results))
-    if debug:
-        print 'Results(Items): ' + str(getResponse.results)
+    if 'count' in getResponse.results:
+        print 'Results(Items) Length: ' + str(getResponse.results['count'])
+    print 'Results(Items): ' + str(getResponse.results)
     print '-----------------------------'
-    
+
     while getResponse.more_results:
         print '>>> Continue Retrieve all Campaigns with GetMoreResults'
         getResponse = getCamp.getMoreResults()
@@ -36,7 +36,7 @@ try:
     print '>>> Create a new Campaign'
     postCamp = ET_Client.ET_Campaign()
     postCamp.authStub = stubObj
-    postCamp.props = {"name" : "PythonSDKCreatedForTest4", "description": "PythonSDKCreatedForTest", "color":"FF9933", "favorite":"false"}
+    postCamp.props = {"name" : "PythonSDKCreatedForTest", "description": "PythonSDKCreatedForTest", "color":"FF9933", "favorite":"false"}
     postResponse = postCamp.post()
     print 'Post Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)

@@ -1,7 +1,4 @@
-import sys
-sys.path.append("../")
 import ET_Client
-
 
 try:
     debug = False
@@ -40,14 +37,13 @@ try:
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
     print 'Results: ' + str(postResponse.results)
-
     # Update DE to add new field
     print '>>> Update DE to add new field'
     de3 = ET_Client.ET_DataExtension()
     de3.authStub = stubObj
     de3.props = {"Name" : NameOfDE,"CustomerKey" : NameOfDE}
     de3.columns = [{"Name" : "AddedField", "FieldType" : "Text"}]
-    patchResponse = de3.patch
+    patchResponse = de3.patch()
     print 'Patch Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
@@ -57,7 +53,7 @@ try:
 
     # Retrieve all columns for data extension
     print '>>> Retrieve all columns for data extension '
-    myDEColumn = ET_Client.ET_DataExtensionColumn()
+    myDEColumn = ET_Client.ET_DataExtension_Column()
     myDEColumn.authStub = stubObj
     myDEColumn.props = ["Name"]
     myDEColumn.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfDE}
@@ -73,7 +69,7 @@ try:
 
     # Add a row to a data extension (using CustomerKey)
     print '>>>  Add a row to a data extension'
-    de4 = ET_Client.ET_DataExtensionRow()
+    de4 = ET_Client.ET_DataExtension_Row()
     de4.CustomerKey = NameOfDE;
     de4.authStub = stubObj
     de4.props = {"Name" : "MAC3", "OtherField" : "Text3"}
@@ -85,7 +81,7 @@ try:
 
     # Add a row to a data extension (Using Name)
     print '>>> Add a row to a data extension'
-    de4 = ET_Client.ET_DataExtensionRow()
+    de4 = ET_Client.ET_DataExtension_Row()
     de4.authStub = stubObj
     de4.Name = NameOfDE
     de4.props = {"Name" : "MAC4", "OtherField" : "Text3"}
@@ -97,7 +93,7 @@ try:
 
     # Retrieve all rows
     print '>>> Retrieve all rows'
-    row = ET_Client.ET_DataExtensionRow()
+    row = ET_Client.ET_DataExtension_Row()
     row.authStub = stubObj
     row.CustomerKey = NameOfDE
     row.props = ["Name","OtherField"]
@@ -112,11 +108,11 @@ try:
 
     # Update a row in  a data extension
     print '>>> Update a row in  a data extension'
-    de4 = ET_Client.ET_DataExtensionRow()
+    de4 = ET_Client.ET_DataExtension_Row()
     de4.authStub = stubObj
     de4.CustomerKey = NameOfDE
     de4.props = {"Name" : "MAC3", "OtherField" : "UPDATED!"}
-    postResponse = de4.patch
+    postResponse = de4.patch()
     print 'Patch Status: ' + str(postResponse.status)
     print 'Code: ' + str(postResponse.code)
     print 'Message: ' + str(postResponse.message)
@@ -124,7 +120,7 @@ try:
 
     # Retrieve only updated row
     print '>>> Retrieve only updated row'
-    row = ET_Client.ET_DataExtensionRow()
+    row = ET_Client.ET_DataExtension_Row()
     row.authStub = stubObj
     row.CustomerKey = NameOfDE
     row.props = ["Name","OtherField"]
@@ -140,11 +136,11 @@ try:
 
     # Delete a row from a data extension
     print '>>> Delete a row from a data extension'
-    de4 = ET_Client.ET_DataExtensionRow()
+    de4 = ET_Client.ET_DataExtension_Row()
     de4.authStub = stubObj
     de4.CustomerKey = NameOfDE
     de4.props = {"Name" : "MAC3"}
-    deleteResponse = de4.delete
+    deleteResponse = de4.delete()
     print 'Delete Status: ' + str(deleteResponse.status)
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)
@@ -155,8 +151,8 @@ try:
     de5 = ET_Client.ET_DataExtension()
     de5.authStub = stubObj
     de5.props = {"Name" : NameOfDE,"CustomerKey" : NameOfDE}
-    delResponse = de5.delete
-    print 'Post Status: ' + str(delResponse.status)
+    delResponse = de5.delete()
+    print 'Delete Status: ' + str(delResponse.status)
     print 'Code: ' + str(delResponse.code)
     print 'Message: ' + str(delResponse.message)
     print 'Results: ' + str(delResponse.results)
@@ -164,7 +160,7 @@ try:
 
     # Retrieve lots of rows with moreResults
     print '>>> Retrieve lots of rows with moreResults'
-    row = ET_Client.ET_DataExtensionRow()
+    row = ET_Client.ET_DataExtension_Row()
     row.authStub = stubObj
     row.Name = "zipstolong"
     row.props = ["zip","latitude","longitude"]
@@ -188,5 +184,5 @@ try:
         print 'Results Length: ' + str(len(getResponse.results))
 
 except Exception as e:
-    print 'Caught exception: ' + e.message
+    print 'Caught exception: ' + str(e.message)
     print e

@@ -430,15 +430,7 @@ class ET_GetSupport(ET_BaseObject):
 class ET_GetRest(ET_Constructor):
     def __init__(self, authStub, endpoint, qs = None):
         authStub.refresh_token()    
-        
-        '''
-        if qs is not None: 
-            qs['access_token'] = authStub.authToken
-        else:
-            qs = {"access_token" : authStub.authToken}
-        
-        r = requests.get(endpoint, data=qs)    #this adds it to the body instead of the url...possibly should work anyway or param to put it in url instead of body??
-        '''
+
         r = requests.get(endpoint + '?access_token=' + authStub.authToken)        
         
         self.more_results = False
@@ -446,34 +438,6 @@ class ET_GetRest(ET_Constructor):
         obj = super(ET_GetRest, self).__init__(r, True)
         return obj
 
-########
-##
-##    Restful webservice to Get additional records to initial request
-##
-########        
-class ET_ContinueRest(ET_Constructor):
-    '''
-    def initialize(authStub, endpoint, qs = nil)
-        authStub.refresh_token()    
-        
-        if qs then 
-            qs['access_token'] = authStub.authToken
-        else 
-            qs = {"access_token" => authStub.authToken}
-        end         
-        
-        uri = URI.parse(endpoint)
-        uri.query = URI.encode_www_form(qs)
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-        request = Net::HTTP::Get.new(uri.request_uri)        
-        requestResponse = http.request(request)
-        
-        @moreResults = false
-                    
-        super(requestResponse, true)
-    '''
-    
 ########
 ##
 ##    Restful webservice to Get data
@@ -517,18 +481,6 @@ class ET_DeleteRest(ET_Constructor):
         
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj
-    
-        '''
-        qs = {"access_token" => authStub.authToken}
-            
-        uri = URI.parse(endpoint)
-        uri.query = URI.encode_www_form(qs)
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-        request = Net::HTTP::Delete.new(uri.request_uri)        
-        requestResponse = http.request(request)
-        super(requestResponse, true)
-        '''
 
 ########
 ##
@@ -742,7 +694,7 @@ class ET_Campaign_Asset(ET_CUDSupportRest):
         
 ########
 ##
-##    wrap an Exact Target Bounce Event
+##    wrap an Exact Target Click Event
 ##
 ########
 class ET_ClickEvent(ET_GetSupport):
@@ -810,4 +762,200 @@ class ET_Subscriber(ET_CUDSupport):
     def __init__(self):
         super(ET_Subscriber, self).__init__()
         self.objType = 'Subscriber'
+        
+class ET_DataExtension(ET_CUDSupport):
+    columns = None
+    
+    def __init__(self):
+        super(ET_DataExtension, self).__init__()
+        self.objType = 'DataExtension'    
+    
+    def post(self):
+        originalProps = self.props
 
+        if type(self.props) is list:
+            multiDE = []
+            for currentDE in self.props:
+                for key in currentDE['columns']:
+                    currentDE['Fields'] = {}
+                    currentDE['Fields']['Field'] = []                
+                    currentDE['Fields']['Field'].append(key)
+                del currentDE['columns']
+                multiDE.append(currentDE.copy())
+        
+            self.props = multiDE
+        else:
+            self.props['Fields'] = {}
+            self.props['Fields']['Field'] = []
+            
+            for key in self.columns:        
+                self.props['Fields']['Field'].append(key)
+        
+        obj = super(ET_DataExtension, self).post()
+        self.props = originalProps    
+        return obj
+
+    def patch(self):
+        self.props['Fields'] = {}
+        self.props['Fields']['Field'] = []
+        for key in self.columns:
+            self.props['Fields']['Field'].append(key)
+        obj = super(ET_DataExtension, self).patch()
+        del self.props["Fields"]         
+        return obj
+    
+class ET_DataExtension_Column(ET_GetSupport):
+    def __init__(self):
+        super(ET_DataExtension_Column, self).__init__()
+        self.obj = 'DataExtensionField'
+        
+    def get(self):
+        '''
+        if props and props.is_a? Array then
+            @props = props
+        end
+        '''
+        
+        if self.props is not None and type(self.props) is dict:
+            self.props = self.props.keys()
+
+        '''
+        if filter and filter.is_a? Hash then
+            @filter = filter
+        end
+        '''
+                
+        '''                
+        fixCustomerKey = False
+        if filter and filter.is_a? Hash then
+            @filter = filter
+            if @filter.has_key?("Property") && @filter["Property"] == "CustomerKey" then
+                @filter["Property"]  = "DataExtension.CustomerKey"
+                fixCustomerKey = true 
+            end 
+        end
+        '''
+        
+        obj = ET_Get(self.authStub, self.obj, self.props, self.search_filter)                        
+        self.last_request_id = obj.request_id    
+        
+        '''    
+        if fixCustomerKey then
+            @filter["Property"] = "CustomerKey"
+        end 
+        '''
+            
+        return obj
+    
+class ET_DataExtension_Row(ET_CUDSupport):
+    Name = None
+    CustomerKey = None        
+                
+    def __init__(self):                                
+        super(ET_DataExtension_Row, self).__init__()
+        self.objType = "DataExtensionObject"
+        
+    def get(self):
+        self.getName()
+        '''
+        if props and props.is_a? Array then
+            @props = props
+        end
+        '''
+        
+        if self.props is not None and type(self.props) is dict:
+            self.props = self.props.keys()
+
+        '''
+        if filter and filter.is_a? Hash then
+            @filter = filter
+        end
+        '''
+            
+        obj = ET_Get(self.authStub, "DataExtensionObject[{0}]".format(self.Name), self.props, self.search_filter)                        
+        self.last_request_id = obj.request_id                
+            
+        return obj
+        
+    def post(self):
+        self.getCustomerKey()
+        originalProps = self.props
+        
+        ## FIX THIS
+        if type(self.props) is list:
+            pass    ##THIS SHOULD DO SOMETHING
+        else:
+            currentFields = []
+            currentProp = {}
+                
+            for key, value in self.props.iteritems():
+                currentFields.append({"Name" : key, "Value" : value})
+
+            currentProp['CustomerKey'] = self.CustomerKey
+            currentProp['Properties'] = {}
+            currentProp['Properties']['Property'] = currentFields    
+
+        obj = ET_Post(self.authStub, self.objType, currentProp)    
+        self.props = originalProps
+        return obj
+        
+    def patch(self): 
+        self.getCustomerKey()
+        currentFields = []
+        currentProp = {}
+            
+        for key, value in self.props.iteritems():
+            currentFields.append({"Name" : key, "Value" : value})
+
+        currentProp['CustomerKey'] = self.CustomerKey
+        currentProp['Properties'] = {}
+        currentProp['Properties']['Property'] = currentFields                                    
+            
+        obj = ET_Patch(self.authStub, self.objType, currentProp)
+        return obj
+    
+    def delete(self): 
+        self.getCustomerKey()
+        currentFields = []
+        currentProp = {}
+            
+        for key, value in self.props.iteritems():
+            currentFields.append({"Name" : key, "Value" : value})
+
+        currentProp['CustomerKey'] = self.CustomerKey
+        currentProp['Keys'] = {}
+        currentProp['Keys']['Key'] = currentFields                                    
+            
+        obj = ET_Delete(self.authStub, self.objType, currentProp)
+        return obj
+    
+    def getCustomerKey(self):
+        if self.CustomerKey is None:
+            if self.Name is None:     
+                raise Exception('Unable to process DataExtension::Row request due to CustomerKey and Name not being defined on ET_DatExtension::row')    
+            else:
+                de = ET_DataExtension()
+                de.authStub = self.authStub
+                de.props = ["Name","CustomerKey"]
+                de.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : self.Name}
+                getResponse = de.get()
+                if getResponse.status and len(getResponse.results) == 1 and 'CustomerKey' in getResponse.results[0]: 
+                    self.CustomerKey = getResponse.results[0]['CustomerKey']
+                else:
+                    raise Exception('Unable to process DataExtension::Row request due to unable to find DataExtension based on Name')
+                    
+                
+    def getName(self):
+        if self.Name is None:
+            if self.CustomerKey is None:
+                raise Exception('Unable to process DataExtension::Row request due to CustomerKey and Name not being defined on ET_DatExtension::row')    
+            else:
+                de = ET_DataExtension()
+                de.authStub = self.authStub
+                de.props = ["Name","CustomerKey"]
+                de.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : self.CustomerKey}
+                getResponse = de.get()
+                if getResponse.status and len(getResponse.results) == 1 and 'Name' in getResponse.results[0]: 
+                    self.Name = getResponse.results[0]['Name']
+                else:
+                    raise Exception('Unable to process DataExtension::Row request due to unable to find DataExtension based on CustomerKey')                    
