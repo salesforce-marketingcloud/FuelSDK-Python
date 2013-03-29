@@ -792,9 +792,9 @@ class ET_DataExtension(ET_CUDSupport):
         if type(self.props) is list:
             multiDE = []
             for currentDE in self.props:
-                for key in currentDE['columns']:
-                    currentDE['Fields'] = {}
-                    currentDE['Fields']['Field'] = []                
+                currentDE['Fields'] = {}
+                currentDE['Fields']['Field'] = []                
+                for key in currentDE['columns']:                    
                     currentDE['Fields']['Field'].append(key)
                 del currentDE['columns']
                 multiDE.append(currentDE.copy())
