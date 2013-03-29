@@ -26,7 +26,7 @@ try:
     # Make sure the list created correctly before 
     if postResponse.status: 
         
-        newListID = postResponse.results[0]['new_id']
+        newListID = postResponse.results[0]['NewID']
     
         # Create Subscriber On List 
         print '>>> Create Subscriber On List'
