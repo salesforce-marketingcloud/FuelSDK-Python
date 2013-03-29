@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 
 try:
@@ -9,7 +7,7 @@ try:
     # Retrieve All Email with GetMoreResults
     print '>>> Retrieve All Email with GetMoreResults'
     getHTMLBody = ET_Client.ET_Email()
-    getHTMLBody.authStub = stubObj
+    getHTMLBody.auth_stub = stubObj
     getHTMLBody.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Name","Folder","CategoryID","HTMLBody","TextBody","Subject","IsActive","IsHTMLPaste","ClonedFromID","Status","EmailType","CharacterSet","HasDynamicSubjectLine","ContentCheckStatus","Client.PartnerClientKey","ContentAreas","CustomerKey"]
     getResponse = getHTMLBody.get()
     print 'Retrieve Status: ' + str(getResponse.status)
@@ -34,7 +32,7 @@ try:
     # Create Email 
     print '>>> Create Email'
     postHTMLBody = ET_Client.ET_Email()
-    postHTMLBody.authStub = stubObj
+    postHTMLBody.auth_stub = stubObj
     postHTMLBody.props = {"CustomerKey" : NameOfTestEmail, "Name":NameOfTestEmail, "Subject" : "Created Using the PythonSDK", "HTMLBody": "<b>Some HTML Goes here</b>"}
     postResponse = postHTMLBody.post()
     print 'Post Status: ' + str(postResponse.status)
@@ -46,7 +44,7 @@ try:
     # Retrieve newly created Email
     print '>>> Retrieve newly created Email'
     getHTMLBody = ET_Client.ET_Email()
-    getHTMLBody.authStub = stubObj
+    getHTMLBody.auth_stub = stubObj
     getHTMLBody.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Name","Folder","CategoryID","HTMLBody","TextBody","Subject","IsActive","IsHTMLPaste","ClonedFromID","Status","EmailType","CharacterSet","HasDynamicSubjectLine","ContentCheckStatus","Client.PartnerClientKey","ContentAreas","CustomerKey"]
     getHTMLBody.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestEmail}
     getResponse = getHTMLBody.get()
@@ -60,7 +58,7 @@ try:
     # Update Email 
     print '>>> Update Email'
     patchHTMLBody = ET_Client.ET_Email()
-    patchHTMLBody.authStub = stubObj
+    patchHTMLBody.auth_stub = stubObj
     patchHTMLBody.props = {"CustomerKey" : NameOfTestEmail, "Name":NameOfTestEmail,  "HTMLBody": "<b>Some HTML HTMLBody Goes here. NOW WITH NEW HTMLBody</b>"}
     patchResponse = patchHTMLBody.patch
     print 'Patch Status: ' + str(postResponse.status)
@@ -72,7 +70,7 @@ try:
     # Retrieve updated Email
     print '>>> Retrieve updated Email'
     getHTMLBody = ET_Client.ET_Email()
-    getHTMLBody.authStub = stubObj
+    getHTMLBody.auth_stub = stubObj
     getHTMLBody.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Name","Folder","CategoryID","HTMLBody","TextBody","Subject","IsActive","IsHTMLPaste","ClonedFromID","Status","EmailType","CharacterSet","HasDynamicSubjectLine","ContentCheckStatus","Client.PartnerClientKey","ContentAreas","CustomerKey"]
     getHTMLBody.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestEmail}
     getResponse = getHTMLBody.get()
@@ -86,7 +84,7 @@ try:
     # Delete Email 
     print '>>> Delete Email'
     deleteHTMLBody = ET_Client.ET_Email()
-    deleteHTMLBody.authStub = stubObj
+    deleteHTMLBody.auth_stub = stubObj
     deleteHTMLBody.props = {"CustomerKey" : NameOfTestEmail, "Name":NameOfTestEmail, "HTMLBody": "<b>Some HTML HTMLBody Goes here. NOW WITH NEW HTMLBody</b>"}
     deleteResponse = deleteHTMLBody.delete()
     print 'Delete Status: ' + str(deleteResponse.status)
@@ -98,7 +96,7 @@ try:
     # Retrieve Email to confirm deletion
     print '>>> Retrieve Email to confirm deletion'
     getHTMLBody = ET_Client.ET_Email()
-    getHTMLBody.authStub = stubObj
+    getHTMLBody.auth_stub = stubObj
     getHTMLBody.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Name","Folder","CategoryID","HTMLBody","TextBody","Subject","IsActive","IsHTMLPaste","ClonedFromID","Status","EmailType","CharacterSet","HasDynamicSubjectLine","ContentCheckStatus","Client.PartnerClientKey","ContentAreas","CustomerKey"]
     getHTMLBody.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestEmail}
     getResponse = getHTMLBody.get()

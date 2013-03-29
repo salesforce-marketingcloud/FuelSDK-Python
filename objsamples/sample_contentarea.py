@@ -7,7 +7,7 @@ try:
     # Retrieve All ContentArea with GetMoreResults
     print '>>> Retrieve All ContentArea with GetMoreResults'
     getContent = ET_Client.ET_ContentArea()
-    getContent.authStub = stubObj 
+    getContent.auth_stub = stubObj 
     getContent.props = ["RowObjectID","ObjectID","ID","CustomerKey","Client.ID","ModifiedDate","CreatedDate","CategoryID","Name","Layout","IsDynamicContent","Content","IsSurvey","IsBlank","Key"]  
     getResponse = getContent.get()
     print 'Retrieve Status: ' + str(getResponse.status)
@@ -32,7 +32,7 @@ try:
     # Create ContentArea 
     print '>>> Create ContentArea'
     postContent = ET_Client.ET_ContentArea()
-    postContent.authStub = stubObj
+    postContent.auth_stub = stubObj
     postContent.props = {"CustomerKey" : NameOfTestContentArea, "Name" : NameOfTestContentArea, "Content": "<b>Some HTML Content Goes here</b>"}   
     postResponse = postContent.post()
     print 'Post Status: ' + str(postResponse.status)
@@ -44,7 +44,7 @@ try:
     # Retrieve newly created ContentArea
     print '>>> Retrieve newly created ContentArea'
     getContent = ET_Client.ET_ContentArea()
-    getContent.authStub = stubObj 
+    getContent.auth_stub = stubObj 
     getContent.props = ["RowObjectID","ObjectID","ID","CustomerKey","Client.ID","ModifiedDate","CreatedDate","CategoryID","Name","Layout","IsDynamicContent","Content","IsSurvey","IsBlank","Key"]  
     getContent.search_filter =  {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestContentArea}
     getResponse = getContent.get()
@@ -58,7 +58,7 @@ try:
     # Update ContentArea 
     print '>>> Update ContentArea'
     patchContent = ET_Client.ET_ContentArea()
-    patchContent.authStub = stubObj
+    patchContent.auth_stub = stubObj
     patchContent.props = {"CustomerKey" : NameOfTestContentArea, "Name":NameOfTestContentArea, "Content": "<b>Some HTML Content Goes here. NOW WITH NEW CONTENT</b>"}    
     patchResponse = patchContent.patch()
     print 'Patch Status: ' + str(patchResponse.status)
@@ -70,7 +70,7 @@ try:
     # Retrieve updated ContentArea
     print '>>> Retrieve updated ContentArea'
     getContent = ET_Client.ET_ContentArea()
-    getContent.authStub = stubObj 
+    getContent.auth_stub = stubObj 
     getContent.props = ["RowObjectID","ObjectID","ID","CustomerKey","Client.ID","ModifiedDate","CreatedDate","CategoryID","Name","Layout","IsDynamicContent","Content","IsSurvey","IsBlank","Key"]  
     getContent.search_filter =  {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestContentArea}
     getResponse = getContent.get()
@@ -84,7 +84,7 @@ try:
     # Delete ContentArea 
     print '>>> Delete ContentArea'
     deleteContent = ET_Client.ET_ContentArea()
-    deleteContent.authStub = stubObj
+    deleteContent.auth_stub = stubObj
     deleteContent.props = {"CustomerKey" : NameOfTestContentArea, "Name":NameOfTestContentArea, "Content": "<b>Some HTML Content Goes here. NOW WITH NEW CONTENT</b>"}   
     deleteResponse = deleteContent.delete()
     print 'Delete Status: ' + str(deleteResponse.status)
@@ -96,7 +96,7 @@ try:
     # Retrieve ContentArea to confirm deletion
     print '>>> Retrieve ContentArea to confirm deletion'
     getContent = ET_Client.ET_ContentArea()
-    getContent.authStub = stubObj 
+    getContent.auth_stub = stubObj 
     getContent.props = ["RowObjectID","ObjectID","ID","CustomerKey","Client.ID","ModifiedDate","CreatedDate","CategoryID","Name","Layout","IsDynamicContent","Content","IsSurvey","IsBlank","Key"]  
     getContent.search_filter =  {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestContentArea}
     getResponse = getContent.get()

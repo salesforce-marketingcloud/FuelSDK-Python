@@ -10,7 +10,7 @@ try:
 
     print '>>> Retrieve Filtered BounceEvents with GetMoreResults'
     getBounceEvent = ET_Client.ET_BounceEvent()
-    getBounceEvent.authStub = stubObj    
+    getBounceEvent.auth_stub = stubObj    
     getBounceEvent.props = ["SendID","SubscriberKey","EventDate","Client.ID","EventType","BatchID","TriggeredSendDefinitionObjectID","PartnerKey"]
     getBounceEvent.search_filter = {'Property' : 'EventDate', 'SimpleOperator' : 'greaterThan', 'DateValue' : retrieveDate}
     getResponse = getBounceEvent.get()
@@ -36,7 +36,7 @@ try:
     '''
     print '>>> Retrieve All BounceEvents with GetMoreResults'
     getBounceEvent = ET_BounceEvent.new()
-    getBounceEvent.authStub = stubObj    
+    getBounceEvent.auth_stub = stubObj    
     getBounceEvent.props = ["SendID","SubscriberKey","EventDate","Client.ID","EventType","BatchID","TriggeredSendDefinitionObjectID","PartnerKey"]    
     getResponse = getBounceEvent.get
     print 'Retrieve Status: ' + str(getResponse.status)

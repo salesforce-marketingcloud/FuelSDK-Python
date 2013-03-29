@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 
 try:
@@ -14,7 +12,7 @@ try:
     # Create List 
     print '>>> Create List'
     postList = ET_Client.ET_List()
-    postList.authStub = stubObj
+    postList.auth_stub = stubObj
     postList.props = {"ListName" : NewListName, "Description" : "This list was created with the PythonSDK", "Type" : "Private" }
     postResponse = postList.post()
     print 'Post Status: ' + str(postResponse.status)
@@ -25,7 +23,7 @@ try:
     
     if postResponse.status: 
         
-        newListID = postResponse.results[0]['new_id']
+        newListID = postResponse.results[0]['NewID']
         # Adding Subscriber To a List
         print '>>> Add Subscriber To a List'
         AddSubResponse = stubObj.AddSubscriberToList("AddSubTesting@bh.exacttarget.com", [newListID])
@@ -38,9 +36,9 @@ try:
         # Delete List
         print '>>> Delete List'
         deleteSub = ET_Client.ET_List()
-        deleteSub.authStub = stubObj
+        deleteSub.auth_stub = stubObj
         deleteSub.props = {"ID" : newListID}
-        deleteResponse = deleteSub.delete
+        deleteResponse = deleteSub.delete()
         print 'Delete Status: ' + str(deleteResponse.status)
         print 'Code: ' + str(deleteResponse.code)
         print 'Message: ' + str(deleteResponse.message)

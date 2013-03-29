@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 import uuid
 
@@ -10,7 +8,7 @@ try:
     # Get all TriggeredSendDefinitions
     print '>>> Get all TriggeredSendDefinitions'
     getTS = ET_Client.ET_TriggeredSend()
-    getTS.authStub = stubObj
+    getTS.auth_stub = stubObj
     getTS.props = ["CustomerKey", "Name", "TriggeredSendStatus"]
     getResponse = getTS.get()
     print 'Retrieve Status: ' + str(getResponse.status)
@@ -29,7 +27,7 @@ try:
     
     print '>>> Pause a TriggeredSend'
     patchTrig = ET_Client.ET_TriggeredSend()
-    patchTrig.authStub = stubObj
+    patchTrig.auth_stub = stubObj
     patchTrig.props = {"CustomerKey" : NameOfTestTS, "TriggeredSendStatus" :"Inactive"}
     patchResponse = patchTrig.patch()
     print 'Patch Status: ' + str(patchResponse.status)
@@ -42,7 +40,7 @@ try:
     # Retrieve Single TriggeredSend
     print '>>> Retrieve Single TriggeredSend'
     getTS = ET_Client.ET_TriggeredSend()
-    getTS.authStub = stubObj
+    getTS.auth_stub = stubObj
     getTS.props = ["CustomerKey", "Name", "TriggeredSendStatus"]
     getTS.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestTS}
     getResponse = getTS.get()
@@ -57,7 +55,7 @@ try:
     '''
     print '>>> Start a TriggeredSend by setting to Active'
     patchTrig = ET_Client.ET_TriggeredSend()
-    patchTrig.authStub = stubObj
+    patchTrig.auth_stub = stubObj
     patchTrig.props = {"CustomerKey" : NameOfTestTS, "TriggeredSendStatus" :"Active"}
     patchResponse = patchTrig.patch()
     print 'Patch Status: ' + str(patchResponse.status)
@@ -70,7 +68,7 @@ try:
     # Retrieve Single TriggeredSend After setting back to active
     print '>>> Retrieve Single TriggeredSend After setting back to active'
     getTS = ET_Client.ET_TriggeredSend()
-    getTS.authStub = stubObj
+    getTS.auth_stub = stubObj
     getTS.props = ["CustomerKey", "Name", "TriggeredSendStatus"]
     getTS.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : NameOfTestTS}
     getResponse = getTS.get()
@@ -85,7 +83,7 @@ try:
     # Send an email with TriggeredSend
     print '>>> Send an email with TriggeredSend'
     sendTrig = ET_Client.ET_TriggeredSend()
-    sendTrig.authStub = stubObj
+    sendTrig.auth_stub = stubObj
     sendTrig.props = {"CustomerKey" : NameOfTestTS}
     sendTrig.subscribers = [{"EmailAddress":"testing@bh.exacttarget.com", "SubscriberKey" : "testing@bh.exacttarget.com"}]
     sendResponse = sendTrig.send()
@@ -101,7 +99,7 @@ try:
     # Create a TriggeredSend Definition 
     print '>>> Create a TriggeredSend Definition'
     postTrig = ET_Client.ET_TriggeredSend()
-    postTrig.authStub = stubObj
+    postTrig.auth_stub = stubObj
     postTrig.props = {'CustomerKey' : TSNameForCreateThenDelete,'Name' : TSNameForCreateThenDelete, 'Email' : {"ID":"3113962"}, "SendClassification": {"CustomerKey": "2240"}}
     postResponse = postTrig.post()
     print 'Post Status: ' + str(postResponse.status)
@@ -113,7 +111,7 @@ try:
     # Delete a TriggeredSend Definition 
     print '>>> Delete a TriggeredSend Definition '
     deleteTrig = ET_Client.ET_TriggeredSend()
-    deleteTrig.authStub = stubObj
+    deleteTrig.auth_stub = stubObj
     deleteTrig.props = {'CustomerKey' : TSNameForCreateThenDelete}
     deleteResponse = deleteTrig.post()
     print 'Delete Status: ' + str(deleteResponse.status)

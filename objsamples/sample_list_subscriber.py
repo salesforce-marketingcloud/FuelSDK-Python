@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 
 try:
@@ -15,7 +13,7 @@ try:
     # Create List 
     print '>>> Create List'
     postList = ET_Client.ET_List()
-    postList.authStub = stubObj
+    postList.auth_stub = stubObj
     postList.props = {"ListName" : NewListName, "Description" : "This list was created with the PythonSDK", "Type" : "Private" }
     postResponse = postList.post()
     print 'Post Status: ' + str(postResponse.status)
@@ -33,7 +31,7 @@ try:
         # Create Subscriber On List 
         print '>>> Create Subscriber On List'
         postSub = ET_Client.ET_Subscriber()
-        postSub.authStub = stubObj
+        postSub.auth_stub = stubObj
         postSub.props = {"EmailAddress" : SubscriberTestEmail, "Lists" :[{"ID" : newListID}]}
         postResponse = postSub.post()
         print 'Post Status: ' + str(postResponse.status)
@@ -49,7 +47,7 @@ try:
                 # Update Subscriber to add to List
                 print '>>> Update Subscriber to add to List'
                 patchSub = ET_Client.ET_Subscriber()
-                patchSub.authStub = stubObj
+                patchSub.auth_stub = stubObj
                 patchSub.props = {"EmailAddress" : SubscriberTestEmail, "Lists" :[{"ID" : newListID}]}
                 patchResponse = patchSub.patch()
                 print 'Patch Status: ' + str(postResponse.status)
@@ -61,7 +59,7 @@ try:
         # Retrieve all Subscribers on the List
         print '>>> Retrieve all Subscribers on the List'
         getListSubs = ET_Client.ET_List_Subscriber()
-        getListSubs.authStub = stubObj
+        getListSubs.auth_stub = stubObj
         getListSubs.props = ["ObjectID","SubscriberKey","CreatedDate","Client.ID","Client.PartnerClientKey","ListID","Status"]
         getListSubs.search_filter = {'Property' : 'ListID','SimpleOperator' : 'equals','Value' : newListID}
         getResponse = getListSubs.get()
@@ -75,7 +73,7 @@ try:
         # Delete List
         print '>>> Delete List'
         deleteSub = ET_Client.ET_List()
-        deleteSub.authStub = stubObj
+        deleteSub.auth_stub = stubObj
         deleteSub.props = {"ID" : newListID}
         deleteResponse = deleteSub.delete()
         print 'Delete Status: ' + str(deleteResponse.status)

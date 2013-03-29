@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 
 try:
@@ -12,7 +10,7 @@ try:
 
     print '>>> Retrieve Filtered SentEvents with GetMoreResults'
     getSentEvent = ET_Client.ET_SentEvent()
-    getSentEvent.authStub = stubObj
+    getSentEvent.auth_stub = stubObj
     getSentEvent.props = ["SendID","SubscriberKey","EventDate","Client.ID","EventType","BatchID","TriggeredSendDefinitionObjectID","ListID","PartnerKey","SubscriberID"]
     getSentEvent.search_filter = {'Property' : 'EventDate','SimpleOperator' : 'greaterThan','DateValue' : retrieveDate}
     getResponse = getSentEvent.get()
@@ -39,7 +37,7 @@ try:
     '''
     print '>>> Retrieve All SentEvents with GetMoreResults'
     getSentEvent = ET_Client.ET_SentEvent()
-    getSentEvent.authStub = stubObj
+    getSentEvent.auth_stub = stubObj
     getSentEvent.props = ["SendID","SubscriberKey","EventDate","Client.ID","EventType","BatchID","TriggeredSendDefinitionObjectID","ListID","PartnerKey","SubscriberID"]
     getResponse = getSentEvent.get()
     print 'Retrieve Status: ' + str(getResponse.status)

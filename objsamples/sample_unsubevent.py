@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 
 try:
@@ -12,7 +10,7 @@ try:
     
     print '>>> Retrieve Filtered UnsubEvents with GetMoreResults'
     getUnsubEvent = ET_Client.ET_UnsubEvent()
-    getUnsubEvent.authStub = stubObj
+    getUnsubEvent.auth_stub = stubObj
     getUnsubEvent.props = ["SendID","SubscriberKey","EventDate","Client.ID","EventType","BatchID","TriggeredSendDefinitionObjectID","PartnerKey"]
     getUnsubEvent.search_filter = {'Property' : 'EventDate','SimpleOperator' : 'greaterThan','DateValue' : retrieveDate}
     getResponse = getUnsubEvent.get()
@@ -41,7 +39,7 @@ try:
     '''
     print '>>> Retrieve All UnsubEvents with GetMoreResults'
     getUnsubEvent = ET_Client.ET_UnsubEvent()
-    getUnsubEvent.authStub = stubObj
+    getUnsubEvent.auth_stub = stubObj
     getUnsubEvent.props = ["SendID","SubscriberKey","EventDate","Client.ID","EventType","BatchID","TriggeredSendDefinitionObjectID","PartnerKey"]
     getResponse = getUnsubEvent.get()
     print 'Retrieve Status: ' + str(getResponse.status)

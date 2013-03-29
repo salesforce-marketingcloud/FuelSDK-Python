@@ -118,7 +118,7 @@ class ET_Client(object):
                 ##read the WSDL from the filesystem and 
                 ##recreate the suds SOAP client with the updated token information
                 ##setting faults=False will return the http code (200 etc.) but any errors will need to be handled in code
-                self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False)
+                self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
                 self.soap_client.set_options(location=self.endpoint)
 
                 element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
@@ -145,6 +145,41 @@ class ET_Client(object):
         except Exception as e:
             raise Exception('Unable to determine stack using /platform/v1/tokenContext: ' + e.message)  
 
+    ##add or update a subscriber with a list
+    def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
+        newSub = ET_Subscriber()
+        newSub.auth_stub = self
+        lists = []
+        
+        for p in listIDs:
+            lists.append({"ID" : p})
+        
+        newSub.props = {"EmailAddress" : emailAddress, "Lists" : lists}
+        if subscriberKey is not None:
+            newSub.props['SubscriberKey']  = subscriberKey
+        
+        # Try to add the subscriber
+        postResponse = newSub.post()
+        
+        if not postResponse.status:
+            # If the subscriber already exists in the account then we need to do an update.
+            # Update Subscriber On List 
+            if postResponse.results[0]['ErrorCode'] == 12014:     
+                patchResponse = newSub.patch()
+                return patchResponse
+
+        return postResponse
+    
+    ##write the data extension props to the web service
+    def CreateDataExtensions(self, dataExtensionDefinitions):
+        newDEs = ET_DataExtension()
+        newDEs.auth_stub = self
+                
+        newDEs.props = dataExtensionDefinitions                        
+        postResponse = newDEs.post()        
+        
+        return postResponse
+    
 ########
 ##
 ##    Parent class used to determine what status we are in depending on web service call results
@@ -204,25 +239,52 @@ class ET_Constructor(object):
 
                 else:
                     self.status = False
+                    
+    def parse_props_dict_into_ws_object(self, obj_type, ws_object, props_dict):
+        for k, v in props_dict.iteritems():
+            if k in ws_object:
+                ws_object[k] = v
+            else:
+                message = k + ' is not a property of ' + obj_type
+                print message
+                raise Exception(message)
+        return ws_object
 
+    def parse_props_into_ws_object(self, auth_stub, obj_type, props):
+        if props is not None and type(props) is dict:
+            ws_create = auth_stub.soap_client.factory.create(obj_type)
+            ws_create = self.parse_props_dict_into_ws_object(obj_type, ws_create, props)
+            return ws_create            
+        elif props is not None and type(props) is list:
+            ws_create_list = []
+            for prop_dict in props:
+                ws_create = auth_stub.soap_client.factory.create(obj_type)
+                ws_create = self.parse_props_dict_into_ws_object(obj_type, ws_create, prop_dict)
+                ws_create_list.append(ws_create)
+            return ws_create_list
+        else:
+            message = 'Can not post properties to ' + obj_type + ' without a dict or list of properties'
+            print message
+            raise Exception(message)        
+        
 ########
 ##
 ##    Used to Describe Objects via web service call
 ##
 ########
 class ET_Describe(ET_Constructor):
-    def __init__(self, authStub, objType):        
-        authStub.refresh_token()
+    def __init__(self, auth_stub, obj_type):        
+        auth_stub.refresh_token()
 
-        ws_describeRequest = authStub.soap_client.factory.create('ArrayOfObjectDefinitionRequest')
+        ws_describeRequest = auth_stub.soap_client.factory.create('ArrayOfObjectDefinitionRequest')
 
-        ObjectDefinitionRequest = { 'ObjectType' : objType}
+        ObjectDefinitionRequest = { 'ObjectType' : obj_type}
         ws_describeRequest.ObjectDefinitionRequest = [ObjectDefinitionRequest]
 
-        response = authStub.soap_client.service.Describe(ws_describeRequest)        
+        response = auth_stub.soap_client.service.Describe(ws_describeRequest)        
 
         if response is not None:
-            self.message = 'Describe: ' + objType
+            self.message = 'Describe: ' + obj_type
             super(ET_Describe, self).__init__(response)
 
 ########
@@ -231,11 +293,11 @@ class ET_Describe(ET_Constructor):
 ##
 ########
 class ET_Get(ET_Constructor):
-    def __init__(self, authStub, objType, props = None, search_filter = None):        
-        authStub.refresh_token()
+    def __init__(self, auth_stub, obj_type, props = None, search_filter = None):        
+        auth_stub.refresh_token()
         
-        if props is None:   #if there are no properties to retrieve for the objType then return a Description of objType
-            describe = ET_Describe(authStub, objType)
+        if props is None:   #if there are no properties to retrieve for the obj_type then return a Description of obj_type
+            describe = ET_Describe(auth_stub, obj_type)
             self.results = describe.results
             self.code = describe.code
             self.status = describe.status
@@ -244,7 +306,7 @@ class ET_Get(ET_Constructor):
             self.request_id = describe.request_id
             return
 
-        ws_retrieveRequest = authStub.soap_client.factory.create('RetrieveRequest')
+        ws_retrieveRequest = auth_stub.soap_client.factory.create('RetrieveRequest')
                 
         if props is not None:
             if type(props) is dict: # If the properties is a hash, then we just want to use the keys
@@ -253,7 +315,7 @@ class ET_Get(ET_Constructor):
                 ws_retrieveRequest.Properties = props
 
         if search_filter is not None:
-            ws_simpleFilterPart = authStub.soap_client.factory.create('SimpleFilterPart')
+            ws_simpleFilterPart = auth_stub.soap_client.factory.create('SimpleFilterPart')
             
             for prop in ws_simpleFilterPart:
                 if prop[0] in search_filter:
@@ -261,9 +323,9 @@ class ET_Get(ET_Constructor):
            
             ws_retrieveRequest.Filter = ws_simpleFilterPart
 
-        ws_retrieveRequest.ObjectType = objType
+        ws_retrieveRequest.ObjectType = obj_type
         
-        response = authStub.soap_client.service.Retrieve(ws_retrieveRequest)        
+        response = auth_stub.soap_client.service.Retrieve(ws_retrieveRequest)        
 
         if response is not None:
             super(ET_Get, self).__init__(response)
@@ -274,26 +336,10 @@ class ET_Get(ET_Constructor):
 ##
 ########
 class ET_Post(ET_Constructor):
-    def __init__(self, authStub, objType, props = None):
-        authStub.refresh_token()
-              
-        ws_create = authStub.soap_client.factory.create(objType)
-            
-        if props is not None and type(props) is dict:
-            for k, v in props.iteritems():
-                if k in ws_create:
-                    ws_create[k] = v
-                else:
-                    message = k + ' is not a property of ' + objType
-                    print message
-                    raise Exception(message)
-        else:
-            message = 'Can not post properties to ' + objType + ' without a dict of properties'
-            print message
-            raise Exception(message)
-        
-        response = authStub.soap_client.service.Create(None, ws_create)
-             
+    def __init__(self, auth_stub, obj_type, props = None):
+        auth_stub.refresh_token()
+
+        response = auth_stub.soap_client.service.Create(None, self.parse_props_into_ws_object(auth_stub, obj_type, props))
         if(response is not None):
             super(ET_Post, self).__init__(response)
 
@@ -303,26 +349,11 @@ class ET_Post(ET_Constructor):
 ##
 ########
 class ET_Patch(ET_Constructor):
-    def __init__(self, authStub, objType, props = None):
-        authStub.refresh_token()
+    def __init__(self, auth_stub, obj_type, props = None):
+        auth_stub.refresh_token()
               
-        ws_update = authStub.soap_client.factory.create(objType)
-            
-        if props is not None and type(props) is dict:
-            for k, v in props.iteritems():
-                if k in ws_update:
-                    ws_update[k] = v
-                else:
-                    message = k + ' is not a property of ' + objType
-                    print message
-                    raise Exception(message)
-        else:
-            message = 'Can not post properties to ' + objType + ' without a dict of properties'
-            print message
-            raise Exception(message)
-        
-        response = authStub.soap_client.service.Update(None, ws_update)
-             
+        response = auth_stub.soap_client.service.Update(None, self.parse_props_into_ws_object(auth_stub, obj_type, props))
+
         if(response is not None):
             super(ET_Patch, self).__init__(response)
 
@@ -332,26 +363,11 @@ class ET_Patch(ET_Constructor):
 ##
 ########
 class ET_Delete(ET_Constructor):
-    def __init__(self, authStub, objType, props = None):
-        authStub.refresh_token()
+    def __init__(self, auth_stub, obj_type, props = None):
+        auth_stub.refresh_token()
               
-        ws_delete = authStub.soap_client.factory.create(objType)
-            
-        if props is not None and type(props) is dict:
-            for k, v in props.iteritems():
-                if k in ws_delete:
-                    ws_delete[k] = v
-                else:
-                    message = k + ' is not a property of ' + objType
-                    print message
-                    raise Exception(message)
-        else:
-            message = 'Can not post properties to ' + objType + ' without a dict of properties'
-            print message
-            raise Exception(message)
-        
-        response = authStub.soap_client.service.Delete(None, ws_delete)
-             
+        response = auth_stub.soap_client.service.Delete(None, self.parse_props_into_ws_object(auth_stub, obj_type, props))
+
         if(response is not None):
             super(ET_Delete, self).__init__(response)
 
@@ -361,12 +377,12 @@ class ET_Delete(ET_Constructor):
 ##
 ########
 class ET_Continue(ET_Constructor):
-    def __init__(self, authStub, request_id):
-        authStub.refresh_token()
+    def __init__(self, auth_stub, request_id):
+        auth_stub.refresh_token()
 
-        ws_continueRequest = authStub.soap_client.factory.create('RetrieveRequest')
+        ws_continueRequest = auth_stub.soap_client.factory.create('RetrieveRequest')
         ws_continueRequest.ContinueRequest = request_id
-        response = authStub.soap_client.service.Retrieve(ws_continueRequest)        
+        response = auth_stub.soap_client.service.Retrieve(ws_continueRequest)        
 
         if response is not None:
             super(ET_Continue, self).__init__(response)
@@ -377,7 +393,7 @@ class ET_Continue(ET_Constructor):
 ##
 ########
 class ET_BaseObject(object):
-    authStub = None
+    auth_stub = None
     obj = None
     last_request_id = None
     endpoint = None
@@ -391,7 +407,7 @@ class ET_BaseObject(object):
 ##
 ########
 class ET_GetSupport(ET_BaseObject):
-    objType = 'ET_GetSupport'   #should be overwritten by inherited class
+    obj_type = 'ET_GetSupport'   #should be overwritten by inherited class
     
     def get(self, m_props = None, m_filter = None):
         props = self.props
@@ -405,19 +421,19 @@ class ET_GetSupport(ET_BaseObject):
         if m_filter is not None and type(m_filter) is dict:
             search_filter = m_filter
 
-        obj = ET_Get(self.authStub, self.objType, props, search_filter)
+        obj = ET_Get(self.auth_stub, self.obj_type, props, search_filter)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
     
     def info(self):
-        obj = ET_Describe(self.authStub, self.objType)
+        obj = ET_Describe(self.auth_stub, self.obj_type)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
     
     def getMoreResults(self):
-        obj = ET_Continue(self.authStub, self.last_request_id)
+        obj = ET_Continue(self.auth_stub, self.last_request_id)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
@@ -428,10 +444,10 @@ class ET_GetSupport(ET_BaseObject):
 ##
 ########
 class ET_GetRest(ET_Constructor):
-    def __init__(self, authStub, endpoint, qs = None):
-        authStub.refresh_token()    
+    def __init__(self, auth_stub, endpoint, qs = None):
+        auth_stub.refresh_token()    
 
-        r = requests.get(endpoint + '?access_token=' + authStub.authToken)        
+        r = requests.get(endpoint + '?access_token=' + auth_stub.authToken)        
         
         self.more_results = False
                     
@@ -444,11 +460,11 @@ class ET_GetRest(ET_Constructor):
 ##
 ########
 class ET_PostRest(ET_Constructor):    
-    def __init__(self, authStub, endpoint, payload):
-        authStub.refresh_token()
+    def __init__(self, auth_stub, endpoint, payload):
+        auth_stub.refresh_token()
         
         headers = {'content-type' : 'application/json'}
-        r = requests.post(endpoint + '?access_token=' + authStub.authToken , data=json.dumps(payload), headers=headers)
+        r = requests.post(endpoint + '?access_token=' + auth_stub.authToken , data=json.dumps(payload), headers=headers)
         
         obj = super(ET_PostRest, self).__init__(r, True)
         return obj
@@ -459,11 +475,11 @@ class ET_PostRest(ET_Constructor):
 ##
 ########
 class ET_PatchRest(ET_Constructor):
-    def __init__(self, authStub, endpoint, payload):
-        authStub.refresh_token()
+    def __init__(self, auth_stub, endpoint, payload):
+        auth_stub.refresh_token()
         
         headers = {'content-type' : 'application/json'}
-        r = requests.patch(endpoint + '?access_token=' + authStub.authToken , data=json.dumps(payload), headers=headers)
+        r = requests.patch(endpoint + '?access_token=' + auth_stub.authToken , data=json.dumps(payload), headers=headers)
         
         obj = super(ET_PatchRest, self).__init__(r, True)
         return obj
@@ -474,10 +490,10 @@ class ET_PatchRest(ET_Constructor):
 ##
 ########
 class ET_DeleteRest(ET_Constructor):
-    def __init__(self, authStub, endpoint):
-        authStub.refresh_token()
+    def __init__(self, auth_stub, endpoint):
+        auth_stub.refresh_token()
         
-        r = requests.delete(endpoint + '?access_token=' + authStub.authToken)
+        r = requests.delete(endpoint + '?access_token=' + auth_stub.authToken)
         
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj
@@ -497,19 +513,19 @@ class ET_CUDSupport(ET_GetSupport):
             for k, v in self.extProps.iteritems():
                 self.props[k.capitalize] = v
         
-        obj = ET_Post(self.authStub, self.objType, self.props)
+        obj = ET_Post(self.auth_stub, self.obj_type, self.props)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
     
     def patch(self):
-        obj = ET_Patch(self.authStub, self.objType, self.props)
+        obj = ET_Patch(self.auth_stub, self.obj_type, self.props)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
 
     def delete(self):
-        obj = ET_Delete(self.authStub, self.objType, self.props)
+        obj = ET_Delete(self.auth_stub, self.obj_type, self.props)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
@@ -548,7 +564,7 @@ class ET_GetSupportRest(ET_BaseObject):
         for value in self.urlProps:             
             completeURL = completeURL.replace('/{{{0}}}'.format(value), '')
 
-        obj = ET_GetRest(self.authStub, completeURL, additionalQS)    
+        obj = ET_GetRest(self.auth_stub, completeURL, additionalQS)    
         
         results = obj.results
         print type(results)
@@ -621,7 +637,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         for value in self.urlProps:             
             completeURL = completeURL.replace('/{{{0}}}'.format(value), '')         
 
-        obj = ET_PostRest(self.authStub, completeURL, self.props)
+        obj = ET_PostRest(self.auth_stub, completeURL, self.props)
         return obj        
     
     def patch(self):
@@ -636,7 +652,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
                 if k in self.urlProps:
                     completeURL = completeURL.replace('{{{0}}}'.format(k), v)
         
-        obj = ET_PatchRest(self.authStub, completeURL, self.props)            
+        obj = ET_PatchRest(self.auth_stub, completeURL, self.props)            
         return obj
     
     def delete(self):
@@ -651,7 +667,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
                 if k in self.urlProps:
                     completeURL = completeURL.replace('{{{0}}}'.format(k), v)
 
-        obj = ET_DeleteRest(self.authStub, completeURL)
+        obj = ET_DeleteRest(self.auth_stub, completeURL)
         return obj
 
 ########
@@ -662,7 +678,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
 class ET_ContentArea(ET_CUDSupport):    
     def __init__(self):
         super(ET_ContentArea, self).__init__()
-        self.objType = 'ContentArea'
+        self.obj_type = 'ContentArea'
 
 ########
 ##
@@ -671,7 +687,7 @@ class ET_ContentArea(ET_CUDSupport):
 ########
 class ET_BounceEvent(ET_GetSupport):
     def __init__(self):
-        self.objType = 'BounceEvent'
+        self.obj_type = 'BounceEvent'
      
 ########
 ##
@@ -700,7 +716,7 @@ class ET_Campaign_Asset(ET_CUDSupportRest):
 class ET_ClickEvent(ET_GetSupport):
     def __init__(self):
         super(ET_ClickEvent, self).__init__()
-        self.objType = 'ClickEvent'
+        self.obj_type = 'ClickEvent'
         
 ########
 ##
@@ -710,12 +726,12 @@ class ET_ClickEvent(ET_GetSupport):
 class ET_List(ET_CUDSupport):
     def __init__(self):
         super(ET_List, self).__init__()
-        self.objType = 'List'
+        self.obj_type = 'List'
     
 class ET_List_Subscriber(ET_GetSupport):
     def __init__(self):
         super(ET_List_Subscriber, self).__init__()
-        self.objType = 'ListSubscriber'    
+        self.obj_type = 'ListSubscriber'    
 
 
 
@@ -728,47 +744,47 @@ class ET_List_Subscriber(ET_GetSupport):
 class ET_SentEvent(ET_GetSupport):
     def __init__(self):
         super(ET_SentEvent, self).__init__()
-        self.objType = 'SentEvent'
+        self.obj_type = 'SentEvent'
 
 class ET_OpenEvent(ET_GetSupport):
     def __init__(self):
         super(ET_OpenEvent, self).__init__()
-        self.objType = 'OpenEvent'
+        self.obj_type = 'OpenEvent'
 
 class ET_UnsubEvent(ET_GetSupport):
     def __init__(self):
         super(ET_UnsubEvent, self).__init__()
-        self.objType = 'UnsubEvent'
+        self.obj_type = 'UnsubEvent'
 
 class ET_Email(ET_CUDSupport):
     def __init__(self):
         super(ET_Email, self).__init__()
-        self.objType = 'Email'
+        self.obj_type = 'Email'
 
 class ET_TriggeredSend(ET_CUDSupport):
     subscribers = None
     
     def __init__(self):
         super(ET_TriggeredSend, self).__init__()
-        self.objType = 'TriggeredSendDefinition'
+        self.obj_type = 'TriggeredSendDefinition'
 
     def send(self):
         tscall = {"TriggeredSendDefinition" : self.props, "Subscribers" : self.subscribers}
-        self.obj = ET_Post(self.authStub, "TriggeredSend", tscall)
+        self.obj = ET_Post(self.auth_stub, "TriggeredSend", tscall)
         return self.obj
 
 
 class ET_Subscriber(ET_CUDSupport):
     def __init__(self):
         super(ET_Subscriber, self).__init__()
-        self.objType = 'Subscriber'
+        self.obj_type = 'Subscriber'
         
 class ET_DataExtension(ET_CUDSupport):
     columns = None
     
     def __init__(self):
         super(ET_DataExtension, self).__init__()
-        self.objType = 'DataExtension'    
+        self.obj_type = 'DataExtension'    
     
     def post(self):
         originalProps = self.props
@@ -836,7 +852,7 @@ class ET_DataExtension_Column(ET_GetSupport):
         end
         '''
         
-        obj = ET_Get(self.authStub, self.obj, self.props, self.search_filter)                        
+        obj = ET_Get(self.auth_stub, self.obj, self.props, self.search_filter)                        
         self.last_request_id = obj.request_id    
         
         '''    
@@ -846,14 +862,14 @@ class ET_DataExtension_Column(ET_GetSupport):
         '''
             
         return obj
-    
+
 class ET_DataExtension_Row(ET_CUDSupport):
     Name = None
     CustomerKey = None        
                 
     def __init__(self):                                
         super(ET_DataExtension_Row, self).__init__()
-        self.objType = "DataExtensionObject"
+        self.obj_type = "DataExtensionObject"
         
     def get(self):
         self.getName()
@@ -872,7 +888,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
         end
         '''
             
-        obj = ET_Get(self.authStub, "DataExtensionObject[{0}]".format(self.Name), self.props, self.search_filter)                        
+        obj = ET_Get(self.auth_stub, "DataExtensionObject[{0}]".format(self.Name), self.props, self.search_filter)                        
         self.last_request_id = obj.request_id                
             
         return obj
@@ -895,7 +911,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
             currentProp['Properties'] = {}
             currentProp['Properties']['Property'] = currentFields    
 
-        obj = ET_Post(self.authStub, self.objType, currentProp)    
+        obj = ET_Post(self.auth_stub, self.obj_type, currentProp)    
         self.props = originalProps
         return obj
         
@@ -911,7 +927,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
         currentProp['Properties'] = {}
         currentProp['Properties']['Property'] = currentFields                                    
             
-        obj = ET_Patch(self.authStub, self.objType, currentProp)
+        obj = ET_Patch(self.auth_stub, self.obj_type, currentProp)
         return obj
     
     def delete(self): 
@@ -926,7 +942,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
         currentProp['Keys'] = {}
         currentProp['Keys']['Key'] = currentFields                                    
             
-        obj = ET_Delete(self.authStub, self.objType, currentProp)
+        obj = ET_Delete(self.auth_stub, self.obj_type, currentProp)
         return obj
     
     def getCustomerKey(self):
@@ -935,7 +951,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 raise Exception('Unable to process DataExtension::Row request due to CustomerKey and Name not being defined on ET_DatExtension::row')    
             else:
                 de = ET_DataExtension()
-                de.authStub = self.authStub
+                de.auth_stub = self.auth_stub
                 de.props = ["Name","CustomerKey"]
                 de.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : self.Name}
                 getResponse = de.get()
@@ -951,7 +967,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 raise Exception('Unable to process DataExtension::Row request due to CustomerKey and Name not being defined on ET_DatExtension::row')    
             else:
                 de = ET_DataExtension()
-                de.authStub = self.authStub
+                de.auth_stub = self.auth_stub
                 de.props = ["Name","CustomerKey"]
                 de.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : self.CustomerKey}
                 getResponse = de.get()

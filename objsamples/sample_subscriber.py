@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 
 try:
@@ -14,7 +12,7 @@ try:
     # Create Subscriber 
     print '>>> Create Subscriber'
     postSub = ET_Client.ET_Subscriber()
-    postSub.authStub = stubObj
+    postSub.auth_stub = stubObj
     postSub.props = {"EmailAddress" : SubscriberTestEmail}
     postResponse = postSub.post()
     print 'Post Status: ' + str(postResponse.status)
@@ -26,7 +24,7 @@ try:
     # Retrieve newly created Subscriber
     print '>>> Retrieve newly created Subscriber'
     getSub = ET_Client.ET_Subscriber()
-    getSub.authStub = stubObj
+    getSub.auth_stub = stubObj
     getSub.props = ["SubscriberKey", "EmailAddress", "Status"]
     getSub.search_filter = {'Property' : 'SubscriberKey','SimpleOperator' : 'equals','Value' : SubscriberTestEmail}
     getResponse = getSub.get()
@@ -40,7 +38,7 @@ try:
     # Update Subscriber 
     print '>>> Update Subscriber'
     patchSub = ET_Client.ET_Subscriber()
-    patchSub.authStub = stubObj
+    patchSub.auth_stub = stubObj
     patchSub.props = {"EmailAddress" : SubscriberTestEmail, "Status" : "Unsubscribed"}
     patchResponse = patchSub.patch()
     print 'Patch Status: ' + str(patchResponse.status)
@@ -52,7 +50,7 @@ try:
     # Retrieve Subscriber that should have status unsubscribed now
     print '>>> Retrieve Subscriber that should have status unsubscribed now'
     getSub = ET_Client.ET_Subscriber()
-    getSub.authStub = stubObj
+    getSub.auth_stub = stubObj
     getSub.props = ["SubscriberKey", "EmailAddress", "Status"]
     getSub.search_filter = {'Property' : 'SubscriberKey','SimpleOperator' : 'equals','Value' : SubscriberTestEmail};
     getResponse = getSub.get()
@@ -66,7 +64,7 @@ try:
     # Delete Subscriber
     print '>>> Delete Subscriber'
     deleteSub = ET_Client.ET_Subscriber()
-    deleteSub.authStub = stubObj
+    deleteSub.auth_stub = stubObj
     deleteSub.props = {"EmailAddress" : SubscriberTestEmail}
     deleteResponse = deleteSub.delete()
     print 'Delete Status: ' + str(deleteResponse.status)
@@ -78,7 +76,7 @@ try:
     # Retrieve Subscriber to confirm deletion
     print '>>> Retrieve Subscriber to confirm deletion'
     getSub = ET_Client.ET_Subscriber()
-    getSub.authStub = stubObj
+    getSub.auth_stub = stubObj
     getSub.props = ["SubscriberKey", "EmailAddress", "Status"]
     getSub.search_filter = {'Property' : 'SubscriberKey','SimpleOperator' : 'equals','Value' : SubscriberTestEmail};
     getResponse = getSub.get()
@@ -96,7 +94,7 @@ try:
     # Retrieve All Subcribers with GetMoreResults
     print '>>> Retrieve All Subcribers with GetMoreResults'
     getSub = ET_Client.ET_Subscriber()
-    getSub.authStub = stubObj
+    getSub.auth_stub = stubObj
     getSub.props = ["SubscriberKey", "EmailAddress", "Status"]
     getResponse = getSub.get()
     print 'Retrieve Status: ' + str(getResponse.status)

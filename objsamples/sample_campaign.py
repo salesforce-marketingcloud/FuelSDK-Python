@@ -11,7 +11,7 @@ try:
     # Retrieve all Campaigns
     print '>>> Retrieve all Campaigns'
     getCamp = ET_Client.ET_Campaign()
-    getCamp.authStub = stubObj
+    getCamp.auth_stub = stubObj
     getResponse = getCamp.get()
     print 'Retrieve Status: ' + str(getResponse.status)
     print 'Code: ' + str(getResponse.code)
@@ -35,7 +35,7 @@ try:
     # Create a new Campaign
     print '>>> Create a new Campaign'
     postCamp = ET_Client.ET_Campaign()
-    postCamp.authStub = stubObj
+    postCamp.auth_stub = stubObj
     postCamp.props = {"name" : "PythonSDKCreatedForTest", "description": "PythonSDKCreatedForTest", "color":"FF9933", "favorite":"false"}
     postResponse = postCamp.post()
     print 'Post Status: ' + str(postResponse.status)
@@ -51,7 +51,7 @@ try:
         # Retrieve the new Campaign
         print '>>> Retrieve the new Campaign'
         getCamp = ET_Client.ET_Campaign()
-        getCamp.authStub = stubObj
+        getCamp.auth_stub = stubObj
         getCamp.props = {"id" : IDOfpostCampaign}
         getResponse = getCamp.get()
         print 'Retrieve Status: ' + str(getResponse.status)
@@ -63,7 +63,7 @@ try:
         # Update the new Campaign
         print '>>> Update the new Campaign'
         patchCamp = ET_Client.ET_Campaign()
-        patchCamp.authStub = stubObj
+        patchCamp.auth_stub = stubObj
         patchCamp.props = {"id": IDOfpostCampaign, "name" : "PythonSDKCreated-Updated!"}
         postResponse = patchCamp.patch()
         print 'Patch Status: ' + str(postResponse.status)
@@ -75,7 +75,7 @@ try:
         # Retrieve the updated Campaign
         print '>>> Retrieve the updated Campaign'
         getCamp = ET_Client.ET_Campaign()
-        getCamp.authStub = stubObj
+        getCamp.auth_stub = stubObj
         getCamp.props = {"id" : IDOfpostCampaign}
         getResponse = getCamp.get()
         print 'Retrieve Status: ' + str(getResponse.status)
@@ -87,7 +87,7 @@ try:
         # Create a new Campaign Asset
         print '>>> Create a new Campaign Asset'
         postCampAsset = ET_Client.ET_Campaign_Asset()
-        postCampAsset.authStub = stubObj
+        postCampAsset.auth_stub = stubObj
         postCampAsset.props = {"id" : IDOfpostCampaign, "ids": [ExampleAssetItemID], "type": ExampleAssetType}
         postResponse = postCampAsset.post()
         print 'Post Status: ' + str(postResponse.status)
@@ -101,7 +101,7 @@ try:
         # Retrieve all Campaign Asset for a campaign
         print '>>> Retrieve all Campaign Asset for a Campaign'
         getCampAsset = ET_Client.ET_Campaign_Asset()
-        getCampAsset.authStub = stubObj
+        getCampAsset.auth_stub = stubObj
         getCampAsset.props = {"id" : IDOfpostCampaign}
         getResponse = getCampAsset.get()
         print 'Retrieve Status: ' + str(getResponse.status)
@@ -113,7 +113,7 @@ try:
         # Retrieve a single new Campaign Asset
         print '>>> Retrieve a single new Campaign Asset'
         getCampAsset = ET_Client.ET_Campaign_Asset()
-        getCampAsset.authStub = stubObj
+        getCampAsset.auth_stub = stubObj
         getCampAsset.props = {"id" : IDOfpostCampaign, "assetId" : IDOfpostCampaignAsset}
         getResponse = getCampAsset.get()
         print 'Retrieve Status: ' + str(getResponse.status)
@@ -125,7 +125,7 @@ try:
         # Delete the new Campaign Asset
         print '>>> Delete the new Campaign Asset'
         deleteCampAsset = ET_Client.ET_Campaign_Asset()
-        deleteCampAsset.authStub = stubObj
+        deleteCampAsset.auth_stub = stubObj
         deleteCampAsset.props = {"id" : IDOfpostCampaign, "assetId": IDOfpostCampaignAsset}
         deleteResponse = deleteCampAsset.delete()
         print 'Delete Status: ' + str(deleteResponse.status)
@@ -137,7 +137,7 @@ try:
         # Get a single a new Campaign Asset to confirm deletion
         print '>>> Get a single a new Campaign Asset to confirm deletion'
         getCampAsset = ET_Client.ET_Campaign_Asset()
-        getCampAsset.authStub = stubObj
+        getCampAsset.auth_stub = stubObj
         getCampAsset.props = {"id" : IDOfpostCampaign, "assetId" : IDOfpostCampaignAsset}
         getResponse = getCampAsset.get()
         print 'Retrieve Status: ' + str(getResponse.status)
@@ -149,7 +149,7 @@ try:
         # Delete the new Campaign
         print '>>> Delete the new Campaign'
         deleteCamp = ET_Client.ET_Campaign()
-        deleteCamp.authStub = stubObj
+        deleteCamp.auth_stub = stubObj
         deleteCamp.props = {"id": IDOfpostCampaign}
         deleteResponse = deleteCamp.delete()
         print 'Delete Status: ' + str(deleteResponse.status)

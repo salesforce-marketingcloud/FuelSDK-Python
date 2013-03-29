@@ -1,5 +1,3 @@
-import sys
-sys.path.append("../")
 import ET_Client
 
 try:
@@ -28,9 +26,9 @@ try:
     # Delete deOne
     print '>>> Delete deOne'
     de5 = ET_Client.ET_DataExtension()
-    de5.authStub = stubObj
+    de5.auth_stub = stubObj
     de5.props = {"CustomerKey" : "HelperDEOne"}
-    delResponse = de5.delete
+    delResponse = de5.delete()
     print 'Delete Status: ' + str(delResponse.status)
     print 'Code: ' + str(delResponse.code)
     print 'Message: ' + str(delResponse.message)
@@ -39,9 +37,9 @@ try:
     # Delete deTwo
     print '>>> Delete deTwo'
     de5 = ET_Client.ET_DataExtension()
-    de5.authStub = stubObj
+    de5.auth_stub = stubObj
     de5.props = {"CustomerKey" : "HelperDETwo"}
-    delResponse = de5.delete
+    delResponse = de5.delete()
     print 'Delete Status: ' + str(delResponse.status)
     print 'Code: ' + str(delResponse.code)
     print 'Message: ' + str(delResponse.message)

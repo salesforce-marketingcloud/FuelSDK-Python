@@ -1,7 +1,4 @@
-import sys
-sys.path.append("../")
 import ET_Client
-#require 'securerandom'
 
 try:
 	debug = False
@@ -12,7 +9,7 @@ try:
 	# Create List 
 	print '>>> Create List'
 	postList = ET_Client.ET_List()
-	postList.authStub = stubObj
+	postList.auth_stub = stubObj
 	postList.props = {"ListName" : NewListName, "Description" : "This list was created with the PythonSDK", "Type" : "Private" }		
 	postResponse = postList.post()
 	print 'Post Status: ' + str(postResponse.status)
@@ -30,7 +27,7 @@ try:
 		# Retrieve newly created List by ID
 		print '>>> Retrieve newly created List'
 		getList = ET_Client.ET_List()
-		getList.authStub = stubObj	
+		getList.auth_stub = stubObj	
 		getList.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Client.PartnerClientKey","ListName","Description","Category","Type","CustomerKey","ListClassification","AutomatedEmail.ID"]
 		getList.search_filter =  {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
 		getResponse = getList.get()
@@ -44,7 +41,7 @@ try:
 		# Update List 
 		print '>>> Update List'
 		patchSub = ET_Client.ET_List()
-		patchSub.authStub = stubObj
+		patchSub.auth_stub = stubObj
 		patchSub.props = {"ID" : newListID, "Description" : "I updated the description"}		
 		patchResponse = patchSub.patch()
 		print 'Patch Status: ' + str(patchResponse.status)
@@ -56,7 +53,7 @@ try:
 		# Retrieve List that should have description updated 
 		print '>>> Retrieve List that should have description updated '
 		getList = ET_Client.ET_List()
-		getList.authStub = stubObj	
+		getList.auth_stub = stubObj	
 		getList.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Client.PartnerClientKey","ListName","Description","Category","Type","CustomerKey","ListClassification","AutomatedEmail.ID"]
 		getList.search_filter =  {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
 		getResponse = getList.get()
@@ -70,7 +67,7 @@ try:
 		# Delete List
 		print '>>> Delete List'
 		deleteSub = ET_Client.ET_List()
-		deleteSub.authStub = stubObj	
+		deleteSub.auth_stub = stubObj	
 		deleteSub.props = {"ID" : newListID}
 		deleteResponse = deleteSub.delete()
 		print 'Delete Status: ' + str(deleteResponse.status)
@@ -82,7 +79,7 @@ try:
 		# Retrieve List to confirm deletion
 		print '>>> Retrieve List to confirm deletion'
 		getList = ET_Client.ET_List()
-		getList.authStub = stubObj	
+		getList.auth_stub = stubObj	
 		getList.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Client.PartnerClientKey","ListName","Description","Category","Type","CustomerKey","ListClassification","AutomatedEmail.ID"]
 		getList.search_filter =  {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
 		getResponse = getList.get()
