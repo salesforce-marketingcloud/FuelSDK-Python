@@ -52,7 +52,6 @@ try:
     print 'Results: ' + str(getResponse.results)
     
     # Start a TriggeredSend by setting to Active
-    '''
     print '>>> Start a TriggeredSend by setting to Active'
     patchTrig = ET_Client.ET_TriggeredSend()
     patchTrig.auth_stub = stubObj
@@ -63,7 +62,6 @@ try:
     print 'Message: ' + str(patchResponse.message)
     print 'Result Count: ' + str(len(patchResponse.results))
     print 'Results: ' + str(patchResponse.results)
-    '''
     
     # Retrieve Single TriggeredSend After setting back to active
     print '>>> Retrieve Single TriggeredSend After setting back to active'
