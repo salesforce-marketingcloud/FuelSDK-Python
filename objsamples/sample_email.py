@@ -60,12 +60,12 @@ try:
     patchHTMLBody = ET_Client.ET_Email()
     patchHTMLBody.auth_stub = stubObj
     patchHTMLBody.props = {"CustomerKey" : NameOfTestEmail, "Name":NameOfTestEmail,  "HTMLBody": "<b>Some HTML HTMLBody Goes here. NOW WITH NEW HTMLBody</b>"}
-    patchResponse = patchHTMLBody.patch
-    print 'Patch Status: ' + str(postResponse.status)
-    print 'Code: ' + str(postResponse.code)
-    print 'Message: ' + str(postResponse.message)
-    print 'Result Count: ' + str(len(postResponse.results))
-    print 'Results: ' + str(postResponse.results)
+    patchResponse = patchHTMLBody.patch()
+    print 'Patch Status: ' + str(patchResponse.status)
+    print 'Code: ' + str(patchResponse.code)
+    print 'Message: ' + str(patchResponse.message)
+    print 'Result Count: ' + str(len(patchResponse.results))
+    print 'Results: ' + str(patchResponse.results)
 
     # Retrieve updated Email
     print '>>> Retrieve updated Email'
