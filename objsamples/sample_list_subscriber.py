@@ -43,18 +43,18 @@ try:
         if postResponse.status is False: 
             # If the subscriber already exists in the account then we need to do an update.
             # Update Subscriber On List 
-            if postResponse.results[0]['ErrorCode'] == '12014':     
+            if postResponse.results[0]['ErrorCode'] == 12014:     
                 # Update Subscriber to add to List
                 print '>>> Update Subscriber to add to List'
                 patchSub = ET_Client.ET_Subscriber()
                 patchSub.auth_stub = stubObj
                 patchSub.props = {"EmailAddress" : SubscriberTestEmail, "Lists" :[{"ID" : newListID}]}
                 patchResponse = patchSub.patch()
-                print 'Patch Status: ' + str(postResponse.status)
-                print 'Code: ' + str(postResponse.code)
-                print 'Message: ' + str(postResponse.message)
-                print 'Result Count: ' + str(len(postResponse.results))
-                print 'Results: ' + str(postResponse.results)
+                print 'Patch Status: ' + str(patchResponse.status)
+                print 'Code: ' + str(patchResponse.code)
+                print 'Message: ' + str(patchResponse.message)
+                print 'Result Count: ' + str(len(patchResponse.results))
+                print 'Results: ' + str(patchResponse.results)
         
         # Retrieve all Subscribers on the List
         print '>>> Retrieve all Subscribers on the List'
