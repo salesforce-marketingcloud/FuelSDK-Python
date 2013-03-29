@@ -43,7 +43,7 @@ try:
         if postResponse.status is False: 
             # If the subscriber already exists in the account then we need to do an update.
             # Update Subscriber On List 
-            if postResponse.results[0]['error_code'] == "12014":     
+            if postResponse.results[0]['ErrorCode'] == '12014':     
                 # Update Subscriber to add to List
                 print '>>> Update Subscriber to add to List'
                 patchSub = ET_Client.ET_Subscriber()
