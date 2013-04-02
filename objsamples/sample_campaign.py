@@ -18,19 +18,21 @@ try:
     print 'Message: ' + str(getResponse.message)
     print 'MoreResults: ' + str(getResponse.more_results)
     if 'count' in getResponse.results:
-        print 'Results(Items) Length: ' + str(getResponse.results['count'])
-    print 'Results(Items): ' + str(getResponse.results)
+        print 'Results(Items) Length: ' + str(len(getResponse.results['items']))
+    # print 'Results(Items): ' + str(getResponse.results)
     print '-----------------------------'
 
     while getResponse.more_results:
         print '>>> Continue Retrieve all Campaigns with GetMoreResults'
         getResponse = getCamp.getMoreResults()
+        print str(getResponse)
         print 'Retrieve Status: ' + str(getResponse.status)
         print 'Code: ' + str(getResponse.code)
         print 'Message: ' + str(getResponse.message)
         print 'MoreResults: ' + str(getResponse.more_results)
         print 'RequestID: ' + str(getResponse.request_id)
-        print 'Results(Items) Length: ' + str(len(getResponse.results))
+        if 'count' in getResponse.results:
+            print 'Results(Items) Length: ' + str(len(getResponse.results['items']))
 
     # Create a new Campaign
     print '>>> Create a new Campaign'

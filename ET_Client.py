@@ -446,8 +446,12 @@ class ET_GetSupport(ET_BaseObject):
 class ET_GetRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, qs = None):
         auth_stub.refresh_token()    
+        fullendpoint = endpoint + '?access_token=' + auth_stub.authToken
+        for qStringValue in qs:
+            fullendpoint += '&'+	qStringValue + '=' + str(qs[qStringValue])
 
-        r = requests.get(endpoint + '?access_token=' + auth_stub.authToken)        
+        r = requests.get(fullendpoint)
+	
         
         self.more_results = False
                     
@@ -567,7 +571,6 @@ class ET_GetSupportRest(ET_BaseObject):
         obj = ET_GetRest(self.auth_stub, completeURL, additionalQS)    
         
         results = obj.results
-        print type(results)
         if 'page' in obj.results: 
             self.lastPageNumber = obj.results['page']
             pageSize = obj.results['pageSize']
@@ -577,8 +580,9 @@ class ET_GetSupportRest(ET_BaseObject):
                 count = obj.results['totalCount']
                     
             if count is not None and count > (self.lastPageNumber * pageSize):
-                obj.more_results = True    
-            
+                obj.more_results = True
+            else:
+                obj.more_results = False			
         return obj
     
     def getMoreResults(self):
@@ -599,10 +603,10 @@ class ET_GetSupportRest(ET_BaseObject):
         
         self.props['$page'] = self.lastPageNumber + 1
         
-        obj = self.get
+        obj = self.get()
         
         if removePageFromProps:
-            del self.props.delete['$page']
+            del self.props['$page']
         else:
             self.props['$page'] = originalPageValue
         
