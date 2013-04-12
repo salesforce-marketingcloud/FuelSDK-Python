@@ -315,13 +315,30 @@ class ET_Get(ET_Constructor):
                 ws_retrieveRequest.Properties = props
 
         if search_filter is not None:
-            ws_simpleFilterPart = auth_stub.soap_client.factory.create('SimpleFilterPart')
-            
-            for prop in ws_simpleFilterPart:
-                if prop[0] in search_filter:
-                    ws_simpleFilterPart[prop[0]] = search_filter[prop[0]]
-           
-            ws_retrieveRequest.Filter = ws_simpleFilterPart
+            if search_filter.has_key('LogicalOperator'):
+                ws_simpleFilterPartLeft = auth_stub.soap_client.factory.create('SimpleFilterPart')
+                for prop in ws_simpleFilterPartLeft:
+                    print prop[0]
+                    if prop[0] in search_filter['LeftOperand']:			
+                        ws_simpleFilterPartLeft[prop[0]] = search_filter['LeftOperand'][prop[0]]	
+						
+                ws_simpleFilterPartRight = auth_stub.soap_client.factory.create('SimpleFilterPart')
+                for prop in ws_simpleFilterPartRight:
+                    if prop[0] in search_filter['RightOperand']:
+                        ws_simpleFilterPartRight[prop[0]] = search_filter['RightOperand'][prop[0]]
+						
+                ws_complexFilterPart = auth_stub.soap_client.factory.create('ComplexFilterPart')
+                ws_complexFilterPart.LeftOperand = ws_simpleFilterPartLeft
+                ws_complexFilterPart.RightOperand = ws_simpleFilterPartRight
+                ws_complexFilterPart.LogicalOperator = search_filter['LogicalOperator']
+
+                ws_retrieveRequest.Filter = ws_complexFilterPart
+            else:
+                ws_simpleFilterPart = auth_stub.soap_client.factory.create('SimpleFilterPart')
+                for prop in ws_simpleFilterPart:
+                    if prop[0] in search_filter:
+                        ws_simpleFilterPart[prop[0]] = search_filter[prop[0]]
+                ws_retrieveRequest.Filter = ws_simpleFilterPart
 
         ws_retrieveRequest.ObjectType = obj_type
         
@@ -683,6 +700,16 @@ class ET_ContentArea(ET_CUDSupport):
     def __init__(self):
         super(ET_ContentArea, self).__init__()
         self.obj_type = 'ContentArea'
+
+########
+##
+##    wrap an Exact Target Content Area
+##
+########
+class ET_Folder(ET_CUDSupport):    
+    def __init__(self):
+        super(ET_Folder, self).__init__()
+        self.obj_type = 'DataFolder'
 
 ########
 ##
