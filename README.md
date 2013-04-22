@@ -59,7 +59,7 @@ The default Suds 0.4 Package that is available for download needs to have a coup
 > python setup.py install
 
 
-## Configuring ##
+### Configuring ###
 After downloading the project, rename the config.python.template file to config.python. 
 
 Edit config.python so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (appsignature).  Only change the value for the defaultwsdl configuration item if instructed by ExactTarget.
