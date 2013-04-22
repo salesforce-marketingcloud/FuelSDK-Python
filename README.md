@@ -15,8 +15,51 @@ libraries:
 - requests 1.1.0
 - suds 0.4
 
-
 ## Getting Started ##
+### Custom Suds Changes ###
+The default Suds 0.4 Package that is available for download needs to have a couple small fixes applied in order for it to fully support the Fuel SDK. Please update your suds installation using the following instructions:
+
+- Download the suds package source from https://pypi.python.org/pypi/suds
+- Open the file located wihin the uncompressed files at: suds\mx\appender.py
+- At line 223, the following lines will be present:
+><pre>
+        child.setText(p.get())
+        parent.append(child)
+        for item in p.items():
+            cont = Content(tag=item[0], value=item[1])
+            Appender.append(self, child, cont)
+</pre>
+
+- Replace those lines with:
+><pre>
+        child_value = p.get()
+        if(child_value is None):
+            pass
+        else:
+            child.setText(child_value)
+            parent.append(child)
+            for item in p.items():
+                cont = Content(tag=item[0], value=item[1])
+                Appender.append(self, child, cont)
+
+</pre>
+
+- Open the file located wihin the uncompressed files at suds\bindings\document.py
+- After line 62 which reads:
+><pre>
+            n += 1
+</pre>
+
+- Add the following lines: 
+><pre>
+            if value is None:
+                continue
+</pre>
+- Install Suds by running the command
+> python setup.py install
+
+
+## Configuring ##
 After downloading the project, rename the config.python.template file to config.python. 
 
 Edit config.python so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (appsignature).  Only change the value for the defaultwsdl configuration item if instructed by ExactTarget.
