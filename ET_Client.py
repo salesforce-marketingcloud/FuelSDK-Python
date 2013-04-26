@@ -289,6 +289,25 @@ class ET_Describe(ET_Constructor):
 
 ########
 ##
+##    Used to Configure Objects via web service call
+##
+########
+class ET_Configure(ET_Constructor):
+    def __init__(self, auth_stub, obj_type, props = None):        
+        auth_stub.refresh_token()
+
+        ws_configureRequest = auth_stub.soap_client.factory.create('ConfigureRequestMsg')
+        ws_configureRequest.Action = 'create'        
+        ws_configureRequest.Configurations = {'Configuration': self.parse_props_into_ws_object(auth_stub, obj_type, props)}
+
+        response = auth_stub.soap_client.service.Configure(None, ws_configureRequest)        
+
+        if response is not None:
+            #self.message = 'Describe: ' + obj_type
+            super(ET_Configure, self).__init__(response)
+
+########
+##
 ##    Get call to a web service
 ##
 ########
@@ -703,13 +722,28 @@ class ET_ContentArea(ET_CUDSupport):
 
 ########
 ##
-##    wrap an Exact Target Content Area
+##    wrap an Exact Target DataFolder
 ##
 ########
 class ET_Folder(ET_CUDSupport):    
     def __init__(self):
         super(ET_Folder, self).__init__()
         self.obj_type = 'DataFolder'
+
+########
+##
+##    wrap an Exact Target PropertyDefinition
+##
+########
+class ET_ProfileAttribute():    
+    def __init__(self):
+        self.obj_type = 'PropertyDefinition'
+
+    def post(self):       
+        obj = ET_Configure(self.auth_stub, self.obj_type, self.props)
+        if obj is not None:
+            self.last_request_id = obj.request_id
+        return obj
 
 ########
 ##
@@ -783,6 +817,7 @@ class ET_SentEvent(ET_GetSupport):
     def __init__(self):
         super(ET_SentEvent, self).__init__()
         self.obj_type = 'SentEvent'
+
 
 class ET_OpenEvent(ET_GetSupport):
     def __init__(self):
