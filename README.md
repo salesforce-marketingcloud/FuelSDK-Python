@@ -139,19 +139,19 @@ Find more sample files that illustrate using all of the available functions for 
 
 Sample List:
 
- - [BounceEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-bounceevent.py)
- - [Campaign](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-campaign.py)
- - [ClickEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-clickevent.py)
- - [ContentArea](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-contentarea.py)
- - [DataExtension](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-dataextension.py)
- - [Email](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-email.py)
- - [List](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-list.py)
- - [List > Subscriber](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-subscriber.py)
- - [OpenEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-openevent.py)
- - [SentEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-sentevent.py)
- - [Subscriber](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-subscriber.py)
- - [TriggeredSend](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-triggeredsend.py)
- - [UnsubEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample-unsubevent.py)
+ - [BounceEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_bounceevent.py)
+ - [Campaign](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_campaign.py)
+ - [ClickEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_clickevent.py)
+ - [ContentArea](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_contentarea.py)
+ - [DataExtension](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_dataextension.py)
+ - [Email](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_email.py)
+ - [List](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_list.py)
+ - [List > Subscriber](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_subscriber.py)
+ - [OpenEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_openevent.py)
+ - [SentEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_sentevent.py)
+ - [Subscriber](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_subscriber.py)
+ - [TriggeredSend](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_triggeredsend.py)
+ - [UnsubEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_unsubevent.py)
 
 
  
