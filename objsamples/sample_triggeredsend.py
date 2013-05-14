@@ -111,7 +111,7 @@ try:
     deleteTrig = ET_Client.ET_TriggeredSend()
     deleteTrig.auth_stub = stubObj
     deleteTrig.props = {'CustomerKey' : TSNameForCreateThenDelete}
-    deleteResponse = deleteTrig.post()
+    deleteResponse = deleteTrig.delete()
     print 'Delete Status: ' + str(deleteResponse.status)
     print 'Code: ' + str(deleteResponse.code)
     print 'Message: ' + str(deleteResponse.message)
