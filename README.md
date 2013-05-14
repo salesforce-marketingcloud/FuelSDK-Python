@@ -76,7 +76,7 @@ Next, create an instance of the ET_Client class:
 > myClient = ET_Client.ET_Client()
 
 Create an instance of the object type we want to work with:
-> list = ET_List()
+> list = ET_Client.ET_List()
 
 Associate the ET_Client to the object using the auth_stub property:
 > list.auth_stub = myClient
