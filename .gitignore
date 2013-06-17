@@ -28,6 +28,5 @@ pip-log.txt
 nosetests.xml
 
 objsamples/ET_Client.py
-objsamples/ExactTargetWSDL.xml
 objsamples/config.python
 objsamples/*.pyc

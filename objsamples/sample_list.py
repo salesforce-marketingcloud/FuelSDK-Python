@@ -1,7 +1,7 @@
 import ET_Client
 
 try:
-	debug = False
+	debug = False	
 	stubObj = ET_Client.ET_Client(False, debug)	
 	
 	NewListName = "PythonSDKList"
@@ -27,7 +27,7 @@ try:
 		# Retrieve newly created List by ID
 		print '>>> Retrieve newly created List'
 		getList = ET_Client.ET_List()
-		getList.auth_stub = stubObj	
+		getList.auth_stub = stubObj
 		getList.props = ["ID","PartnerKey","CreatedDate","ModifiedDate","Client.ID","Client.PartnerClientKey","ListName","Description","Category","Type","CustomerKey","ListClassification","AutomatedEmail.ID"]
 		getList.search_filter =  {'Property' : 'ID','SimpleOperator' : 'equals','Value' : newListID}
 		getResponse = getList.get()
@@ -92,5 +92,5 @@ try:
 
 except Exception as e:
 	print 'Caught exception: ' + str(e.message)
-	print e
+
 
