@@ -15,6 +15,11 @@ libraries:
 - requests 1.1.0
 - suds 0.4
 
+The quickest way to install the required libraries is to use pip and tell it to load the libraries listed in the requiredlibraries.txt file (see below). Pip is a tool for installing and managing Python packages and is available at https://pypi.python.org/pypi/pip.
+
+pip install -r requirements.txt
+
+
 ## Getting Started ##
 ### Custom Suds Changes ###
 The default Suds 0.4 Package that is available for download needs to have a couple small fixes applied in order for it to fully support the Fuel SDK. Please update your suds installation using the following instructions:
