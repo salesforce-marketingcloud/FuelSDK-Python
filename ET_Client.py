@@ -299,13 +299,10 @@ class ET_Get(ET_Constructor):
 		
 		if props is None:   #if there are no properties to retrieve for the obj_type then return a Description of obj_type
 			describe = ET_Describe(auth_stub, obj_type)
-			self.results = describe.results
-			self.code = describe.code
-			self.status = describe.status
-			self.message = describe.message
-			self.more_results = describe.more_results				
-			self.request_id = describe.request_id
-			return
+			props = []
+			for prop in describe.results[0].Properties:
+				if prop.IsRetrievable:
+					props.append(prop.Name) 
 
 		ws_retrieveRequest = auth_stub.soap_client.factory.create('RetrieveRequest')
 				
