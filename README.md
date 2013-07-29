@@ -90,36 +90,38 @@ Utilize one of the ET_List methods:
 > response = list.get()
 
 Print out the results for viewing
-> print str(response)
+> print 'Post Status: ' + str(response.status) <br />
+print 'Code: ' + str(response.code) <br />
+print 'Message: ' + str(response.message) <br />
+print 'Result Count: ' + str(len(response.results)) <br />
+print 'Results: ' + str(response.results)
+
 
 **Example Output:**
 
 <pre>
-#&lt;ET_Get:0x355bc48 
-	@results=[
-		{
-			:client=>{
-				:id=>"1000001", 
-				:partner_client_key=>nil
-				}, 
-			:partner_key=>nil, 
-			:created_date=>#&lt;DateTime: 2009-06-12T14:42:06+00:00 ((2454995j,52926s,100000000n),+0s,2299161j)&gt;, 
-			:modified_date=>#&lt;DateTime: 2011-08-17T14:50:30+00:00 ((2455791j,53430s,697000000n),+0s,2299161j)&gt;, 
-			:id=>"1718921", 
-			:object_id=>"f41c7d1b-8957-de11-92ee-001cc494ae9e", 
-			:customer_key=>"All Subscribers - 578623", 
-			:list_name=>"All Subscribers", 
-			:category=>"578623", 
-			:type=>"Private", 
-			:description=>"Contains all subscribers", 
-			:list_classification=>"ExactTargetList", 
-			:"@xsi:type"=>"List"}
-		], 
-	@code=200, 
-	@status=true, 
-	@moreResults=false, 
-	@request_id="41f0f293-954f-4ac7-8e7a-0a5756022218"
->
+Retrieve Status: True
+Code: 200
+Message: OK
+MoreResults: False
+Results Length: 1
+Results: [(List){
+   Client =
+      (ClientID){
+         ID = 113903
+      }
+   PartnerKey = None
+   CreatedDate = 2013-07-29 04:43:32.000073
+   ModifiedDate = 2013-07-29 04:43:32.000073
+   ID = 1966872
+   ObjectID = None
+   CustomerKey = "343431CD-031D-43C7-981F-51B778A5A47F"
+   ListName = "PythonSDKList"
+   Category = 578615
+   Type = "Private"
+   Description = "This list was created with the PythonSDK"
+   ListClassification = "ExactTargetList"
+ }]
 </pre>
 
 ## ET\_Client Class ##
