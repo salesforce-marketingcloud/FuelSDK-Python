@@ -90,7 +90,7 @@ Utilize one of the ET_List methods:
 > response = list.get()
 
 Print out the results for viewing
-> print response
+> print str(response)
 
 **Example Output:**
 
