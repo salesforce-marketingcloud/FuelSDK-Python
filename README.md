@@ -75,13 +75,13 @@ If you have not registered your application or you need to lookup your Applicati
 All ExactTarget objects exposed through the Fuel SDK begin with be prefixed with "ET\_".  Start by working with the ET_List object:
 
 Add a require statement to reference the Fuel SDK's functionality:
-> import ET_Client
+> import FuelSDK
 
 Next, create an instance of the ET_Client class:
-> myClient = ET_Client.ET_Client()
+> myClient = FuelSDK.ET_Client()
 
 Create an instance of the object type we want to work with:
-> list = ET_Client.ET_List()
+> list = FuelSDK.ET_List()
 
 Associate the ET_Client to the object using the auth_stub property:
 > list.auth_stub = myClient
