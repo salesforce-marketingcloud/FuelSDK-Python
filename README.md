@@ -1,4 +1,4 @@
-FuelSDK-Python
+FuelSDK-Python (beta)
 ============
 
 ExactTarget Fuel SDK for Python
