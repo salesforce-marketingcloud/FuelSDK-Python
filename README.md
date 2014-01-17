@@ -67,9 +67,20 @@ The default Suds 0.4 Package that is available for download needs to have a coup
 ### Configuring ###
 After downloading the project, rename the config.python.template file to config.python. 
 
-Edit config.python so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (appsignature).  Only change the value for the defaultwsdl configuration item if instructed by ExactTarget.
+Edit config.python so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (appsignature).  The defaultwsdl configuration must be [changed depending on the ExactTarget service](https://code.exacttarget.com/question/there-any-cetificrate-install-our-server-access-et-api "ExactTarget Forum").
+The authenticationurl must also be [changed depending on service](https://code.exacttarget.com/question/not-able-create-accesstoken-when-clientidsecret-associated-preproduction-account "ExactTarget Forum").
 
 If you have not registered your application or you need to lookup your Application Key or Application Signature values, please go to App Center at [Code@: ExactTarget's Developer Community](http://code.exacttarget.com/appcenter "Code@ App Center").
+
+For S1 Production:
+
+    defaultwsdl: https://webservice.exacttarget.com/etframework.wsdl
+    authenticationurl: https://auth.exacttargetapis.com/v1/requestToken?legacy=1
+
+For Sandbox:
+
+    defaultwsdl: https://webservice.test.exacttarget.com/Service.asmx?wsdl,
+    authenticationurl:"https://auth-test.exacttargetapis.com/v1/requestToken?legacy=1
 
 ## Example Request ##
 All ExactTarget objects exposed through the Fuel SDK begin with be prefixed with "ET\_".  Start by working with the ET_List object:
