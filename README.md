@@ -21,48 +21,6 @@ pip install -r requirements.txt
 
 
 ## Getting Started ##
-### Custom Suds Changes ###
-The default Suds 0.4 Package that is available for download needs to have a couple small fixes applied in order for it to fully support the Fuel SDK. Please update your suds installation using the following instructions:
-
-- Download the suds package source from https://pypi.python.org/pypi/suds
-- Open the file located wihin the uncompressed files at: suds\mx\appender.py
-- At line 223, the following lines will be present:
-><pre>
-        child.setText(p.get())
-        parent.append(child)
-        for item in p.items():
-            cont = Content(tag=item[0], value=item[1])
-            Appender.append(self, child, cont)
-</pre>
-
-- Replace those lines with:
-><pre>
-        child_value = p.get()
-        if(child_value is None):
-            pass
-        else:
-            child.setText(child_value)
-            parent.append(child)
-            for item in p.items():
-                cont = Content(tag=item[0], value=item[1])
-                Appender.append(self, child, cont)
-
-</pre>
-
-- Open the file located wihin the uncompressed files at suds\bindings\document.py
-- After line 62 which reads:
-><pre>
-            n += 1
-</pre>
-
-- Add the following lines: 
-><pre>
-            if value is None:
-                continue
-</pre>
-- Install Suds by running the command
-> python setup.py install
-
 
 ### Configuring ###
 After downloading the project, rename the config.python.template file to config.python. 
@@ -159,6 +117,51 @@ Sample List:
  - [Subscriber](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_subscriber.py)
  - [TriggeredSend](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_triggeredsend.py)
  - [UnsubEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_unsubevent.py)
+
+### Custom Suds Changes (Deprecated) ###
+
+**Note**: Suds is now patched at runtime when importing the FuelSDK. You no longer need to edit the library. Please be aware of the change.
+
+The default Suds 0.4 Package that is available for download needs to have a couple small fixes applied in order for it to fully support the Fuel SDK. Please update your suds installation using the following instructions:
+
+- Download the suds package source from https://pypi.python.org/pypi/suds
+- Open the file located wihin the uncompressed files at: suds\mx\appender.py
+- At line 223, the following lines will be present:
+><pre>
+        child.setText(p.get())
+        parent.append(child)
+        for item in p.items():
+            cont = Content(tag=item[0], value=item[1])
+            Appender.append(self, child, cont)
+</pre>
+
+- Replace those lines with:
+><pre>
+        child_value = p.get()
+        if(child_value is None):
+            pass
+        else:
+            child.setText(child_value)
+            parent.append(child)
+            for item in p.items():
+                cont = Content(tag=item[0], value=item[1])
+                Appender.append(self, child, cont)
+
+</pre>
+
+- Open the file located wihin the uncompressed files at suds\bindings\document.py
+- After line 62 which reads:
+><pre>
+            n += 1
+</pre>
+
+- Add the following lines: 
+><pre>
+            if value is None:
+                continue
+</pre>
+- Install Suds by running the command
+> python setup.py install
 
 ## Copyright and license ##
 Copyright (c) 2013 ExactTarget
