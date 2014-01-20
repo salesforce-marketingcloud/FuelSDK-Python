@@ -28,8 +28,8 @@ try:
         print 'Results Length: ' + str(len(getResponse.results))
 
     NameOfTestFolder = "PythonSDKFolder"
-	
-	# Retrieve Specific Folder for Email Folder ParentID
+    
+    # Retrieve Specific Folder for Email Folder ParentID
     print '>>> Retrieve Specific Folder for Email Folder ParentID'
     getFolder = ET_Client.ET_Folder()
     getFolder.auth_stub = stubObj 
@@ -43,7 +43,7 @@ try:
     print 'MoreResults: ' + str(getResponse.more_results)
     print 'Results Length: ' + str(len(getResponse.results))
     print 'Results: ' + str(getResponse.results)
-	
+    
     ParentIDForEmail = getResponse.results[0].ID
     print 'Parent Folder for Email: ' + str(ParentIDForEmail)
 
