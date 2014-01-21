@@ -137,7 +137,7 @@ class ET_Get(ET_Constructor):
             if search_filter.has_key('LogicalOperator'):
                 ws_simpleFilterPartLeft = auth_stub.soap_client.factory.create('SimpleFilterPart')
                 for prop in ws_simpleFilterPartLeft:
-                    print prop[0]
+                    #print prop[0]
                     if prop[0] in search_filter['LeftOperand']:         
                         ws_simpleFilterPartLeft[prop[0]] = search_filter['LeftOperand'][prop[0]]    
                         
