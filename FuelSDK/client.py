@@ -30,6 +30,7 @@ class ET_Client(object):
     endpoint = None
     authObj = None
     soap_client = None
+    auth_url = None
         
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None):
@@ -48,7 +49,8 @@ class ET_Client(object):
         self.client_secret = config.get('Web Services', 'clientsecret')
         self.appsignature = config.get('Web Services', 'appsignature')
         wsdl_server_url = config.get('Web Services', 'defaultwsdl')
-        
+        self.auth_url = config.get('Web Services', 'authenticationurl')
+
         self.wsdl_file_url = self.load_wsdl(wsdl_server_url, get_server_wsdl)
         
         ## get the JWT from the params if passed in...or go to the server to get it             
@@ -123,7 +125,7 @@ class ET_Client(object):
             if self.refreshKey:
                 payload['refreshToken'] = self.refreshKey
 
-            r = requests.post('https://auth.exacttargetapis.com/v1/requestToken?legacy=1', data=json.dumps(payload), headers=headers)
+            r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
             tokenResponse = r.json()
             
             if 'accessToken' not in tokenResponse:
