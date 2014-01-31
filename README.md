@@ -16,7 +16,7 @@ Libraries:
 * requests 1.1.0
 * suds 0.4
 
-The quickest way to install the required libraries is to use pip and tell it to load the libraries listed in the requiredlibraries.txt file (see below). Pip is a tool for installing and managing Python packages and is available at https://pypi.python.org/pypi/pip.
+The quickest way to install the required libraries is to use pip and tell it to load the libraries listed in the `requirements.txt` file (see below). Pip is a tool for installing and managing Python packages and is available at https://pypi.python.org/pypi/pip.
 
 ```
 pip install -r requirements.txt
