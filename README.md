@@ -6,20 +6,12 @@ ExactTarget Fuel SDK for Python
 
 The Fuel SDK for Python provides easy access to ExactTarget's Fuel API Family services, including a collection of REST APIs and a SOAP API. These APIs provide access to ExactTarget functionality via common collection types such as array/hash.
 
-## Requirements
+## Installation
 
-Python 2.7.3
-
-Libraries:
-
-* pyjwt 0.1.5
-* requests 1.1.0
-* suds 0.4
-
-The quickest way to install the required libraries is to use pip and tell it to load the libraries listed in the `requirements.txt` file (see below). Pip is a tool for installing and managing Python packages and is available at https://pypi.python.org/pypi/pip.
+The Fuel SDK for python can be easily installed from the [Python Package Index](https://pypi.python.org/pypi) using the [pip](https://pip.readthedocs.org) command. Pip is a tool for installing and managing Python packages.
 
 ```
-pip install -r requirements.txt
+pip install FuelSDK
 ```
 
 ## Getting Started
@@ -138,6 +130,29 @@ Sample List:
 * [Subscriber](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_subscriber.py)
 * [TriggeredSend](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_triggeredsend.py)
 * [UnsubEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_unsubevent.py)
+
+## Development on FuelSDK-Python
+
+If you would like to help contribute to the FuelSDK-Python project, checkout the code from the [GitHub project page](https://github.com/ExactTarget/FuelSDK-Python). The use of [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/) is highly recommended. After installing virtualenvwrapper you can run the following commands to setup a sandbox for development.
+
+```
+git clone git@github.com:ExactTarget/FuelSDK-Python.git
+mkvirtualenv FuelSDK-Python
+cd FuelSDK-Python
+pip install -r requirements.txt
+```
+
+You will then have a sandbox which includes all dependencies for doing development on FuelSDK-Python.
+
+## Requirements
+
+Python 2.7.x
+
+Libraries:
+
+* pyjwt
+* requests
+* suds
 
 ### Custom Suds Changes (Deprecated)
 
