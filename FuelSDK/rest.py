@@ -111,6 +111,25 @@ class ET_Describe(ET_Constructor):
 
 ########
 ##
+##    Used to Configure Objects via web service call
+##
+########
+class ET_Configure(ET_Constructor):
+    def __init__(self, auth_stub, obj_type, props = None):        
+        auth_stub.refresh_token()
+
+        ws_configureRequest = auth_stub.soap_client.factory.create('ConfigureRequestMsg')
+        ws_configureRequest.Action = 'create'        
+        ws_configureRequest.Configurations = {'Configuration': self.parse_props_into_ws_object(auth_stub, obj_type, props)}
+
+        response = auth_stub.soap_client.service.Configure(None, ws_configureRequest)        
+
+        if response is not None:
+            #self.message = 'Describe: ' + obj_type
+            super(ET_Configure, self).__init__(response)
+
+########
+##
 ##  Get call to a web service
 ##
 ########

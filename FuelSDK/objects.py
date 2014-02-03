@@ -1,4 +1,4 @@
-from rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete
+from rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete,ET_Configure
 
 ########
 ##
@@ -12,13 +12,28 @@ class ET_ContentArea(ET_CUDSupport):
 
 ########
 ##
-##  wrap an Exact Target Content Area
+##  wrap an Exact Target DataFolder
 ##
 ########
 class ET_Folder(ET_CUDSupport): 
     def __init__(self):
         super(ET_Folder, self).__init__()
         self.obj_type = 'DataFolder'
+
+########
+##
+##    wrap an Exact Target PropertyDefinition
+##
+########
+class ET_ProfileAttribute():    
+    def __init__(self):
+        self.obj_type = 'PropertyDefinition'
+
+    def post(self):       
+        obj = ET_Configure(self.auth_stub, self.obj_type, self.props)
+        if obj is not None:
+            self.last_request_id = obj.request_id
+        return obj
 
 ########
 ##
