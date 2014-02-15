@@ -1832,6 +1832,7 @@
               <element name="ContentCheckStatus" type="xsd:string" minOccurs="0" maxOccurs="1" />
               <element name="SyncTextWithHTML" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
               <element name="PreHeader" type="xsd:string" minOccurs="0" maxOccurs="1" />
+              <element name="IsApproved" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
             </sequence>
           </extension>
         </complexContent>
@@ -2340,6 +2341,8 @@
               <element name="SendSourceDataExtension" minOccurs="0" maxOccurs="1" type="tns:DataExtension" />
               <element name="IsAlwaysOn" minOccurs="0" maxOccurs="1" type="xsd:boolean" />
               <element name="DisableOnEmailBuildError" minOccurs="0" maxOccurs="1" type="xsd:boolean" />
+              <element name="PreHeader" minOccurs="0" maxOccurs="1" type="xsd:string" />
+              <element name="ReplyToAddress" minOccurs="0" maxOccurs="1" type="xsd:string" />
             </sequence>
           </extension>
         </complexContent>
@@ -2560,6 +2563,7 @@
               <element name="DataRetentionPeriodLength" minOccurs="0" maxOccurs="1" type="xsd:short" />
               <element name="DataRetentionPeriodUnitOfMeasure" minOccurs="0" maxOccurs="1" type="tns:RecurrenceTypeEnum" />
               <element name="ReplyManagementRuleSet" minOccurs="0" maxOccurs="1" type="tns:APIObject" />
+              <element name="ReplyToAddress" minOccurs="0" maxOccurs="1" type="xsd:string" />
             </sequence>
           </extension>
         </complexContent>
@@ -2706,7 +2710,6 @@
               </element>
               <element name="SuppressTracking" minOccurs="0" maxOccurs="1" type="xsd:boolean" />
               <element name="IsSendLogging" minOccurs="0" maxOccurs="1" type="xsd:boolean" />
-              <element name="PreHeader" minOccurs="0" maxOccurs="1" type="xsd:string" />
             </sequence>
           </extension>
         </complexContent>
@@ -2758,6 +2761,8 @@
               <element name="IsSeedListSend" minOccurs="0" maxOccurs="1" type="xsd:boolean" />
               <element name="TimeZone" type="tns:TimeZone" minOccurs="0" maxOccurs="1" />
               <element name="SeedListOccurance" minOccurs="0" maxOccurs="1" type="xsd:int" />
+              <element name="PreHeader" minOccurs="0" maxOccurs="1" type="xsd:string" />
+              <element name="ReplyToAddress" minOccurs="0" maxOccurs="1" type="xsd:string" />
             </sequence>
           </extension>
         </complexContent>
