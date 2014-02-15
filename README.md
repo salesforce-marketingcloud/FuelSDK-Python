@@ -18,11 +18,19 @@ pip install FuelSDK
 
 ### Configuring
 
-After downloading the project, rename the `config.python.template` file to `config.python`.
+There are two ways to configure your access tokens and details for the Fuel SDK.
 
-Edit `config.python` so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (appsignature).
-The defaultwsdl configuration must be [changed depending on the ExactTarget service](https://code.exacttarget.com/question/there-any-cetificrate-install-our-server-access-et-api "ExactTarget Forum").
-The authenticationurl must also be [changed depending on service](https://code.exacttarget.com/question/not-able-create-accesstoken-when-clientidsecret-associated-preproduction-account "ExactTarget Forum").
+1. Copy the included `config.python.template` file to `config.python` in either `~/.fuelsdk/` or within this python module.
+2. Add environment variables:
+    * `FUELSDK_CLIENT_ID` (required)
+    * `FUELSDK_CLIENT_SECRET` (required)
+    * `FUELSDK_APP_SIGNATURE`
+    * `FUELSDK_DEFAULT_WSDL`
+    * `FUELSDK_AUTH_URL`
+
+Edit `config.python` or declare environment variables so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (`appsignature` / `FUELSDK_APP_SIGNATURE`).
+The `defaultwsdl` / `FUELSDK_DEFAULT_WSDL` configuration must be [changed depending on the ExactTarget service](https://code.exacttarget.com/question/there-any-cetificrate-install-our-server-access-et-api "ExactTarget Forum").
+The `authenticationurl` / `FUELSDK_AUTH_URL` must also be [changed depending on service](https://code.exacttarget.com/question/not-able-create-accesstoken-when-clientidsecret-associated-preproduction-account "ExactTarget Forum").
 
 If you have not registered your application or you need to lookup your Application Key or Application Signature values, please go to App Center at [Code@: ExactTarget's Developer Community](http://code.exacttarget.com/appcenter "Code@ App Center").
 

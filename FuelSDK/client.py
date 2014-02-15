@@ -12,12 +12,12 @@ from suds.sax.element import Element
 
 from FuelSDK.objects import ET_DataExtension,ET_Subscriber
 
-########
-##
-##  Setup web service connectivity by getting need config data, security tokens etc.
-##
-########
+
 class ET_Client(object):
+    """
+    Setup web service connectivity by getting need config data, security tokens etc.
+    """
+
     debug = False
     client_id = None
     client_secret = None
@@ -35,7 +35,7 @@ class ET_Client(object):
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None):
         self.debug = debug
-        if(debug):
+        if debug:
             logging.basicConfig(level=logging.INFO)
             logging.getLogger('suds.client').setLevel(logging.DEBUG)
             logging.getLogger('suds.transport').setLevel(logging.DEBUG)
@@ -44,12 +44,39 @@ class ET_Client(object):
 
         ## Read the config information out of config.python
         config = ConfigParser.RawConfigParser()
-        config.read('config.python')
-        self.client_id = config.get('Web Services', 'clientid')
-        self.client_secret = config.get('Web Services', 'clientsecret')
-        self.appsignature = config.get('Web Services', 'appsignature')
-        wsdl_server_url = config.get('Web Services', 'defaultwsdl')
-        self.auth_url = config.get('Web Services', 'authenticationurl')
+        if os.path.exists(os.path.expanduser('~/.fuelsdk/config.python')):
+            config.read(os.path.expanduser('~/.fuelsdk/config.python'))
+        else:
+            config.read('config.python')
+
+        if config.has_option('Web Services', 'clientid'):
+            self.client_id = config.get('Web Services', 'clientid')
+        elif 'FUELSDK_CLIENT_ID' in os.environ:
+            self.client_id = os.environ['FUELSDK_CLIENT_ID']
+
+        if config.has_option('Web Services', 'clientsecret'):
+            self.client_secret = config.get('Web Services', 'clientsecret')
+        elif 'FUELSDK_CLIENT_SECRET' in os.environ:
+            self.client_secret = os.environ['FUELSDK_CLIENT_SECRET']
+
+        if config.has_option('Web Services', 'appsignature'):
+            self.appsignature = config.get('Web Services', 'appsignature')
+        elif 'FUELSDK_APP_SIGNATURE' in os.environ:
+            self.appsignature = os.environ['FUELSDK_APP_SIGNATURE']
+
+        if config.has_option('Web Services', 'defaultwsdl'):
+            wsdl_server_url = config.get('Web Services', 'defaultwsdl')
+        elif 'FUELSDK_DEFAULT_WSDL' in os.environ:
+            wsdl_server_url = os.environ['FUELSDK_DEFAULT_WSDL']
+        else:
+            wsdl_server_url = 'https://webservice.exacttarget.com/etframework.wsdl'
+
+        if config.has_option('Web Services', 'authenticationurl'):
+            self.auth_url = config.get('Web Services', 'authenticationurl')
+        elif 'FUELSDK_AUTH_URL' in os.environ:
+            self.auth_url = os.environ['FUELSDK_AUTH_URL']
+        else:
+            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
         self.wsdl_file_url = self.load_wsdl(wsdl_server_url, get_server_wsdl)
         
@@ -67,10 +94,12 @@ class ET_Client(object):
             self.refresh_token()
 
 
-    ## retrieve the url of the ExactTarget wsdl...either file: or http:
-    ## depending on if it already exists locally or server flag is set and
-    ## server has a newer copy
     def load_wsdl(self, wsdl_url, get_server_wsdl = False):
+        """
+        retrieve the url of the ExactTarget wsdl...either file: or http:
+        depending on if it already exists locally or server flag is set and
+        server has a newer copy
+        """
         path = os.path.dirname(os.path.abspath(__file__))
         file_location = os.path.join(path, 'ExactTargetWSDL.xml')
         file_url = 'file:///' + file_location 
@@ -87,12 +116,16 @@ class ET_Client(object):
             
         return file_url
             
-    ### get the WSDL from the server and save it locally
+
     def retrieve_server_wsdl(self, wsdl_url, file_location):
+        """
+        get the WSDL from the server and save it locally
+        """
         r = requests.get(wsdl_url)
         f = open(file_location, 'w')
         f.write(r.text)
         
+
     def build_soap_client(self):
         if self.endpoint is None: 
             self.endpoint = self.determineStack()
@@ -113,8 +146,11 @@ class ET_Client(object):
         security.tokens.append(token)
         self.soap_client.set_options(wsse=security)             
         
-    ## Called from many different places right before executing a SOAP call
+
     def refresh_token(self, force_refresh = False):
+        """
+        Called from many different places right before executing a SOAP call
+        """
         #If we don't already have a token or the token expires within 5 min(300 seconds), get one
         if (force_refresh or self.authToken is None or (self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration)):
             headers = {'content-type' : 'application/json'}
@@ -139,8 +175,11 @@ class ET_Client(object):
         
             self.build_soap_client()
             
-    ##find the correct url that data request web calls should go against for the token we have.
+
     def determineStack(self):
+        """
+        find the correct url that data request web calls should go against for the token we have.
+        """
         try:
             r = requests.get('https://www.exacttargetapis.com/platform/v1/endpoints/soap?access_token=' + self.authToken)           
             contextResponse = r.json()
@@ -150,8 +189,11 @@ class ET_Client(object):
         except Exception as e:
             raise Exception('Unable to determine stack using /platform/v1/tokenContext: ' + e.message)  
 
-    ##add or update a subscriber with a list
+
     def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
+        """
+        add or update a subscriber with a list
+        """
         newSub = ET_Subscriber()
         newSub.auth_stub = self
         lists = []
@@ -175,8 +217,11 @@ class ET_Client(object):
 
         return postResponse
     
-    ##write the data extension props to the web service
+
     def CreateDataExtensions(self, dataExtensionDefinitions):
+        """
+        write the data extension props to the web service
+        """
         newDEs = ET_DataExtension()
         newDEs.auth_stub = self
                 
