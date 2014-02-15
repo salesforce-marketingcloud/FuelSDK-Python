@@ -18,7 +18,7 @@ pip install FuelSDK
 
 ### Configuring
 
-There are two ways to configure your access tokens and details for the Fuel SDK.
+You must configure your access tokens and details for the Fuel SDK in one of the following two ways.
 
 1. Copy the included `config.python.template` file to `config.python` in either `~/.fuelsdk/` or within this python module.
 2. Add environment variables:
