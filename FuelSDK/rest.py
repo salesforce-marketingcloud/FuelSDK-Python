@@ -37,7 +37,7 @@ class ET_Constructor(object):
                 body = response[1]  #and the result in tuple position 1
 
                 # Store the Last Request ID for use with continue
-                if 'RequestID' in body:
+                if body and 'RequestID' in body:
                     self.request_id = body['RequestID']
 
                 if self.code == 200:
