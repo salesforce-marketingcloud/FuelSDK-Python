@@ -73,22 +73,25 @@ class ET_Constructor(object):
         return ws_object
 
     def parse_props_into_ws_object(self, auth_stub, obj_type, props):
+        empty_obj = auth_stub.soap_client.factory.create(obj_type)
         if props is not None and type(props) is dict:
-            ws_create = auth_stub.soap_client.factory.create(obj_type)
+            ws_create = copy.copy(empty_obj)
             ws_create = self.parse_props_dict_into_ws_object(obj_type, ws_create, props)
-            return ws_create            
+            return ws_create
         elif props is not None and type(props) is list:
             ws_create_list = []
             for prop_dict in props:
-                ws_create = auth_stub.soap_client.factory.create(obj_type)
+                #~ print str(datetime.now())+" - start"
+                ws_create = copy.copy(empty_obj)
                 ws_create = self.parse_props_dict_into_ws_object(obj_type, ws_create, prop_dict)
+                #~ print str(datetime.now())+" - start"
                 ws_create_list.append(ws_create)
             return ws_create_list
         else:
             message = 'Can not post properties to ' + obj_type + ' without a dict or list of properties'
             print message
-            raise Exception(message)        
-        
+            raise Exception(message)
+
 ########
 ##
 ##  Used to Describe Objects via web service call

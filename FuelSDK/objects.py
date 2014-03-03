@@ -251,9 +251,23 @@ class ET_DataExtension_Row(ET_CUDSupport):
         self.getCustomerKey()
         originalProps = self.props
         
-        ## FIX THIS
         if type(self.props) is list:
-            pass    ##THIS SHOULD DO SOMETHING
+            currentPropList = []
+            for rec in self.props:
+                currentFields = []
+                currentProp = {}
+                
+                for key, value in rec.iteritems():
+                    currentFields.append({"Name" : key, "Value" : value})
+                
+                currentProp['CustomerKey'] = self.CustomerKey
+                currentProp['Properties'] = {}
+                currentProp['Properties']['Property'] = currentFields
+                
+                currentPropList.append(currentProp)
+            
+            currentProp = currentPropList
+
         else:
             currentFields = []
             currentProp = {}
@@ -271,30 +285,66 @@ class ET_DataExtension_Row(ET_CUDSupport):
         
     def patch(self): 
         self.getCustomerKey()
-        currentFields = []
-        currentProp = {}
-            
-        for key, value in self.props.iteritems():
-            currentFields.append({"Name" : key, "Value" : value})
 
-        currentProp['CustomerKey'] = self.CustomerKey
-        currentProp['Properties'] = {}
-        currentProp['Properties']['Property'] = currentFields                                   
+        if type(self.props) is list:
+            currentPropList = []
+            for rec in self.props:
+                currentFields = []
+                currentProp = {}
+                
+                for key, value in rec.iteritems():
+                    currentFields.append({"Name" : key, "Value" : value})
+                
+                currentProp['CustomerKey'] = self.CustomerKey
+                currentProp['Properties'] = {}
+                currentProp['Properties']['Property'] = currentFields
+                
+                currentPropList.append(currentProp)
+            
+            currentProp = currentPropList
+        else:
+            currentFields = []
+            currentProp = {}
+            
+            for key, value in self.props.iteritems():
+                currentFields.append({"Name" : key, "Value" : value})
+            
+            currentProp['CustomerKey'] = self.CustomerKey
+            currentProp['Properties'] = {}
+            currentProp['Properties']['Property'] = currentFields
             
         obj = ET_Patch(self.auth_stub, self.obj_type, currentProp)
         return obj
     
     def delete(self): 
         self.getCustomerKey()
-        currentFields = []
-        currentProp = {}
-            
-        for key, value in self.props.iteritems():
-            currentFields.append({"Name" : key, "Value" : value})
 
-        currentProp['CustomerKey'] = self.CustomerKey
-        currentProp['Keys'] = {}
-        currentProp['Keys']['Key'] = currentFields                                  
+        if type(self.props) is list:
+            currentPropList = []
+            for rec in self.props:
+                currentFields = []
+                currentProp = {}
+                
+                for key, value in rec.iteritems():
+                    currentFields.append({"Name" : key, "Value" : value})
+                
+                currentProp['CustomerKey'] = self.CustomerKey
+                currentProp['Keys'] = {}
+                currentProp['Keys']['Key'] = currentFields
+                
+                currentPropList.append(currentProp)
+            
+            currentProp = currentPropList
+        else:
+            currentFields = []
+            currentProp = {}
+                
+            for key, value in self.props.iteritems():
+                currentFields.append({"Name" : key, "Value" : value})
+    
+            currentProp['CustomerKey'] = self.CustomerKey
+            currentProp['Keys'] = {}
+            currentProp['Keys']['Key'] = currentFields
             
         obj = ET_Delete(self.auth_stub, self.obj_type, currentProp)
         return obj
