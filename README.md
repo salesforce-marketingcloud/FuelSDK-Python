@@ -64,10 +64,10 @@ list.auth_stub = myClient
 response = list.get()
 
 # Print out the results for viewing
-print 'Post Status: ' + str(response.status) <br />
-print 'Code: ' + str(response.code) <br />
-print 'Message: ' + str(response.message) <br />
-print 'Result Count: ' + str(len(response.results)) <br />
+print 'Post Status: ' + str(response.status)
+print 'Code: ' + str(response.code)
+print 'Message: ' + str(response.message)
+print 'Result Count: ' + str(len(response.results))
 print 'Results: ' + str(response.results)
 ```
 
