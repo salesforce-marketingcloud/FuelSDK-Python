@@ -49,12 +49,16 @@ class ET_Client(object):
         else:
             config.read('config.python')
 
-        if config.has_option('Web Services', 'clientid'):
+        if(params is not None and 'client_id' in params):
+            self.client_id = params['client_id']
+        elif config.has_option('Web Services', 'clientid'):
             self.client_id = config.get('Web Services', 'clientid')
         elif 'FUELSDK_CLIENT_ID' in os.environ:
             self.client_id = os.environ['FUELSDK_CLIENT_ID']
 
-        if config.has_option('Web Services', 'clientsecret'):
+        if(params is not None and 'client_secret' in params):
+            self.client_secret = params['client_secret']
+        elif config.has_option('Web Services', 'clientsecret'):
             self.client_secret = config.get('Web Services', 'clientsecret')
         elif 'FUELSDK_CLIENT_SECRET' in os.environ:
             self.client_secret = os.environ['FUELSDK_CLIENT_SECRET']
