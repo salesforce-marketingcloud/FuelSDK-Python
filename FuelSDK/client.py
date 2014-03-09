@@ -49,32 +49,38 @@ class ET_Client(object):
         else:
             config.read('config.python')
 
-        if(params is not None and 'client_id' in params):
-            self.client_id = params['client_id']
+        if params is not None and 'clientid' in params:
+            self.client_id = params['clientid']
         elif config.has_option('Web Services', 'clientid'):
             self.client_id = config.get('Web Services', 'clientid')
         elif 'FUELSDK_CLIENT_ID' in os.environ:
             self.client_id = os.environ['FUELSDK_CLIENT_ID']
 
-        if(params is not None and 'client_secret' in params):
-            self.client_secret = params['client_secret']
+        if params is not None and 'clientsecret' in params:
+            self.client_secret = params['clientsecret']
         elif config.has_option('Web Services', 'clientsecret'):
             self.client_secret = config.get('Web Services', 'clientsecret')
         elif 'FUELSDK_CLIENT_SECRET' in os.environ:
             self.client_secret = os.environ['FUELSDK_CLIENT_SECRET']
 
-        if config.has_option('Web Services', 'appsignature'):
+        if params is not None and 'appsignature' in params:
+            self.appsignature = params['appsignature']
+        elif config.has_option('Web Services', 'appsignature'):
             self.appsignature = config.get('Web Services', 'appsignature')
         elif 'FUELSDK_APP_SIGNATURE' in os.environ:
             self.appsignature = os.environ['FUELSDK_APP_SIGNATURE']
 
-        if config.has_option('Web Services', 'defaultwsdl'):
+        if params is not None and 'defaultwsdl' in params:
+            wsdl_server_url = params['defaultwsdl']
+        elif config.has_option('Web Services', 'defaultwsdl'):
             wsdl_server_url = config.get('Web Services', 'defaultwsdl')
         elif 'FUELSDK_DEFAULT_WSDL' in os.environ:
             wsdl_server_url = os.environ['FUELSDK_DEFAULT_WSDL']
         else:
             wsdl_server_url = 'https://webservice.exacttarget.com/etframework.wsdl'
 
+        if params is not None and 'authenticationurl' in params:
+            self.auth_url = params['authenticationurl']
         if config.has_option('Web Services', 'authenticationurl'):
             self.auth_url = config.get('Web Services', 'authenticationurl')
         elif 'FUELSDK_AUTH_URL' in os.environ:
