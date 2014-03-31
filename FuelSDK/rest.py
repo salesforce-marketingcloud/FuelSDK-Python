@@ -173,6 +173,11 @@ class ET_Get(ET_Constructor):
                 ws_complexFilterPart.LeftOperand = ws_simpleFilterPartLeft
                 ws_complexFilterPart.RightOperand = ws_simpleFilterPartRight
                 ws_complexFilterPart.LogicalOperator = search_filter['LogicalOperator']
+                for additional_operand in search_filter.get('AdditionalOperands', []):
+                    ws_simpleFilterPart = auth_stub.soap_client.factory.create('SimpleFilterPart')
+                    for k, v in additional_operand.items():
+                        ws_simpleFilterPart[k] = v
+                    ws_complexFilterPart.AdditionalOperands.Operand.append(ws_simpleFilterPart)
 
                 ws_retrieveRequest.Filter = ws_complexFilterPart
             else:
