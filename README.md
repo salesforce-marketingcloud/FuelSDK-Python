@@ -27,10 +27,12 @@ You must configure your access tokens and details for the Fuel SDK in one of the
     * `FUELSDK_APP_SIGNATURE`
     * `FUELSDK_DEFAULT_WSDL`
     * `FUELSDK_AUTH_URL`
+    * `FUELSDK_WSDL_FILE_LOCAL_LOC`
 
 Edit `config.python` or declare environment variables so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (`appsignature` / `FUELSDK_APP_SIGNATURE`).
 The `defaultwsdl` / `FUELSDK_DEFAULT_WSDL` configuration must be [changed depending on the ExactTarget service](https://code.exacttarget.com/question/there-any-cetificrate-install-our-server-access-et-api "ExactTarget Forum").
 The `authenticationurl` / `FUELSDK_AUTH_URL` must also be [changed depending on service](https://code.exacttarget.com/question/not-able-create-accesstoken-when-clientidsecret-associated-preproduction-account "ExactTarget Forum").
+The `wsdl_file_local_loc` / `FUELSDK_WSDL_FILE_LOCAL_LOC` allows you to specify the full path/filename where the WSDL file will be located on disk, if for instance you are connecting to different endpoints from the same server.
 
 If you have not registered your application or you need to lookup your Application Key or Application Signature values, please go to App Center at [Code@: ExactTarget's Developer Community](http://code.exacttarget.com/appcenter "Code@ App Center").
 
