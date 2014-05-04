@@ -28,9 +28,10 @@ class ET_Folder(ET_CUDSupport):
 class ET_ProfileAttribute():    
     def __init__(self):
         self.obj_type = 'PropertyDefinition'
+        self.update = False
 
     def post(self):       
-        obj = ET_Configure(self.auth_stub, self.obj_type, self.props)
+        obj = ET_Configure(self.auth_stub, self.obj_type, self.props, self.update)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
@@ -123,7 +124,7 @@ class ET_TriggeredSend(ET_CUDSupport):
         self.obj_type = 'TriggeredSendDefinition'
 
     def send(self):
-        tscall = {"TriggeredSendDefinition" : self.props, "Subscribers" : self.subscribers}
+        tscall = {"TriggeredSendDefinition" : self.props, "Subscribers" : self.subscribers, "Attributes": self.attributes }
         self.obj = ET_Post(self.auth_stub, "TriggeredSend", tscall)
         return self.obj
 

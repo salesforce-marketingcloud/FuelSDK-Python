@@ -41,6 +41,8 @@ class ET_Client(object):
             logging.getLogger('suds.transport').setLevel(logging.DEBUG)
             logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
             logging.getLogger('suds.wsdl').setLevel(logging.DEBUG)
+        else:
+            logging.getLogger('suds').setLevel(logging.INFO)
 
         ## Read the config information out of config.python
         config = ConfigParser.RawConfigParser()
@@ -81,15 +83,24 @@ class ET_Client(object):
 
         if params is not None and 'authenticationurl' in params:
             self.auth_url = params['authenticationurl']
-        if config.has_option('Web Services', 'authenticationurl'):
+        elif config.has_option('Web Services', 'authenticationurl'):
             self.auth_url = config.get('Web Services', 'authenticationurl')
         elif 'FUELSDK_AUTH_URL' in os.environ:
             self.auth_url = os.environ['FUELSDK_AUTH_URL']
         else:
             self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
-        self.wsdl_file_url = self.load_wsdl(wsdl_server_url, get_server_wsdl)
-        
+        if params is not None and "wsdl_file_local_loc" in params:
+            wsdl_file_local_location = params["wsdl_file_local_loc"]
+        elif config.has_option("Web Services", "wsdl_file_local_loc"):
+            wsdl_file_local_location = config.get("Web Services", "wsdl_file_local_loc")
+        elif "FUELSDK_WSDL_FILE_LOCAL_LOC" in os.environ:
+            wsdl_file_local_location = os.environ["FUELSDK_WSDL_FILE_LOCAL_LOC"]
+        else:
+            wsdl_file_local_location = None
+
+        self.wsdl_file_url = self.load_wsdl(wsdl_server_url, wsdl_file_local_location, get_server_wsdl)
+
         ## get the JWT from the params if passed in...or go to the server to get it             
         if(params is not None and 'jwt' in params):
             decodedJWT = jwt.decode(params['jwt'], self.appsignature)
@@ -104,17 +115,20 @@ class ET_Client(object):
             self.refresh_token()
 
 
-    def load_wsdl(self, wsdl_url, get_server_wsdl = False):
+    def load_wsdl(self, wsdl_url, wsdl_file_local_location, get_server_wsdl = False):
         """
         retrieve the url of the ExactTarget wsdl...either file: or http:
         depending on if it already exists locally or server flag is set and
         server has a newer copy
         """
-        path = os.path.dirname(os.path.abspath(__file__))
-        file_location = os.path.join(path, 'ExactTargetWSDL.xml')
+        if wsdl_file_local_location is not None:
+           file_location = wsdl_file_local_location
+        else:
+           path = os.path.dirname(os.path.abspath(__file__))
+           file_location = os.path.join(path, 'ExactTargetWSDL.xml')
         file_url = 'file:///' + file_location 
         
-        if not os.path.exists(file_location):   #if there is no local copy then go get it...
+        if not os.path.exists(file_location) or os.path.getsize(file_location) == 0:   #if there is no local copy or local copy is empty then go get it...
             self.retrieve_server_wsdl(wsdl_url, file_location)
         elif get_server_wsdl:
             r = requests.head(wsdl_url)
