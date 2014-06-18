@@ -4,7 +4,7 @@ with open('README.md') as f:
     readme = f.read()
 
 setup(
-    version='0.9.2',
+    version='0.9.3',
     name='FuelSDK',
     description='ExactTarget Fuel SDK for Python',
     long_description=readme,
