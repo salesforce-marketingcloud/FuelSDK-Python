@@ -64,12 +64,12 @@ class ET_Constructor(object):
                     self.status = False
                     
     def parse_props_dict_into_ws_object(self, obj_type, ws_object, props_dict):
-        for k, v in props_dict.iteritems():
+        for k, v in props_dict.items():
             if k in ws_object:
                 ws_object[k] = v
             else:
                 message = k + ' is not a property of ' + obj_type
-                print message
+                print(message)
                 raise Exception(message)
         return ws_object
 
@@ -90,7 +90,7 @@ class ET_Constructor(object):
             return ws_create_list
         else:
             message = 'Can not post properties to ' + obj_type + ' without a dict or list of properties'
-            print message
+            print(message)
             raise Exception(message)
 
 ########
@@ -157,7 +157,7 @@ class ET_Get(ET_Constructor):
                 ws_retrieveRequest.Properties = props
 
         if search_filter is not None:
-            if search_filter.has_key('LogicalOperator'):
+            if 'LogicalOperator' in search_filter:
                 ws_simpleFilterPartLeft = auth_stub.soap_client.factory.create('SimpleFilterPart')
                 for prop in ws_simpleFilterPartLeft:
                     #print prop[0]
@@ -175,7 +175,7 @@ class ET_Get(ET_Constructor):
                 ws_complexFilterPart.LogicalOperator = search_filter['LogicalOperator']
                 for additional_operand in search_filter.get('AdditionalOperands', []):
                     ws_simpleFilterPart = auth_stub.soap_client.factory.create('SimpleFilterPart')
-                    for k, v in additional_operand.items():
+                    for k, v in list(additional_operand.items()):
                         ws_simpleFilterPart[k] = v
                     ws_complexFilterPart.AdditionalOperands.Operand.append(ws_simpleFilterPart)
 
@@ -280,7 +280,7 @@ class ET_GetSupport(ET_BaseObject):
         if m_props is not None and type(m_props) is list:
             props = m_props     
         elif self.props is not None and type(self.props) is dict:
-            props = self.props.keys()
+            props = list(self.props.keys())
 
         if m_filter is not None and type(m_filter) is dict:
             search_filter = m_filter
@@ -378,7 +378,7 @@ class ET_CUDSupport(ET_GetSupport):
         
     def post(self):
         if self.extProps is not None:
-            for k, v in self.extProps.iteritems():
+            for k, v in self.extProps.items():
                 self.props[k.capitalize] = v
         
         obj = ET_Post(self.auth_stub, self.obj_type, self.props)
@@ -419,7 +419,7 @@ class ET_GetSupportRest(ET_BaseObject):
         additionalQS = {}
         
         if self.props is not None and type(self.props) is dict:
-            for k, v in self.props.iteritems():
+            for k, v in self.props.items():
                 if k in self.urlProps:
                     completeURL = completeURL.replace('{{{0}}}'.format(k), v)
                 else:
@@ -493,7 +493,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         completeURL = self.endpoint 
         
         if self.props is not None and type(self.props) is dict:
-            for k, v in self.props.iteritems():
+            for k, v in self.props.items():
                 if k in self.urlProps:
                     completeURL = completeURL.replace('{{{0}}}'.format(k), v)
         
@@ -516,7 +516,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
                 raise "Unable to process request due to missing required prop: #{value}"
         
         if self.props is not None and type(self.props) is dict:
-            for k, v in self.props.iteritems():
+            for k, v in self.props.items():
                 if k in self.urlProps:
                     completeURL = completeURL.replace('{{{0}}}'.format(k), v)
         
@@ -531,7 +531,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
                 raise "Unable to process request due to missing required prop: #{value}"
         
         if self.props is not None and type(self.props) is dict:     
-            for k, v in self.props.iteritems():
+            for k, v in self.props.items():
                 if k in self.urlProps:
                     completeURL = completeURL.replace('{{{0}}}'.format(k), v)
 

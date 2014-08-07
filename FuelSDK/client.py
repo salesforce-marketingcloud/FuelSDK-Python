@@ -1,6 +1,6 @@
 import os
 import logging
-import ConfigParser
+import configparser
 import time
 import json
 
@@ -45,7 +45,7 @@ class ET_Client(object):
             logging.getLogger('suds').setLevel(logging.INFO)
 
         ## Read the config information out of config.python
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         if os.path.exists(os.path.expanduser('~/.fuelsdk/config.python')):
             config.read(os.path.expanduser('~/.fuelsdk/config.python'))
         else:
