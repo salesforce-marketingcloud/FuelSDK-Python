@@ -29,9 +29,10 @@ class ET_ProfileAttribute():
     def __init__(self):
         self.obj_type = 'PropertyDefinition'
         self.update = False
+        self.delete = False
 
     def post(self):       
-        obj = ET_Configure(self.auth_stub, self.obj_type, self.props, self.update)
+        obj = ET_Configure(self.auth_stub, self.obj_type, self.props, self.update, self.delete)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
