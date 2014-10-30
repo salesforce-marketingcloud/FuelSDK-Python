@@ -119,11 +119,16 @@ class ET_Describe(ET_Constructor):
 ##
 ########
 class ET_Configure(ET_Constructor):
-    def __init__(self, auth_stub, obj_type, props = None, update = False):        
+    def __init__(self, auth_stub, obj_type, props = None, update = False, delete = False):
         auth_stub.refresh_token()
 
         ws_configureRequest = auth_stub.soap_client.factory.create('ConfigureRequestMsg')
-        ws_configureRequest.Action = 'create' if update is False else 'update'
+        action = 'create'
+        if delete:
+            action = 'delete'
+        elif update:
+            action = 'update'
+        ws_configureRequest.Action = action
         ws_configureRequest.Configurations = {'Configuration': self.parse_props_into_ws_object(auth_stub, obj_type, props)}
 
         response = auth_stub.soap_client.service.Configure(None, ws_configureRequest)        
@@ -138,7 +143,7 @@ class ET_Configure(ET_Constructor):
 ##
 ########
 class ET_Get(ET_Constructor):
-    def __init__(self, auth_stub, obj_type, props = None, search_filter = None):        
+    def __init__(self, auth_stub, obj_type, props = None, search_filter = None, options = None):        
         auth_stub.refresh_token()
         
         if props is None:   #if there are no properties to retrieve for the obj_type then return a Description of obj_type
@@ -186,6 +191,14 @@ class ET_Get(ET_Constructor):
                     if prop[0] in search_filter:
                         ws_simpleFilterPart[prop[0]] = search_filter[prop[0]]
                 ws_retrieveRequest.Filter = ws_simpleFilterPart
+
+        if options is not None:
+            for key, value in options.iteritems():
+                if isinstance(value, dict):
+                    for k, v in value.iteritems():
+                        ws_retrieveRequest.Options[key][k] = v
+                else:
+                    ws_retrieveRequest.Options[key] = value
 
         ws_retrieveRequest.ObjectType = obj_type
         
@@ -264,6 +277,7 @@ class ET_BaseObject(object):
     props = None
     extProps = None
     search_filter = None
+    options = None
 
 ########
 ##
@@ -273,9 +287,10 @@ class ET_BaseObject(object):
 class ET_GetSupport(ET_BaseObject):
     obj_type = 'ET_GetSupport'   #should be overwritten by inherited class
     
-    def get(self, m_props = None, m_filter = None):
+    def get(self, m_props = None, m_filter = None, m_options = None):
         props = self.props
         search_filter = self.search_filter
+        options = self.options
         
         if m_props is not None and type(m_props) is list:
             props = m_props     
@@ -285,7 +300,10 @@ class ET_GetSupport(ET_BaseObject):
         if m_filter is not None and type(m_filter) is dict:
             search_filter = m_filter
 
-        obj = ET_Get(self.auth_stub, self.obj_type, props, search_filter)
+        if m_options is not None and type(m_filter) is dict:
+            options = m_options
+
+        obj = ET_Get(self.auth_stub, self.obj_type, props, search_filter, options)
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
