@@ -19,6 +19,21 @@ try:
     print 'Results Length: ' + str(len(getResponse.results))
     #print 'Results: ' + str(getResponse.results)
 
+    # Get all of the DataExtensions in an Account belonging to a specific sub account
+    print '>>> Get all of the DataExtensions in an Account belonging to a specific sub account'
+    de = ET_Client.ET_DataExtension()
+    de.auth_stub = stubObj
+    de.props = ["CustomerKey", "Name"]
+    de.options = {"Client": {"ID": "1234567"}}
+    getResponse = de.get()
+    print 'Retrieve Status: ' + str(getResponse.status)
+    print 'Code: ' + str(getResponse.code)
+    print 'Message: ' + str(getResponse.message)
+    print 'MoreResults: ' + str(getResponse.more_results)
+    print 'RequestID: ' + str(getResponse.request_id)
+    print 'Results Length: ' + str(len(getResponse.results))
+    #print 'Results: ' + str(getResponse.results)
+
     # Specify a name for the data extension that will be used for testing
     # Note: Name and CustomerKey will be the same value
     # WARNING: Data Extension will be deleted so don't use the name of a
