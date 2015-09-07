@@ -133,7 +133,7 @@ class ET_Client(object):
         else:
             location_prefix = 'file:///'
 
-        file_url = prefix + file_location 
+        file_url = location_prefix + file_location 
         
         if not os.path.exists(file_location) or os.path.getsize(file_location) == 0:   #if there is no local copy or local copy is empty then go get it...
             self.retrieve_server_wsdl(wsdl_url, file_location)
