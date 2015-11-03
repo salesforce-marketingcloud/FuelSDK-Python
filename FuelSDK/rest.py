@@ -209,6 +209,28 @@ class ET_Get(ET_Constructor):
 
 ########
 ##
+##  Call the Exact Target web service Perform method
+##
+########
+class ET_Perform(ET_Constructor):
+
+    def __init__(self, auth_stub, action, obj_type, definition, options=None):
+        auth_stub.refresh_token()
+        auth_stub.soap_client.set_options(soapheaders=None)
+
+        parsed_options = self.parse_props_into_ws_object(auth_stub, 'PerformOptions', options) if options else None
+        parsed_definition = self.parse_props_into_ws_object(auth_stub, obj_type, definition)
+
+        request = auth_stub.soap_client.factory.create('PerformRequestMsg')
+        request.Options = parsed_options
+        request.Action = action
+        request.Definitions.Definition.append(parsed_definition)
+        response = auth_stub.soap_client.service.Perform(parsed_options, action, request.Definitions)
+        if response is not None:
+            super(ET_Perform, self).__init__(response)
+
+########
+##
 ##  Call the Exact Target web service Create method
 ##
 ########
