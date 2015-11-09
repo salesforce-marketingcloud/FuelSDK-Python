@@ -99,6 +99,12 @@ class ET_Client(object):
         else:
             wsdl_file_local_location = None
 
+        if params is not None and 'username' in params:
+            self.username = params['username']
+
+        if params is not None and 'password' in params:
+            self.password = params['password']
+
         self.wsdl_file_url = self.load_wsdl(wsdl_server_url, wsdl_file_local_location, get_server_wsdl)
 
         ## get the JWT from the params if passed in...or go to the server to get it             
@@ -173,7 +179,7 @@ class ET_Client(object):
         self.soap_client.set_options(soapheaders=(element_oAuth))               
         
         security = suds.wsse.Security()
-        token = suds.wsse.UsernameToken('*', '*')
+        token = suds.wsse.UsernameToken(getattr(self, 'username', '*'), getattr(self, 'password', '*'))
         security.tokens.append(token)
         self.soap_client.set_options(wsse=security)             
         
