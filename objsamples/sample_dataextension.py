@@ -59,10 +59,10 @@ try:
     de3.props = {"Name" : NameOfDE,"CustomerKey" : NameOfDE}
     de3.columns = [{"Name" : "AddedField", "FieldType" : "Text"}]
     patchResponse = de3.patch()
-    print 'Patch Status: ' + str(postResponse.status)
-    print 'Code: ' + str(postResponse.code)
-    print 'Message: ' + str(postResponse.message)
-    print 'Results: ' + str(postResponse.results)
+    print 'Patch Status: ' + str(patchResponse.status)
+    print 'Code: ' + str(patchResponse.code)
+    print 'Message: ' + str(patchResponse.message)
+    print 'Results: ' + str(patchResponse.results)
 
 
 
