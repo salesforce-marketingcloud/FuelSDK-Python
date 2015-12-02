@@ -202,8 +202,8 @@ class ET_Get(ET_Constructor):
 
         ws_retrieveRequest.ObjectType = obj_type
 
-         if client_ids:
-                    ws_retrieveRequest.ClientIDs = client_ids
+        if client_ids:
+            ws_retrieveRequest.ClientIDs = client_ids
         
         response = auth_stub.soap_client.service.Retrieve(ws_retrieveRequest)       
 
