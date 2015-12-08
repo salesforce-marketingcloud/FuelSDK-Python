@@ -99,6 +99,12 @@ class ET_Client(object):
         else:
             wsdl_file_local_location = None
 
+        if params is not None and 'username' in params:
+            self.username = params['username']
+
+        if params is not None and 'password' in params:
+            self.password = params['password']
+
         self.wsdl_file_url = self.load_wsdl(wsdl_server_url, wsdl_file_local_location, get_server_wsdl)
 
         ## get the JWT from the params if passed in...or go to the server to get it             
@@ -126,7 +132,14 @@ class ET_Client(object):
         else:
            path = os.path.dirname(os.path.abspath(__file__))
            file_location = os.path.join(path, 'ExactTargetWSDL.xml')
-        file_url = 'file:///' + file_location 
+
+        #Condition for urllib2 2.6 and suds2.6 requests
+        if file_location.startswith('/'):
+            location_prefix = 'file://'
+        else:
+            location_prefix = 'file:///'
+
+        file_url = location_prefix + file_location 
         
         if not os.path.exists(file_location) or os.path.getsize(file_location) == 0:   #if there is no local copy or local copy is empty then go get it...
             self.retrieve_server_wsdl(wsdl_url, file_location)
@@ -166,7 +179,7 @@ class ET_Client(object):
         self.soap_client.set_options(soapheaders=(element_oAuth))               
         
         security = suds.wsse.Security()
-        token = suds.wsse.UsernameToken('*', '*')
+        token = suds.wsse.UsernameToken(getattr(self, 'username', '*'), getattr(self, 'password', '*'))
         security.tokens.append(token)
         self.soap_client.set_options(wsse=security)             
         

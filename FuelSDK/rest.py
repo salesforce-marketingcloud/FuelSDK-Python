@@ -143,7 +143,7 @@ class ET_Configure(ET_Constructor):
 ##
 ########
 class ET_Get(ET_Constructor):
-    def __init__(self, auth_stub, obj_type, props = None, search_filter = None, options = None):        
+    def __init__(self, auth_stub, obj_type, props = None, search_filter = None, options = None, client_ids = None):
         auth_stub.refresh_token()
         
         if props is None:   #if there are no properties to retrieve for the obj_type then return a Description of obj_type
@@ -201,11 +201,36 @@ class ET_Get(ET_Constructor):
                     ws_retrieveRequest.Options[key] = value
 
         ws_retrieveRequest.ObjectType = obj_type
+
+        if client_ids:
+            ws_retrieveRequest.ClientIDs = client_ids
         
         response = auth_stub.soap_client.service.Retrieve(ws_retrieveRequest)       
 
         if response is not None:
             super(ET_Get, self).__init__(response)
+
+########
+##
+##  Call the Exact Target web service Perform method
+##
+########
+class ET_Perform(ET_Constructor):
+
+    def __init__(self, auth_stub, action, obj_type, definition, options=None):
+        auth_stub.refresh_token()
+        auth_stub.soap_client.set_options(soapheaders=None)
+
+        parsed_options = self.parse_props_into_ws_object(auth_stub, 'PerformOptions', options) if options else None
+        parsed_definition = self.parse_props_into_ws_object(auth_stub, obj_type, definition)
+
+        request = auth_stub.soap_client.factory.create('PerformRequestMsg')
+        request.Options = parsed_options
+        request.Action = action
+        request.Definitions.Definition.append(parsed_definition)
+        response = auth_stub.soap_client.service.Perform(parsed_options, action, request.Definitions)
+        if response is not None:
+            super(ET_Perform, self).__init__(response)
 
 ########
 ##
@@ -278,6 +303,7 @@ class ET_BaseObject(object):
     extProps = None
     search_filter = None
     options = None
+    client_ids = None
 
 ########
 ##
@@ -287,10 +313,11 @@ class ET_BaseObject(object):
 class ET_GetSupport(ET_BaseObject):
     obj_type = 'ET_GetSupport'   #should be overwritten by inherited class
     
-    def get(self, m_props = None, m_filter = None, m_options = None):
+    def get(self, m_props = None, m_filter = None, m_options = None, m_client_ids=None):
         props = self.props
         search_filter = self.search_filter
         options = self.options
+        client_ids = self.client_ids
         
         if m_props is not None and type(m_props) is list:
             props = m_props     
@@ -303,7 +330,11 @@ class ET_GetSupport(ET_BaseObject):
         if m_options is not None and type(m_filter) is dict:
             options = m_options
 
-        obj = ET_Get(self.auth_stub, self.obj_type, props, search_filter, options)
+        if m_client_ids is not None and type(m_client_ids) is list:
+            client_ids = m_client_ids
+
+        obj = ET_Get(self.auth_stub, self.obj_type, props, search_filter, options, client_ids)
+
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
