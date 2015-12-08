@@ -331,7 +331,7 @@ class ET_GetSupport(ET_BaseObject):
             options = m_options
 
         if m_client_ids is not None and type(m_client_ids) is list:
-            client_ids = m_cliend_ids
+            client_ids = m_client_ids
 
         obj = ET_Get(self.auth_stub, self.obj_type, props, search_filter, options, client_ids)
 
