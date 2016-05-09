@@ -10,7 +10,7 @@ import suds.client
 import suds.wsse
 from suds.sax.element import Element
 
-from FuelSDK.objects import ET_DataExtension,ET_Subscriber
+from objects import ET_DataExtension,ET_Subscriber
 
 
 class ET_Client(object):
