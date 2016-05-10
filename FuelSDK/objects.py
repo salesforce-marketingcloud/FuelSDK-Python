@@ -119,7 +119,7 @@ class ET_Email(ET_CUDSupport):
 
 class ET_TriggeredSend(ET_CUDSupport):
     subscribers = None
-    
+    attributes  = None
     def __init__(self):
         super(ET_TriggeredSend, self).__init__()
         self.obj_type = 'TriggeredSendDefinition'
