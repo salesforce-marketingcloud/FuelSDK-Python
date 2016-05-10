@@ -181,7 +181,7 @@ class ET_Client(object):
             if (self.authToken is None):
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'accessType': 'offline'}
             else:
-                payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'refreshToken' : self.refreshKey, 'accessType': 'offline', 'scope':'cas:'+ self.internalAuthToken}
+                payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'refreshToken' : self.refreshKey, 'accessType': 'offline'}
             if self.refreshKey:
                 payload['refreshToken'] = self.refreshKey
 
