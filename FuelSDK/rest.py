@@ -157,7 +157,7 @@ class ET_Get(ET_Constructor):
                 
         if props is not None:
             if type(props) is dict: # If the properties is a hash, then we just want to use the keys
-                ws_retrieveRequest.Properties = props.keys
+                ws_retrieveRequest.Properties = props.keys()
             else:
                 ws_retrieveRequest.Properties = props
 
