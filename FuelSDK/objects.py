@@ -114,7 +114,7 @@ class ET_List_Subscriber(ET_GetSupport):
 
 class ET_SubscriberList(ET_GetSupport):
     def __init__(self):
-        super(ET_Subscriber_List, self).__init__()
+        super(ET_SubscriberList, self).__init__()
         self.obj_type = 'SubscriberList'
 
 class ET_SentEvent(ET_GetSupport):
