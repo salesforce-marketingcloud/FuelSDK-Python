@@ -156,7 +156,7 @@ You will then have a sandbox which includes all dependencies for doing developme
 
 ## Requirements
 
-Python 2.7.x
+Python 3.3.x
 
 Libraries:
 
@@ -169,8 +169,9 @@ Libraries:
 **Note**: Suds is now patched at runtime when importing the FuelSDK. You no longer need to edit the library. Please be aware of the change.
 
 The default Suds 0.4 Package that is available for download needs to have a couple small fixes applied in order for it to fully support the Fuel SDK. Please update your suds installation using the following instructions:
+Suds-jurko 0.6 supports Python 3.x.x
 
-- Download the suds package source from https://pypi.python.org/pypi/suds
+- Download the suds package source from https://pypi.python.org/pypi/suds-jurko/0.6
 - Open the file located wihin the uncompressed files at: `suds\mx\appender.py`
 - At line 223, the following lines will be present:
 ```python

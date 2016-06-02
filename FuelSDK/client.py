@@ -1,6 +1,6 @@
 import os
 import logging
-import ConfigParser
+import configparser
 import time
 import json
 
@@ -10,7 +10,8 @@ import suds.client
 import suds.wsse
 from suds.sax.element import Element
 
-from objects import ET_DataExtension,ET_Subscriber
+
+from FuelSDK.objects import ET_DataExtension,ET_Subscriber
 
 
 class ET_Client(object):
@@ -33,7 +34,7 @@ class ET_Client(object):
     auth_url = None
         
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
-    def __init__(self, get_server_wsdl = False, debug = False, params = None):
+    def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
         self.debug = debug
         if debug:
             logging.basicConfig(level=logging.INFO)
@@ -45,7 +46,7 @@ class ET_Client(object):
             logging.getLogger('suds').setLevel(logging.INFO)
 
         ## Read the config information out of config.python
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         if os.path.exists(os.path.expanduser('~/.fuelsdk/config.python')):
             config.read(os.path.expanduser('~/.fuelsdk/config.python'))
         else:
