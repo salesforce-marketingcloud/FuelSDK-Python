@@ -1,4 +1,4 @@
-from rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete,ET_Configure
+from FuelSDK.rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete,ET_Configure
 
 ########
 ##
@@ -145,7 +145,8 @@ class ET_TriggeredSend(ET_CUDSupport):
         self.obj_type = 'TriggeredSendDefinition'
 
     def send(self):
-        tscall = {"TriggeredSendDefinition" : self.props, "Subscribers" : self.subscribers, "Attributes": self.attributes }
+        tscall = {"TriggeredSendDefinition":self.props, "Subscribers" : self.subscribers, "Attributes": self.attributes }
+        print (tscall)
         self.obj = ET_Post(self.auth_stub, "TriggeredSend", tscall)
         return self.obj
 

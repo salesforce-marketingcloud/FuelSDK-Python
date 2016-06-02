@@ -64,12 +64,12 @@ class ET_Constructor(object):
                     self.status = False
                     
     def parse_props_dict_into_ws_object(self, obj_type, ws_object, props_dict):
-        for k, v in props_dict.iteritems():
+        for k, v in props_dict.items():
             if k in ws_object:
                 ws_object[k] = v
             else:
                 message = k + ' is not a property of ' + obj_type
-                print message
+                print (message)
                 raise Exception(message)
         return ws_object
 
@@ -90,7 +90,7 @@ class ET_Constructor(object):
             return ws_create_list
         else:
             message = 'Can not post properties to ' + obj_type + ' without a dict or list of properties'
-            print message
+            print (message)
             raise Exception(message)
 
 ########
@@ -215,8 +215,9 @@ class ET_Get(ET_Constructor):
 class ET_Post(ET_Constructor):
     def __init__(self, auth_stub, obj_type, props = None):
         auth_stub.refresh_token()
-
+        print("response")
         response = auth_stub.soap_client.service.Create(None, self.parse_props_into_ws_object(auth_stub, obj_type, props))
+        print(response)
         if(response is not None):
             super(ET_Post, self).__init__(response)
 
