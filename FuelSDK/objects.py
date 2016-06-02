@@ -146,7 +146,6 @@ class ET_TriggeredSend(ET_CUDSupport):
 
     def send(self):
         tscall = {"TriggeredSendDefinition":self.props, "Subscribers" : self.subscribers, "Attributes": self.attributes }
-        print (tscall)
         self.obj = ET_Post(self.auth_stub, "TriggeredSend", tscall)
         return self.obj
 
