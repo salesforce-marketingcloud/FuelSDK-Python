@@ -1,4 +1,4 @@
-p[]PyJWT>=1.4.0
+PyJWT>=1.4.0
 distribute==0.7.3
 requests>=2.10.0
 suds-jurko==0.6
