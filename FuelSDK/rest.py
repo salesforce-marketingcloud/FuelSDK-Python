@@ -213,7 +213,6 @@ class ET_Get(ET_Constructor):
 class ET_Post(ET_Constructor):
     def __init__(self, auth_stub, obj_type, props = None):
         auth_stub.refresh_token()
-        print("response")
         response = auth_stub.soap_client.service.Create(None, self.parse_props_into_ws_object(auth_stub, obj_type, props))
         if(response is not None):
             super(ET_Post, self).__init__(response)
