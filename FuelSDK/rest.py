@@ -160,7 +160,7 @@ class ET_Get(ET_Constructor):
                 ws_retrieveRequest.Properties = props
 
         if search_filter is not None:
-            if search_filter.has_key('LogicalOperator'):
+            if 'LogicalOperator' in search_filter:
                 ws_simpleFilterPartLeft = auth_stub.soap_client.factory.create('SimpleFilterPart')
                 for prop in ws_simpleFilterPartLeft:
                     #print prop[0]
