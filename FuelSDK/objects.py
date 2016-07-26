@@ -1,4 +1,4 @@
-from FuelSDK.rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete,ET_Configure
+from FuelSDK.rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete,ET_Configure,ET_Describe
 
 ########
 ##
@@ -36,6 +36,9 @@ class ET_ProfileAttribute():
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
+
+    def get(self):
+        return ET_Describe(self.auth_stub, 'Subscriber')
 
 ########
 ##
