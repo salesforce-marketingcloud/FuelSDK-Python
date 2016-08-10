@@ -178,7 +178,7 @@ class ET_Client(object):
         """
         #If we don't already have a token or the token expires within 5 min(300 seconds), get one
         if (force_refresh or self.authToken is None or (self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration)):
-            headers = {'content-type' : 'application/json'}
+            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python'}
             if (self.authToken is None):
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'accessType': 'offline'}
             else:
@@ -206,7 +206,7 @@ class ET_Client(object):
         find the correct url that data request web calls should go against for the token we have.
         """
         try:
-            r = requests.get('https://www.exacttargetapis.com/platform/v1/endpoints/soap?access_token=' + self.authToken)           
+            r = requests.get('https://www.exacttargetapis.com/platform/v1/endpoints/soap?access_token=' + self.authToken, {'user-agent' : 'FuelSDK-Python'})
             contextResponse = r.json()
             if('url' in contextResponse):
                 return str(contextResponse['url'])
