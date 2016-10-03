@@ -137,6 +137,62 @@ class ET_Configure(ET_Constructor):
             #self.message = 'Describe: ' + obj_type
             super(ET_Configure, self).__init__(response)
 
+
+########
+##
+##  Class for creating filters based on an auth_stub
+##
+########
+class ET_Filter(object):
+    def __init__(self, auth_stub):
+        self.auth_stub = auth_stub
+
+
+    def additionalOperandToSimpleFilter(self, operand):
+        simpleFilter = self.auth_stub.soap_client.factory.create('SimpleFilterPart')
+        for k, v in operand.items():
+            simpleFilter[k] = v
+        return simpleFilter
+
+
+    def complexFilter(self, leftOperand, rightOperand, logicalOperator, additionalOperands):
+        complexFilter = self.auth_stub.soap_client.factory.create('ComplexFilterPart')
+
+        complexFilter["LeftOperand"] = self.filterFor(leftOperand)
+        complexFilter["RightOperand"] = self.filterFor(rightOperand)
+        complexFilter["LogicalOperator"] = logicalOperator
+
+        for op in additionalOperands:
+            additionalOperandFilter = self.additionalOperandToSimpleFilter(op)
+            complexFilter.AdditionalOperands.Operand.append(additionalOperandFilter)
+
+        return complexFilter
+
+
+    def simpleFilter(self, operand):
+        simpleFilter = self.auth_stub.soap_client.factory.create('SimpleFilterPart')
+        for prop in simpleFilter:
+            propertyKey = prop[0]
+            if propertyKey in operand:
+                simpleFilter[propertyKey] = operand[propertyKey]
+
+        return simpleFilter
+
+
+    def filterFor(self, operand):
+        result = None
+        if operand.has_key('LogicalOperator'):
+            result = self.complexFilter(
+                                   operand["LeftOperand"],
+                                   operand["RightOperand"],
+                                   operand["LogicalOperator"],
+                                   operand.get('AdditionalOperands', []))
+        else:
+            result = self.simpleFilter(operand)
+
+        return result
+
+
 ########
 ##
 ##  Get call to a web service
@@ -162,35 +218,8 @@ class ET_Get(ET_Constructor):
                 ws_retrieveRequest.Properties = props
 
         if search_filter is not None:
-            if search_filter.has_key('LogicalOperator'):
-                ws_simpleFilterPartLeft = auth_stub.soap_client.factory.create('SimpleFilterPart')
-                for prop in ws_simpleFilterPartLeft:
-                    #print prop[0]
-                    if prop[0] in search_filter['LeftOperand']:         
-                        ws_simpleFilterPartLeft[prop[0]] = search_filter['LeftOperand'][prop[0]]    
-                        
-                ws_simpleFilterPartRight = auth_stub.soap_client.factory.create('SimpleFilterPart')
-                for prop in ws_simpleFilterPartRight:
-                    if prop[0] in search_filter['RightOperand']:
-                        ws_simpleFilterPartRight[prop[0]] = search_filter['RightOperand'][prop[0]]
-                        
-                ws_complexFilterPart = auth_stub.soap_client.factory.create('ComplexFilterPart')
-                ws_complexFilterPart.LeftOperand = ws_simpleFilterPartLeft
-                ws_complexFilterPart.RightOperand = ws_simpleFilterPartRight
-                ws_complexFilterPart.LogicalOperator = search_filter['LogicalOperator']
-                for additional_operand in search_filter.get('AdditionalOperands', []):
-                    ws_simpleFilterPart = auth_stub.soap_client.factory.create('SimpleFilterPart')
-                    for k, v in additional_operand.items():
-                        ws_simpleFilterPart[k] = v
-                    ws_complexFilterPart.AdditionalOperands.Operand.append(ws_simpleFilterPart)
-
-                ws_retrieveRequest.Filter = ws_complexFilterPart
-            else:
-                ws_simpleFilterPart = auth_stub.soap_client.factory.create('SimpleFilterPart')
-                for prop in ws_simpleFilterPart:
-                    if prop[0] in search_filter:
-                        ws_simpleFilterPart[prop[0]] = search_filter[prop[0]]
-                ws_retrieveRequest.Filter = ws_simpleFilterPart
+          newFilter = ET_Filter(auth_stub).filterFor(search_filter)
+          ws_retrieveRequest.Filter = newFilter
 
         if options is not None:
             for key, value in options.iteritems():
