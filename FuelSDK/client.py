@@ -126,7 +126,14 @@ class ET_Client(object):
         else:
            path = os.path.dirname(os.path.abspath(__file__))
            file_location = os.path.join(path, 'ExactTargetWSDL.xml')
-        file_url = 'file:///' + file_location 
+
+        #Condition for urllib2 2.6 and suds2.6 requests
+        if file_location.startswith('/'):
+            location_prefix = 'file://'
+        else:
+            location_prefix = 'file:///'
+
+        file_url = location_prefix + file_location 
         
         if not os.path.exists(file_location) or os.path.getsize(file_location) == 0:   #if there is no local copy or local copy is empty then go get it...
             self.retrieve_server_wsdl(wsdl_url, file_location)
