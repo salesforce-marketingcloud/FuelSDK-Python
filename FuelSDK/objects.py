@@ -282,7 +282,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 currentFields = []
                 currentProp = {}
                 
-                for key, value in rec.iteritems():
+                for key, value in rec.items():
                     currentFields.append({"Name" : key, "Value" : value})
                 
                 currentProp['CustomerKey'] = self.CustomerKey
@@ -297,7 +297,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
             currentFields = []
             currentProp = {}
                 
-            for key, value in self.props.iteritems():
+            for key, value in self.props.items():
                 currentFields.append({"Name" : key, "Value" : value})
 
             currentProp['CustomerKey'] = self.CustomerKey
@@ -317,7 +317,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 currentFields = []
                 currentProp = {}
                 
-                for key, value in rec.iteritems():
+                for key, value in rec.items():
                     currentFields.append({"Name" : key, "Value" : value})
                 
                 currentProp['CustomerKey'] = self.CustomerKey
@@ -331,7 +331,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
             currentFields = []
             currentProp = {}
             
-            for key, value in self.props.iteritems():
+            for key, value in self.props.items():
                 currentFields.append({"Name" : key, "Value" : value})
             
             currentProp['CustomerKey'] = self.CustomerKey
@@ -350,7 +350,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 currentFields = []
                 currentProp = {}
                 
-                for key, value in rec.iteritems():
+                for key, value in rec.items():
                     currentFields.append({"Name" : key, "Value" : value})
                 
                 currentProp['CustomerKey'] = self.CustomerKey
@@ -364,7 +364,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
             currentFields = []
             currentProp = {}
                 
-            for key, value in self.props.iteritems():
+            for key, value in self.props.items():
                 currentFields.append({"Name" : key, "Value" : value})
     
             currentProp['CustomerKey'] = self.CustomerKey
