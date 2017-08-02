@@ -9,6 +9,7 @@ import requests
 import suds.client
 import suds.wsse
 from suds.sax.element import Element
+import urllib2
 
 from objects import ET_DataExtension,ET_Subscriber
 
@@ -157,7 +158,9 @@ class ET_Client(object):
         self.authObj = {'oAuth' : {'oAuthToken' : self.internalAuthToken}}          
         self.authObj['attributes'] = { 'oAuth' : { 'xmlns' : 'http://exacttarget.com' }}                        
 
-        self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
+        self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1,
+                                              proxy=urllib2.getproxies())
+
         self.soap_client.set_options(location=self.endpoint)
 
         element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
