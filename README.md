@@ -141,6 +141,12 @@ Sample List:
 * [TriggeredSend](https://github.com/salesforce-marketingcloud/FuelSDK-Python/tree/master/objsamples/sample_triggeredsend.py)
 * [UnsubEvent](https://github.com/salesforce-marketingcloud/FuelSDK-Python/tree/master/objsamples/sample_unsubevent.py)
 
+
+You can also download a copy of wsdl file from the obsamples directory and mention its path in the config file (config.python) like below:  
+> wsdl_file_local_loc: /path/to/wsdl/ExactTargetWSDL.xml
+
+Using this wsdl file also resolves [issue:81](https://github.com/salesforce-marketingcloud/FuelSDK-Python/issues/81)
+
 ## Development on FuelSDK-Python
 
 If you would like to help contribute to the FuelSDK-Python project, checkout the code from the [GitHub project page](https://github.com/salesforce-marketingcloud/FuelSDK-Python). The use of [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/) is highly recommended. After installing virtualenvwrapper you can run the following commands to setup a sandbox for development.
@@ -152,7 +158,14 @@ cd FuelSDK-Python
 pip install -r requirements.txt
 ```
 
-You will then have a sandbox which includes all dependencies for doing development on FuelSDK-Python.
+You will then have a sandbox which includes all dependencies for doing development on FuelSDK-Python.  
+Also you may need to setup your PYTHONPATH environment variable to the cloned root directory so that you can access them from anywhere.  
+On Mac/Linux:  
+> export PYTHONPATH=$PYTHONPATH:/path/to/FuelSDK-Python
+
+On Windows:  
+> set PYTHONPATH=%PYTHONPATH%;C:\path\to\FuelSDK-Python
+
 
 ## Requirements
 
