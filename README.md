@@ -143,7 +143,8 @@ Sample List:
 
 
 You can also download a copy of wsdl file from the obsamples directory and mention its path in the config file (config.python) like below:  
-> wsdl_file_local_loc: /path/to/wsdl/ExactTargetWSDL.xml  
+> wsdl_file_local_loc: /path/to/wsdl/ExactTargetWSDL.xml
+
 Using this wsdl file also resolves [issue:81](https://github.com/salesforce-marketingcloud/FuelSDK-Python/issues/81)
 
 ## Development on FuelSDK-Python
