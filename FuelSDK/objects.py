@@ -1,4 +1,4 @@
-from rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete,ET_Configure
+from FuelSDK.rest import ET_CUDSupport,ET_CUDSupportRest,ET_GetSupport,ET_Get,ET_Patch,ET_Post,ET_Delete,ET_Configure,ET_Describe
 
 ########
 ##
@@ -36,6 +36,9 @@ class ET_ProfileAttribute():
         if obj is not None:
             self.last_request_id = obj.request_id
         return obj
+
+    def get(self):
+        return ET_Describe(self.auth_stub, 'Subscriber')
 
 ########
 ##
@@ -145,7 +148,7 @@ class ET_TriggeredSend(ET_CUDSupport):
         self.obj_type = 'TriggeredSendDefinition'
 
     def send(self):
-        tscall = {"TriggeredSendDefinition" : self.props, "Subscribers" : self.subscribers, "Attributes": self.attributes }
+        tscall = {"TriggeredSendDefinition":self.props, "Subscribers" : self.subscribers, "Attributes": self.attributes }
         self.obj = ET_Post(self.auth_stub, "TriggeredSend", tscall)
         return self.obj
 
@@ -279,7 +282,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 currentFields = []
                 currentProp = {}
                 
-                for key, value in rec.iteritems():
+                for key, value in rec.items():
                     currentFields.append({"Name" : key, "Value" : value})
                 
                 currentProp['CustomerKey'] = self.CustomerKey
@@ -294,7 +297,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
             currentFields = []
             currentProp = {}
                 
-            for key, value in self.props.iteritems():
+            for key, value in self.props.items():
                 currentFields.append({"Name" : key, "Value" : value})
 
             currentProp['CustomerKey'] = self.CustomerKey
@@ -314,7 +317,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 currentFields = []
                 currentProp = {}
                 
-                for key, value in rec.iteritems():
+                for key, value in rec.items():
                     currentFields.append({"Name" : key, "Value" : value})
                 
                 currentProp['CustomerKey'] = self.CustomerKey
@@ -328,7 +331,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
             currentFields = []
             currentProp = {}
             
-            for key, value in self.props.iteritems():
+            for key, value in self.props.items():
                 currentFields.append({"Name" : key, "Value" : value})
             
             currentProp['CustomerKey'] = self.CustomerKey
@@ -347,7 +350,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 currentFields = []
                 currentProp = {}
                 
-                for key, value in rec.iteritems():
+                for key, value in rec.items():
                     currentFields.append({"Name" : key, "Value" : value})
                 
                 currentProp['CustomerKey'] = self.CustomerKey
@@ -361,7 +364,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
             currentFields = []
             currentProp = {}
                 
-            for key, value in self.props.iteritems():
+            for key, value in self.props.items():
                 currentFields.append({"Name" : key, "Value" : value})
     
             currentProp['CustomerKey'] = self.CustomerKey

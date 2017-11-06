@@ -1,5 +1,6 @@
-PyJWT==0.1.9
+PyJWT>=1.5.3
 distribute==0.7.3
-requests>=2.2.1
-suds==0.4
+requests>=2.18.4
+suds-jurko==0.6
 wsgiref==0.1.2
+
