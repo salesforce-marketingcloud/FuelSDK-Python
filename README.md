@@ -159,9 +159,10 @@ pip install -r requirements.txt
 You will then have a sandbox which includes all dependencies for doing development on FuelSDK-Python.  
 Also you may need to setup your PYTHONPATH environment variable to the cloned root directory so that you can access them from anywhere.  
 On Mac/Linux:  
-> export PYTHONPATH=/path/to/FuelSDK-Python
+> export PYTHONPATH=$PYTHONPATH:/path/to/FuelSDK-Python
+
 On Windows:  
-> set PYTHONPATH=C:\path\to\FuelSDK-Python
+> set PYTHONPATH=%PYTHONPATH%;C:\path\to\FuelSDK-Python
 
 
 ## Requirements
