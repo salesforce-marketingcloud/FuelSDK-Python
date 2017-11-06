@@ -11,7 +11,7 @@ The Fuel SDK for Python provides easy access to ExactTarget's Fuel API Family se
 The Fuel SDK for python can be easily installed from the [Python Package Index](https://pypi.python.org/pypi) using the [pip](https://pip.readthedocs.org) command. Pip is a tool for installing and managing Python packages.
 
 ```
-pip install FuelSDK
+pip install Salesforce-FuelSDK
 ```
 
 ## Getting Started
@@ -141,6 +141,10 @@ Sample List:
 * [TriggeredSend](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_triggeredsend.py)
 * [UnsubEvent](https://github.com/ExactTarget/FuelSDK-Python/blob/master/objsamples/sample_unsubevent.py)
 
+
+You can also download a copy of wsdl file from the obsamples directory and mention its path in the config file (config.python) like below:  
+> wsdl_file_local_loc: /path/to/wsdl/ExactTargetWSDL.xml
+
 ## Development on FuelSDK-Python
 
 If you would like to help contribute to the FuelSDK-Python project, checkout the code from the [GitHub project page](https://github.com/ExactTarget/FuelSDK-Python). The use of [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/) is highly recommended. After installing virtualenvwrapper you can run the following commands to setup a sandbox for development.
@@ -152,7 +156,13 @@ cd FuelSDK-Python
 pip install -r requirements.txt
 ```
 
-You will then have a sandbox which includes all dependencies for doing development on FuelSDK-Python.
+You will then have a sandbox which includes all dependencies for doing development on FuelSDK-Python.  
+Also you may need to setup your PYTHONPATH environment variable to the cloned root directory so that you can access them from anywhere.  
+On Mac/Linux:  
+> export PYTHONPATH=/path/to/FuelSDK-Python
+On Windows:  
+> set PYTHONPATH=C:\path\to\FuelSDK-Python
+
 
 ## Requirements
 
