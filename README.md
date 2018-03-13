@@ -14,6 +14,12 @@ The Fuel SDK for python can be easily installed from the [Python Package Index](
 pip install Salesforce-FuelSDK
 ```
 
+## Support
+The Salesforce Marketing Cloud SDKs are community-supported projects. The SDK source code, samples, and documentation are publicly available on Github to use as-is or fork and modify for your needs. We invite everyone in the community to collaborate with us on Github and submit pull requests to help improve the source code and samples.
+* Post questions on [StackExchange](https://salesforce.stackexchange.com/questions/tagged/marketing-cloud).
+* Submit ideas and suggestions to the [Trailblazer Community](https://success.salesforce.com/ideaSearch?sort=2&filter=Marketing+Cloud).
+* File issues and feature requests here on Github.
+
 ## Getting Started
 
 ### Configuring
