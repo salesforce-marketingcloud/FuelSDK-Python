@@ -40,7 +40,7 @@ If you have not registered your application or you need to lookup your Applicati
 | Environment | WSDL (default) | URL (auth) |
 | ----------- | -------------- | ---------- |
 | Production  | https://webservice.exacttarget.com/etframework.wsdl | https://auth.exacttargetapis.com/v1/requestToken?legacy=1 |
-| Sandbox     | https://webservice.test.exacttarget.com/Service.asmx?wsdl | https://auth-test.exacttargetapis.com/v1/requestToken?legacy=1 |
+| Sandbox     | https://webservice.test.exacttarget.com/etframework.wsdl | https://auth-test.exacttargetapis.com/v1/requestToken?legacy=1 |
 
 
 ## Example Request
