@@ -3,5 +3,6 @@ appsignature: none
 clientid: XXXXXXXXXXXXXXXXXXXXXXXX
 clientsecret: XXXXXXXXXXXXXXXXXXXXXXXX
 defaultwsdl: https://webservice.exacttarget.com/etframework.wsdl
+baseapiurl: https://www.exacttargetapis.com
 authenticationurl: https://auth.exacttargetapis.com/v1/requestToken?legacy=1
 wsdl_file_local_loc: /tmp/ExactTargetWSDL.s6.xml
