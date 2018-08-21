@@ -270,7 +270,7 @@ class ET_BaseObject(object):
     auth_stub = None
     obj = None
     last_request_id = None
-    endpoint = None
+    path = None
     props = None
     extProps = None
     search_filter = None
@@ -429,8 +429,8 @@ class ET_GetSupportRest(ET_BaseObject):
     def get(self, props = None):
         if props is not None and type(props) is dict:
             self.props = props
-            
-        completeURL = self.endpoint     
+
+        completeURL = self.auth_stub.base_api_url + self.path
         additionalQS = {}
         
         if self.props is not None and type(self.props) is dict:
@@ -497,7 +497,7 @@ class ET_GetSupportRest(ET_BaseObject):
 ##
 ########            
 class ET_CUDSupportRest(ET_GetSupportRest):
-    endpoint = None
+    path = None
     urlProps = None
     urlPropsRequired = None
     
@@ -505,7 +505,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         super
     
     def post(self):
-        completeURL = self.endpoint 
+        completeURL = self.auth_stub.base_api_url + self.path
         
         if self.props is not None and type(self.props) is dict:
             for k, v in self.props.items():
@@ -524,7 +524,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         return obj      
     
     def patch(self):
-        completeURL = self.endpoint
+        completeURL = self.auth_stub.base_api_url + self.path
         # All URL Props are required when doing Patch   
         for value in self.urlProps: 
             if self.props is None or value not in self.props:
@@ -539,7 +539,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         return obj
     
     def delete(self):
-        completeURL = self.endpoint     
+        completeURL = self.auth_stub.base_api_url + self.path
         # All URL Props are required when doing Patch   
         for value in self.urlProps: 
             if self.props is None or value not in self.props:

@@ -1,4 +1,4 @@
-# FuelSDK-Python v1.0.1
+# FuelSDK-Python v1.0.2
 
 Salesforce Marketing Cloud Fuel SDK for Python
 
@@ -26,11 +26,13 @@ You must configure your access tokens and details for the Fuel SDK in one of the
     * `FUELSDK_CLIENT_SECRET` (required)
     * `FUELSDK_APP_SIGNATURE`
     * `FUELSDK_DEFAULT_WSDL`
+    * `FUELSDK_BASE_API_URL`
     * `FUELSDK_AUTH_URL`
     * `FUELSDK_WSDL_FILE_LOCAL_LOC`
 
 Edit `config.python` or declare environment variables so you can input the ClientID and Client Secret values provided when you registered your application. If you are building a HubExchange application for the Interactive Marketing Hub then, you must also provide the Application Signature (`appsignature` / `FUELSDK_APP_SIGNATURE`).
 The `defaultwsdl` / `FUELSDK_DEFAULT_WSDL` configuration must be [changed depending on the Salesforce marketing cloud service](https://code.exacttarget.com/question/there-any-cetificrate-install-our-server-access-et-api "Salesforce Marketing Cloud Forum").
+The `baseapiurl` / `FUELSDK_BASE_API_URL` refers to the hostname where the API is hosted, if omitted it will default to [https://www.exacttargetapis.com](https://www.exacttargetapis.com).
 The `authenticationurl` / `FUELSDK_AUTH_URL` must also be [changed depending on service](https://code.exacttarget.com/question/not-able-create-accesstoken-when-clientidsecret-associated-preproduction-account "Salesforce Marketing Cloud Forum").
 The `wsdl_file_local_loc` / `FUELSDK_WSDL_FILE_LOCAL_LOC` allows you to specify the full path/filename where the WSDL file will be located on disk, if for instance you are connecting to different endpoints from the same server.
 
