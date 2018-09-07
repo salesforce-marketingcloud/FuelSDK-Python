@@ -80,7 +80,7 @@ class ET_Client(object):
         elif 'FUELSDK_DEFAULT_WSDL' in os.environ:
             wsdl_server_url = os.environ['FUELSDK_DEFAULT_WSDL']
         else:
-            wsdl_server_url = 'https://webservice.exacttarget.com/etframework.wsdl'
+            raise Exception('Please define the default wsdl')
 
         if params is not None and 'baseapiurl' in params:
             self.base_api_url = params['baseapiurl']
@@ -89,7 +89,7 @@ class ET_Client(object):
         elif 'FUELSDK_BASE_API_URL' in os.environ:
             self.base_api_url = os.environ['FUELSDK_BASE_API_URL']
         else:
-            self.base_api_url = 'https://www.exacttargetapis.com'
+            raise Exception('Please define the base api url')
 
         if params is not None and 'authenticationurl' in params:
             self.auth_url = params['authenticationurl']
@@ -98,7 +98,7 @@ class ET_Client(object):
         elif 'FUELSDK_AUTH_URL' in os.environ:
             self.auth_url = os.environ['FUELSDK_AUTH_URL']
         else:
-            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
+            raise Exception('Please define the authentication url')
 
         if params is not None and "wsdl_file_local_loc" in params:
             wsdl_file_local_location = params["wsdl_file_local_loc"]
