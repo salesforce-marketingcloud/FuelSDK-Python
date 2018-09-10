@@ -325,11 +325,11 @@ class ET_GetSupport(ET_BaseObject):
 class ET_GetRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, qs = None):
         auth_stub.refresh_token()   
-        fullendpoint = endpoint + '?access_token=' + auth_stub.authToken
+        fullendpoint = endpoint
         for qStringValue in qs:
             fullendpoint += '&'+    qStringValue + '=' + str(qs[qStringValue])
 
-        r = requests.get(fullendpoint)
+        r = requests.get(fullendpoint, {'authorization' : 'Bearer ' + auth_stub.authToken})
     
         
         self.more_results = False
@@ -346,8 +346,8 @@ class ET_PostRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, payload):
         auth_stub.refresh_token()
         
-        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python'}
-        r = requests.post(endpoint + '?access_token=' + auth_stub.authToken , data=json.dumps(payload), headers=headers)
+        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python', 'authorization' : 'Bearer ' + auth_stub.authToken}
+        r = requests.post(endpoint, data=json.dumps(payload), headers=headers)
         
         obj = super(ET_PostRest, self).__init__(r, True)
         return obj
@@ -361,8 +361,8 @@ class ET_PatchRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, payload):
         auth_stub.refresh_token()
         
-        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python'}
-        r = requests.patch(endpoint + '?access_token=' + auth_stub.authToken , data=json.dumps(payload), headers=headers)
+        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python', 'authorization' : 'Bearer ' + auth_stub.authToken}
+        r = requests.patch(endpoint , data=json.dumps(payload), headers=headers)
         
         obj = super(ET_PatchRest, self).__init__(r, True)
         return obj
@@ -376,7 +376,7 @@ class ET_DeleteRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint):
         auth_stub.refresh_token()
         
-        r = requests.delete(endpoint + '?access_token=' + auth_stub.authToken)
+        r = requests.delete(endpoint, {'authorization' : 'Bearer ' + auth_stub.authToken})
         
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj
