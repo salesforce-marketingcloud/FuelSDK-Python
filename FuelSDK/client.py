@@ -215,7 +215,10 @@ class ET_Client(object):
         find the correct url that data request web calls should go against for the token we have.
         """
         try:
-            r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap?access_token=' + self.authToken, {'user-agent' : 'FuelSDK-Python'})
+            r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', {
+                'user-agent' : 'FuelSDK-Python',
+                'authorization' : 'Bearer ' + self.authToken
+            })
             contextResponse = r.json()
             if('url' in contextResponse):
                 return str(contextResponse['url'])
