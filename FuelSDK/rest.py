@@ -326,10 +326,12 @@ class ET_GetRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, qs = None):
         auth_stub.refresh_token()   
         fullendpoint = endpoint
+        urlSeparator = '?'
         for qStringValue in qs:
-            fullendpoint += '&'+    qStringValue + '=' + str(qs[qStringValue])
+            fullendpoint += urlSeparator +    qStringValue + '=' + str(qs[qStringValue])
+            urlSeparator = '&'
 
-        r = requests.get(fullendpoint, {'authorization' : 'Bearer ' + auth_stub.authToken})
+        r = requests.get(fullendpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken})
     
         
         self.more_results = False
@@ -376,7 +378,7 @@ class ET_DeleteRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint):
         auth_stub.refresh_token()
         
-        r = requests.delete(endpoint, {'authorization' : 'Bearer ' + auth_stub.authToken})
+        r = requests.delete(endpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken})
         
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj
