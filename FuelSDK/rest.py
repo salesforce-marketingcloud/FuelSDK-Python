@@ -2,7 +2,11 @@ import requests
 import json
 import copy
 
-    
+proxyDict = {
+    "http": "http://127.0.0.01:8888",
+    "https": "https://127.0.0.01:8888"
+}
+
 ########
 ##
 ##  Parent class used to determine what status we are in depending on web service call results
@@ -326,10 +330,12 @@ class ET_GetRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, qs = None):
         auth_stub.refresh_token()   
         fullendpoint = endpoint
+        qsSeparator = "?"
         for qStringValue in qs:
-            fullendpoint += '&'+    qStringValue + '=' + str(qs[qStringValue])
+            fullendpoint += qsSeparator +    qStringValue + '=' + str(qs[qStringValue])
+            qsSeparator = "&"
 
-        r = requests.get(fullendpoint, {'authorization' : 'Bearer ' + auth_stub.authToken})
+        r = requests.get(fullendpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken}, proxies=proxyDict, verify=False)
     
         
         self.more_results = False
@@ -347,7 +353,7 @@ class ET_PostRest(ET_Constructor):
         auth_stub.refresh_token()
         
         headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python', 'authorization' : 'Bearer ' + auth_stub.authToken}
-        r = requests.post(endpoint, data=json.dumps(payload), headers=headers)
+        r = requests.post(endpoint, data=json.dumps(payload), headers=headers, proxies=proxyDict, verify=False)
         
         obj = super(ET_PostRest, self).__init__(r, True)
         return obj
@@ -362,7 +368,7 @@ class ET_PatchRest(ET_Constructor):
         auth_stub.refresh_token()
         
         headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python', 'authorization' : 'Bearer ' + auth_stub.authToken}
-        r = requests.patch(endpoint , data=json.dumps(payload), headers=headers)
+        r = requests.patch(endpoint , data=json.dumps(payload), headers=headers, proxies=proxyDict, verify=False)
         
         obj = super(ET_PatchRest, self).__init__(r, True)
         return obj
@@ -376,7 +382,7 @@ class ET_DeleteRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint):
         auth_stub.refresh_token()
         
-        r = requests.delete(endpoint, {'authorization' : 'Bearer ' + auth_stub.authToken})
+        r = requests.delete(endpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken}, proxies=proxyDict, verify=False)
         
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj
