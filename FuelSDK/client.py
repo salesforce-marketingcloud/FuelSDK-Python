@@ -1,6 +1,7 @@
 import os
 import logging
 import configparser
+import distutils.core
 import time
 import json
 
@@ -18,6 +19,9 @@ proxyDict = {
     "http": "http://127.0.0.0.1:8888",
     "https": "https://127.0.0.01:8888"
 }
+
+HTTP_PROXY_SECTION = 'HTTP Proxy'
+SOAP_PROXY_SECTION = 'SOAP Proxy'
 
 class ET_Client(object):
     """
@@ -37,6 +41,16 @@ class ET_Client(object):
     authObj = None
     soap_client = None
     auth_url = None
+    http_proxy_settings = {
+        'enabled': False,
+        'verify_ssl': True,
+        'proxies': {}
+    }
+    soap_proxy_settings = {
+        'enabled': False,
+        'verify_ssl': True,
+        'proxies': {}
+    }
         
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
@@ -56,6 +70,21 @@ class ET_Client(object):
             config.read(os.path.expanduser('~/.fuelsdk/config.python'))
         else:
             config.read('config.python')
+
+        if config.has_section(HTTP_PROXY_SECTION) and distutils.util.strtobool(config.get(HTTP_PROXY_SECTION, 'enabled')):
+            self.http_proxy_settings['verify_ssl'] = True if distutils.util.strtobool(config.get(HTTP_PROXY_SECTION, 'verify_ssl')) else False
+            self.http_proxy_settings['proxies'] = {
+                'http': config.get(HTTP_PROXY_SECTION, 'http_url'),
+                'https': config.get(HTTP_PROXY_SECTION, 'https_url')
+            }
+
+
+        if config.has_section(SOAP_PROXY_SECTION) and distutils.util.strtobool(config.get(SOAP_PROXY_SECTION, 'enabled')):
+            self.soap_proxy_settings['verify_ssl'] = True if distutils.util.strtobool(config.get(SOAP_PROXY_SECTION, 'verify_ssl')) else False
+            self.soap_proxy_settings['proxies'] = {
+                'http': config.get(SOAP_PROXY_SECTION, 'http_url'),
+                'https': config.get(SOAP_PROXY_SECTION, 'https_url')
+            }
 
         if params is not None and 'clientid' in params:
             self.client_id = params['clientid']
@@ -146,7 +175,7 @@ class ET_Client(object):
         if not os.path.exists(file_location) or os.path.getsize(file_location) == 0:   #if there is no local copy or local copy is empty then go get it...
             self.retrieve_server_wsdl(wsdl_url, file_location)
         elif get_server_wsdl:
-            r = requests.head(wsdl_url, proxies=proxyDict, verify=False)
+            r = requests.head(wsdl_url, proxies=self.http_proxy_settings['proxies'], verify=self.http_proxy_settings['verify_ssl'])
             if r is not None and 'last-modified' in r.headers:
                 server_wsdl_updated = time.strptime(r.headers['last-modified'], '%a, %d %b %Y %H:%M:%S %Z')
                 file_wsdl_updated = time.gmtime(os.path.getmtime(file_location))
@@ -160,7 +189,7 @@ class ET_Client(object):
         """
         get the WSDL from the server and save it locally
         """
-        r = requests.get(wsdl_url, proxies=proxyDict, verify=False)
+        r = requests.get(wsdl_url, proxies=self.http_proxy_settings['proxies'], verify=self.http_proxy_settings['verify_ssl'])
         f = open(file_location, 'w')
         f.write(r.text)
         
@@ -173,14 +202,13 @@ class ET_Client(object):
         self.authObj['attributes'] = { 'oAuth' : { 'xmlns' : 'http://exacttarget.com' }}
 
         session = requests.Session()
-        session.verify = False
-        session.proxies = proxyDict
+        session.verify = self.soap_proxy_settings['verify_ssl']
+        session.proxies = self.soap_proxy_settings['proxies']
         transport = suds_requests.RequestsTransport(session=session)
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
         self.soap_client.set_options(location=self.endpoint)
         self.soap_client.set_options(transport=transport)
-        self.soap_client.set_options(proxy=proxyDict)
 
         element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
         element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
@@ -207,7 +235,7 @@ class ET_Client(object):
             if self.refreshKey:
                 payload['refreshToken'] = self.refreshKey
 
-            r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers, proxies=proxyDict, verify=False)
+            r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers, proxies=self.http_proxy_settings['proxies'], verify=self.http_proxy_settings['verify_ssl'])
             tokenResponse = r.json()
             
             if 'accessToken' not in tokenResponse:
@@ -230,7 +258,7 @@ class ET_Client(object):
             r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
                 'user-agent' : 'FuelSDK-Python',
                 'authorization' : 'Bearer ' + self.authToken
-            },  proxies=proxyDict, verify=False)
+            },  proxies=self.http_proxy_settings['proxies'], verify=self.http_proxy_settings['verify_ssl'])
             contextResponse = r.json()
             if('url' in contextResponse):
                 return str(contextResponse['url'])

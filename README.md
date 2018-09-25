@@ -45,6 +45,26 @@ If you have not registered your application or you need to lookup your Applicati
 | Sandbox     | https://webservice.test.exacttarget.com/Service.asmx?wsdl | https://auth-test.exacttargetapis.com/v1/requestToken?legacy=1 |
 
 
+### Configuring HTTP/HTTPS requests to use proxies
+The `config.python` file now supports proxy settings for HTTP requests. Just add a `HTTP Proxy` section with the following properties:
+* {string} _`enabled`_: Flag to enable proxy usage. Default: `0` (disabled).
+* {string} _`verify_ssl`_: Flag to check SSL certificate of proxies.  Default: `1` (check for certiicate).
+* {string} _`http_url`_: Proxy value for `http` protocol. If _`enabled`_ is falsy, value is ignored. Default: http://127.0.0.1:8888
+* {string} _`https_url`_:Proxy value for `https` protocol. If _`enabled`_ is falsy, value is ignored. Default: https://127.0.0.1:8888
+
+### Configuring SOAP requests to use proxies
+The `config.python` file now supports proxy settings for SOAP requests. Just add a `SOAP Proxy` section with the following properties:
+* {string} _`enabled`_: Flag to enable proxy usage. Default: `0` (disabled).
+* {string} _`verify_ssl`_: Flag to check SSL certificate of proxies.  Default: `1` (check for certiicate).
+* {string} _`http_url`_: Proxy value for `http` protocol. If _`enabled`_ is falsy, value is ignored. Default: http://127.0.0.1:8888
+* {string} _`https_url`_:Proxy value for `https` protocol. If _`enabled`_ is falsy, value is ignored. Default: https://127.0.0.1:8888
+
+**Note**
+For `enabled` and `verify_ssl` flags, valid values are:
+ * `y`, `yes`, `t`, `true`, `on` and `1` for True values;
+ * `n`, `no`, `f`, `false`, `off` and `0` for False values;
+ * Raises ValueError if their values is anything else.
+
 ## Example Request
 
 ### Code
