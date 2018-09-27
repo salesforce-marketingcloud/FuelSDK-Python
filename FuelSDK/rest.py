@@ -331,7 +331,8 @@ class ET_GetRest(ET_Constructor):
             fullendpoint += urlSeparator +    qStringValue + '=' + str(qs[qStringValue])
             urlSeparator = '&'
 
-        r = requests.get(fullendpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken})
+        headers = {'authorization' : 'Bearer ' + auth_stub.authToken,  'user-agent' : 'FuelSDK-Python'}
+        r = requests.get(fullendpoint, headers=headers)
     
         
         self.more_results = False
@@ -377,8 +378,9 @@ class ET_PatchRest(ET_Constructor):
 class ET_DeleteRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint):
         auth_stub.refresh_token()
-        
-        r = requests.delete(endpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken})
+
+        headers = {'authorization' : 'Bearer ' + auth_stub.authToken, 'user-agent' : 'FuelSDK-Python'}
+        r = requests.delete(endpoint, headers=headers)
         
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj

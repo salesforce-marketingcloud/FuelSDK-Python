@@ -169,6 +169,7 @@ class ET_Client(object):
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
         self.soap_client.set_options(location=self.endpoint)
+        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python'})
 
         element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
         element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
