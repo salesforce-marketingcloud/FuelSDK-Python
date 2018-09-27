@@ -2,11 +2,7 @@ import requests
 import json
 import copy
 
-proxyDict = {
-    "http": "http://127.0.0.01:8888",
-    "https": "https://127.0.0.01:8888"
-}
-
+    
 ########
 ##
 ##  Parent class used to determine what status we are in depending on web service call results
@@ -335,7 +331,8 @@ class ET_GetRest(ET_Constructor):
             fullendpoint += qsSeparator +    qStringValue + '=' + str(qs[qStringValue])
             qsSeparator = "&"
 
-        r = requests.get(fullendpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken}, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
+        headers = {'authorization': 'Bearer ' + auth_stub.authToken, 'user-agent': 'FuelSDK-Python'}
+        r = requests.get(fullendpoint, headers=headers, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
     
         
         self.more_results = False
@@ -381,9 +378,10 @@ class ET_PatchRest(ET_Constructor):
 class ET_DeleteRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint):
         auth_stub.refresh_token()
-        
-        r = requests.delete(endpoint, headers={'authorization' : 'Bearer ' + auth_stub.authToken}, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
-        
+
+        headers = {'authorization' : 'Bearer ' + auth_stub.authToken, 'user-agent' : 'FuelSDK-Python'}
+        r = requests.delete(endpoint, headers=headers, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
+
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj
 

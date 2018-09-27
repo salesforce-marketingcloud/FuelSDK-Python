@@ -51,7 +51,7 @@ class ET_Client(object):
         'verify_ssl': True,
         'proxies': {}
     }
-        
+
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
         self.debug = debug
@@ -209,6 +209,7 @@ class ET_Client(object):
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
         self.soap_client.set_options(location=self.endpoint)
         self.soap_client.set_options(transport=transport)
+        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python'})
 
         element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
         element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
