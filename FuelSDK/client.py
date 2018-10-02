@@ -30,7 +30,8 @@ class ET_Client(object):
     endpoint = None
     soap_client = None
     auth_url = None
-        
+    soap_endpoint = None
+
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
         self.debug = debug
@@ -98,6 +99,13 @@ class ET_Client(object):
         else:
             self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken'
 
+        if params is not None and 'soapendpoint' in params:
+            self.soap_endpoint = params['soapendpoint']
+        elif config.has_option('Web Services', 'soapendpoint'):
+            self.soap_endpoint = config.get('Web Services', 'soapendpoint')
+        elif 'FUELSDK_SOAP_ENDPOINT' in os.environ:
+            self.soap_endpoint = os.environ['FUELSDK_SOAP_ENDPOINT']
+
         if params is not None and "wsdl_file_local_loc" in params:
             wsdl_file_local_location = params["wsdl_file_local_loc"]
         elif config.has_option("Web Services", "wsdl_file_local_loc"):
@@ -158,11 +166,11 @@ class ET_Client(object):
         
 
     def build_soap_client(self):
-        if self.endpoint is None: 
-            self.endpoint = self.determineStack()
+        if self.soap_endpoint is None:
+            self.soap_endpoint = self.determineStack()
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
-        self.soap_client.set_options(location=self.endpoint)
+        self.soap_client.set_options(location=self.soap_endpoint)
         self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python'})
 
         element_fueloauth = Element('fueloauth').setText(self.authToken)
@@ -217,7 +225,7 @@ class ET_Client(object):
                 return str(contextResponse['url'])
 
         except Exception as e:
-            raise Exception('Unable to determine stack using /platform/v1/tokenContext: ' + e.message)  
+            raise Exception('Unable to determine stack using /platform/v1/endpoints/soap: ' + e.message)
 
 
     def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
