@@ -209,24 +209,26 @@ class ET_Client(object):
                 self.refreshKey = tokenResponse['refreshToken']
         
             self.build_soap_client()
-            
 
     def determineStack(self):
+        default_endpoint = 'https://webservice.exacttarget.com/Service.asmx'
         """
         find the correct url that data request web calls should go against for the token we have.
         """
         try:
             r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
-                'user-agent' : 'FuelSDK-Python',
-                'authorization' : 'Bearer ' + self.authToken
+                'user-agent': 'FuelSDK-Python',
+                'authorization': 'Bearer ' + self.authToken
             })
+
             contextResponse = r.json()
-            if('url' in contextResponse):
+            if ('url' in contextResponse):
                 return str(contextResponse['url'])
+            else:
+                return default_endpoint
 
         except Exception as e:
-            raise Exception('Unable to determine stack using /platform/v1/endpoints/soap: ' + e.message)
-
+            return default_endpoint
 
     def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
         """
