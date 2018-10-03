@@ -7,7 +7,6 @@ import json
 import jwt
 import requests
 import suds.client
-import suds.wsse
 from suds.sax.element import Element
 
 
@@ -175,13 +174,6 @@ class ET_Client(object):
 
         element_fueloauth = Element('fueloauth').setText(self.authToken)
         self.soap_client.set_options(soapheaders=(element_fueloauth))
-        
-        # Commenting this for now, don't think we need to support it
-        # security = suds.wsse.Security()
-        # token = suds.wsse.UsernameToken('*', '*')
-        # security.tokens.append(token)
-        # self.soap_client.set_options(wsse=security)
-        
 
     def refresh_token(self, force_refresh = False):
         """
