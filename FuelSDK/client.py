@@ -30,6 +30,7 @@ class ET_Client(object):
     soap_client = None
     auth_url = None
     soap_endpoint = None
+    soap_cache_file = "soap_cache_file.json"
 
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
@@ -202,8 +203,33 @@ class ET_Client(object):
         
             self.build_soap_client()
 
+    def get_soap_cache_file(self):
+        json_data = {}
+        if os.path.isfile(self.soap_cache_file):
+            file = open(self.soap_cache_file, "r")
+            json_data = json.load(file)
+            file.close()
+
+        return json_data
+
+    def update_cache_file(self, url):
+        file = open(self.soap_cache_file, "w+")
+
+        data = {}
+        data['url'] = url
+        data['timestamp'] = time.time()
+        json.dump(data, file)
+        file.close()
+
     def determineStack(self):
         default_endpoint = 'https://webservice.exacttarget.com/Service.asmx'
+
+        cache_file_data = self.get_soap_cache_file()
+
+        if 'url' in cache_file_data and 'timestamp' in cache_file_data \
+            and cache_file_data['timestamp'] + (15 * 60) > time.time():
+            return cache_file_data['url']
+
         """
         find the correct url that data request web calls should go against for the token we have.
         """
@@ -215,7 +241,9 @@ class ET_Client(object):
 
             contextResponse = r.json()
             if ('url' in contextResponse):
-                return str(contextResponse['url'])
+                soap_url = str(contextResponse['url'])
+                self.update_cache_file(soap_url)
+                return soap_url
             else:
                 return default_endpoint
 
