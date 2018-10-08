@@ -166,8 +166,8 @@ class ET_Client(object):
         
 
     def build_soap_client(self):
-        if self.soap_endpoint is None:
-            self.soap_endpoint = self.determineStack()
+        if self.soap_endpoint is None or not self.soap_endpoint:
+            self.soap_endpoint = self.get_soap_endpoint()
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
         self.soap_client.set_options(location=self.soap_endpoint)
@@ -217,17 +217,17 @@ class ET_Client(object):
 
         data = {}
         data['url'] = url
-        data['timestamp'] = time.time()
+        data['timestamp'] = time.time() + (10 * 60)
         json.dump(data, file)
         file.close()
 
-    def determineStack(self):
+    def get_soap_endpoint(self):
         default_endpoint = 'https://webservice.exacttarget.com/Service.asmx'
 
         cache_file_data = self.get_soap_cache_file()
 
         if 'url' in cache_file_data and 'timestamp' in cache_file_data \
-            and cache_file_data['timestamp'] + (15 * 60) > time.time():
+            and cache_file_data['timestamp'] > time.time():
             return cache_file_data['url']
 
         """
