@@ -7,7 +7,6 @@ import json
 import jwt
 import requests
 import suds.client
-import suds.wsse
 from suds.sax.element import Element
 
 
@@ -25,14 +24,14 @@ class ET_Client(object):
     appsignature = None
     wsdl_file_url = None
     authToken = None
-    internalAuthToken = None
     authTokenExpiration = None  #seconds since epoch that the current jwt token will expire
     refreshKey = None
     endpoint = None
-    authObj = None
     soap_client = None
     auth_url = None
-        
+    soap_endpoint = None
+    soap_cache_file = "soap_cache_file.json"
+
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
         self.debug = debug
@@ -98,7 +97,14 @@ class ET_Client(object):
         elif 'FUELSDK_AUTH_URL' in os.environ:
             self.auth_url = os.environ['FUELSDK_AUTH_URL']
         else:
-            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
+            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken'
+
+        if params is not None and 'soapendpoint' in params:
+            self.soap_endpoint = params['soapendpoint']
+        elif config.has_option('Web Services', 'soapendpoint'):
+            self.soap_endpoint = config.get('Web Services', 'soapendpoint')
+        elif 'FUELSDK_SOAP_ENDPOINT' in os.environ:
+            self.soap_endpoint = os.environ['FUELSDK_SOAP_ENDPOINT']
 
         if params is not None and "wsdl_file_local_loc" in params:
             wsdl_file_local_location = params["wsdl_file_local_loc"]
@@ -116,7 +122,6 @@ class ET_Client(object):
             decodedJWT = jwt.decode(params['jwt'], self.appsignature)
             self.authToken = decodedJWT['request']['user']['oauthToken']
             self.authTokenExpiration = time.time() + decodedJWT['request']['user']['expiresIn']
-            self.internalAuthToken = decodedJWT['request']['user']['internalOauthToken']
             if 'refreshToken' in decodedJWT:
                 self.refreshKey = tokenResponse['request']['user']['refreshToken']
             self.build_soap_client()
@@ -161,26 +166,15 @@ class ET_Client(object):
         
 
     def build_soap_client(self):
-        if self.endpoint is None: 
-            self.endpoint = self.determineStack()
-        
-        self.authObj = {'oAuth' : {'oAuthToken' : self.internalAuthToken}}          
-        self.authObj['attributes'] = { 'oAuth' : { 'xmlns' : 'http://exacttarget.com' }}                        
+        if self.soap_endpoint is None or not self.soap_endpoint:
+            self.soap_endpoint = self.get_soap_endpoint()
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
-        self.soap_client.set_options(location=self.endpoint)
+        self.soap_client.set_options(location=self.soap_endpoint)
         self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python'})
 
-        element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
-        element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
-        element_oAuth.append(element_oAuthToken)
-        self.soap_client.set_options(soapheaders=(element_oAuth))               
-        
-        security = suds.wsse.Security()
-        token = suds.wsse.UsernameToken('*', '*')
-        security.tokens.append(token)
-        self.soap_client.set_options(wsse=security)             
-        
+        element_fueloauth = Element('fueloauth').setText(self.authToken)
+        self.soap_client.set_options(soapheaders=(element_fueloauth))
 
     def refresh_token(self, force_refresh = False):
         """
@@ -204,29 +198,57 @@ class ET_Client(object):
             
             self.authToken = tokenResponse['accessToken']
             self.authTokenExpiration = time.time() + tokenResponse['expiresIn']
-            self.internalAuthToken = tokenResponse['legacyToken']
             if 'refreshToken' in tokenResponse:
                 self.refreshKey = tokenResponse['refreshToken']
         
             self.build_soap_client()
-            
 
-    def determineStack(self):
+    def get_soap_cache_file(self):
+        json_data = {}
+        if os.path.isfile(self.soap_cache_file):
+            file = open(self.soap_cache_file, "r")
+            json_data = json.load(file)
+            file.close()
+
+        return json_data
+
+    def update_cache_file(self, url):
+        file = open(self.soap_cache_file, "w+")
+
+        data = {}
+        data['url'] = url
+        data['timestamp'] = time.time() + (10 * 60)
+        json.dump(data, file)
+        file.close()
+
+    def get_soap_endpoint(self):
+        default_endpoint = 'https://webservice.exacttarget.com/Service.asmx'
+
+        cache_file_data = self.get_soap_cache_file()
+
+        if 'url' in cache_file_data and 'timestamp' in cache_file_data \
+            and cache_file_data['timestamp'] > time.time():
+            return cache_file_data['url']
+
         """
         find the correct url that data request web calls should go against for the token we have.
         """
         try:
             r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
-                'user-agent' : 'FuelSDK-Python',
-                'authorization' : 'Bearer ' + self.authToken
+                'user-agent': 'FuelSDK-Python',
+                'authorization': 'Bearer ' + self.authToken
             })
+
             contextResponse = r.json()
-            if('url' in contextResponse):
-                return str(contextResponse['url'])
+            if ('url' in contextResponse):
+                soap_url = str(contextResponse['url'])
+                self.update_cache_file(soap_url)
+                return soap_url
+            else:
+                return default_endpoint
 
         except Exception as e:
-            raise Exception('Unable to determine stack using /platform/v1/tokenContext: ' + e.message)  
-
+            return default_endpoint
 
     def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
         """
