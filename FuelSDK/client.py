@@ -7,6 +7,7 @@ import json
 import jwt
 import requests
 import suds.client
+import suds.wsse
 from suds.sax.element import Element
 
 
@@ -24,9 +25,11 @@ class ET_Client(object):
     appsignature = None
     wsdl_file_url = None
     authToken = None
+    internalAuthToken = None
     authTokenExpiration = None  #seconds since epoch that the current jwt token will expire
     refreshKey = None
     endpoint = None
+    authObj = None
     soap_client = None
     auth_url = None
     soap_endpoint = None
@@ -97,7 +100,7 @@ class ET_Client(object):
         elif 'FUELSDK_AUTH_URL' in os.environ:
             self.auth_url = os.environ['FUELSDK_AUTH_URL']
         else:
-            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken'
+            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
         if params is not None and 'soapendpoint' in params:
             self.soap_endpoint = params['soapendpoint']
@@ -122,6 +125,7 @@ class ET_Client(object):
             decodedJWT = jwt.decode(params['jwt'], self.appsignature)
             self.authToken = decodedJWT['request']['user']['oauthToken']
             self.authTokenExpiration = time.time() + decodedJWT['request']['user']['expiresIn']
+            self.internalAuthToken = decodedJWT['request']['user']['internalOauthToken']
             if 'refreshToken' in decodedJWT:
                 self.refreshKey = tokenResponse['request']['user']['refreshToken']
             self.build_soap_client()
@@ -173,8 +177,16 @@ class ET_Client(object):
         self.soap_client.set_options(location=self.soap_endpoint)
         self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python'})
 
-        element_fueloauth = Element('fueloauth').setText(self.authToken)
-        self.soap_client.set_options(soapheaders=(element_fueloauth))
+        element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
+        element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
+        element_oAuth.append(element_oAuthToken)
+        self.soap_client.set_options(soapheaders=(element_oAuth))
+
+        security = suds.wsse.Security()
+        token = suds.wsse.UsernameToken('*', '*')
+        security.tokens.append(token)
+        self.soap_client.set_options(wsse=security)
+        
 
     def refresh_token(self, force_refresh = False):
         """
@@ -198,6 +210,7 @@ class ET_Client(object):
             
             self.authToken = tokenResponse['accessToken']
             self.authTokenExpiration = time.time() + tokenResponse['expiresIn']
+            self.internalAuthToken = tokenResponse['legacyToken']
             if 'refreshToken' in tokenResponse:
                 self.refreshKey = tokenResponse['refreshToken']
         

@@ -36,7 +36,6 @@ The `defaultwsdl` / `FUELSDK_DEFAULT_WSDL` configuration must be [changed depend
 The `baseapiurl` / `FUELSDK_BASE_API_URL` refers to the hostname where the API is hosted, if omitted it will default to [https://www.exacttargetapis.com](https://www.exacttargetapis.com).
 The `authenticationurl` / `FUELSDK_AUTH_URL` must also be [changed depending on service](https://code.exacttarget.com/question/not-able-create-accesstoken-when-clientidsecret-associated-preproduction-account "Salesforce Marketing Cloud Forum"). If omitted it will default to [https://auth.exacttargetapis.com/v1/requestToken](https://auth.exacttargetapis.com/v1/requestToken).
 The `soapendpoint` / `FUELSDK_SOAP_ENDPOINT` refers to the endpoint that will be used for doing SOAP calls. If omitted it will default to [https://webservice.exacttarget.com/Service.asmx](https://webservice.exacttarget.com/Service.asmx).
-
 The `wsdl_file_local_loc` / `FUELSDK_WSDL_FILE_LOCAL_LOC` allows you to specify the full path/filename where the WSDL file will be located on disk, if for instance you are connecting to different endpoints from the same server.
 
 If you have not registered your application or you need to lookup your Application Key or Application Signature values, please go to App Center at [Code@: Salesforce Marketing Cloud's Developer Community](https://developer.salesforce.com/docs/?filter_text=&service=Marketing%20Cloud "Code@ App Center").
@@ -44,8 +43,8 @@ If you have not registered your application or you need to lookup your Applicati
 
 | Environment | WSDL (default) | URL (auth) |
 | ----------- | -------------- | ---------- |
-| Production  | https://webservice.exacttarget.com/etframework.wsdl | https://auth.exacttargetapis.com/v1/requestToken |
-| Sandbox     | https://webservice.test.exacttarget.com/Service.asmx?wsdl | https://auth-test.exacttargetapis.com/v1/requestToken |
+| Production  | https://webservice.exacttarget.com/etframework.wsdl | https://auth.exacttargetapis.com/v1/requestToken?legacy=1 |
+| Sandbox     | https://webservice.test.exacttarget.com/Service.asmx?wsdl | https://auth-test.exacttargetapis.com/v1/requestToken?legacy=1 |
 
 
 ## Example Request
