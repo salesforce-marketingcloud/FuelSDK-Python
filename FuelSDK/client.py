@@ -202,6 +202,11 @@ class ET_Client(object):
             if self.refreshKey:
                 payload['refreshToken'] = self.refreshKey
 
+            legacyString = "?legacy=1"
+            if legacyString not in self.auth_url:
+                self.auth_url = self.auth_url.strip()
+                self.auth_url = self.auth_url + legacyString
+
             r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
             tokenResponse = r.json()
             
