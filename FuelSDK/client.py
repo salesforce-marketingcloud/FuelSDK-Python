@@ -226,7 +226,7 @@ class ET_Client(object):
         token = suds.wsse.UsernameToken('*', '*')
         security.tokens.append(token)
         self.soap_client.set_options(wsse=security)
-
+        
 
     def refresh_token(self, force_refresh = False):
         """
@@ -241,6 +241,11 @@ class ET_Client(object):
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'refreshToken' : self.refreshKey, 'accessType': 'offline'}
             if self.refreshKey:
                 payload['refreshToken'] = self.refreshKey
+
+            legacyString = "?legacy=1"
+            if legacyString not in self.auth_url:
+                self.auth_url = self.auth_url.strip()
+                self.auth_url = self.auth_url + legacyString
 
             r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers, proxies=self.http_proxy_settings['proxies'], verify=self.http_proxy_settings['verify_ssl'])
             tokenResponse = r.json()

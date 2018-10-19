@@ -1,4 +1,4 @@
-# FuelSDK-Python v1.0.2
+# FuelSDK-Python v1.1.1
 
 Salesforce Marketing Cloud Fuel SDK for Python
 
