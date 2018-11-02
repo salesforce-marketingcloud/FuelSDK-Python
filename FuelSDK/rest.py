@@ -331,7 +331,7 @@ class ET_GetRest(ET_Constructor):
             fullendpoint += qsSeparator +    qStringValue + '=' + str(qs[qStringValue])
             qsSeparator = "&"
 
-        headers = {'authorization': 'Bearer ' + auth_stub.authToken, 'user-agent': 'FuelSDK-Python'}
+        headers = {'authorization': 'Bearer ' + auth_stub.authToken, 'user-agent': 'FuelSDK-Python-v1.1.1'}
         r = requests.get(fullendpoint, headers=headers, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
     
         
@@ -349,7 +349,7 @@ class ET_PostRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, payload):
         auth_stub.refresh_token()
         
-        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python', 'authorization' : 'Bearer ' + auth_stub.authToken}
+        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.1.1', 'authorization' : 'Bearer ' + auth_stub.authToken}
         r = requests.post(endpoint, data=json.dumps(payload), headers=headers, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
         
         obj = super(ET_PostRest, self).__init__(r, True)
@@ -364,7 +364,7 @@ class ET_PatchRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, payload):
         auth_stub.refresh_token()
         
-        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python', 'authorization' : 'Bearer ' + auth_stub.authToken}
+        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.1.1', 'authorization' : 'Bearer ' + auth_stub.authToken}
         r = requests.patch(endpoint , data=json.dumps(payload), headers=headers, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
         
         obj = super(ET_PatchRest, self).__init__(r, True)
@@ -379,7 +379,7 @@ class ET_DeleteRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint):
         auth_stub.refresh_token()
 
-        headers = {'authorization' : 'Bearer ' + auth_stub.authToken, 'user-agent' : 'FuelSDK-Python'}
+        headers = {'authorization' : 'Bearer ' + auth_stub.authToken, 'user-agent' : 'FuelSDK-Python-v1.1.1'}
         r = requests.delete(endpoint, headers=headers, proxies=auth_stub.http_proxy_settings['proxies'], verify=auth_stub.http_proxy_settings['verify_ssl'])
 
         obj = super(ET_DeleteRest, self).__init__(r, True)
