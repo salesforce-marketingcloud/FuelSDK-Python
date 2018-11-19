@@ -270,7 +270,7 @@ class ET_BaseObject(object):
     auth_stub = None
     obj = None
     last_request_id = None
-    endpoint = None
+    path = None
     props = None
     extProps = None
     search_filter = None
@@ -325,11 +325,14 @@ class ET_GetSupport(ET_BaseObject):
 class ET_GetRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, qs = None):
         auth_stub.refresh_token()   
-        fullendpoint = endpoint + '?access_token=' + auth_stub.authToken
+        fullendpoint = endpoint
+        urlSeparator = '?'
         for qStringValue in qs:
-            fullendpoint += '&'+    qStringValue + '=' + str(qs[qStringValue])
+            fullendpoint += urlSeparator +    qStringValue + '=' + str(qs[qStringValue])
+            urlSeparator = '&'
 
-        r = requests.get(fullendpoint)
+        headers = {'authorization' : 'Bearer ' + auth_stub.authToken,  'user-agent' : 'FuelSDK-Python-v1.1.1'}
+        r = requests.get(fullendpoint, headers=headers)
     
         
         self.more_results = False
@@ -346,8 +349,8 @@ class ET_PostRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, payload):
         auth_stub.refresh_token()
         
-        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python'}
-        r = requests.post(endpoint + '?access_token=' + auth_stub.authToken , data=json.dumps(payload), headers=headers)
+        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.1.1', 'authorization' : 'Bearer ' + auth_stub.authToken}
+        r = requests.post(endpoint, data=json.dumps(payload), headers=headers)
         
         obj = super(ET_PostRest, self).__init__(r, True)
         return obj
@@ -361,8 +364,8 @@ class ET_PatchRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint, payload):
         auth_stub.refresh_token()
         
-        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python'}
-        r = requests.patch(endpoint + '?access_token=' + auth_stub.authToken , data=json.dumps(payload), headers=headers)
+        headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.1.1', 'authorization' : 'Bearer ' + auth_stub.authToken}
+        r = requests.patch(endpoint , data=json.dumps(payload), headers=headers)
         
         obj = super(ET_PatchRest, self).__init__(r, True)
         return obj
@@ -375,8 +378,9 @@ class ET_PatchRest(ET_Constructor):
 class ET_DeleteRest(ET_Constructor):
     def __init__(self, auth_stub, endpoint):
         auth_stub.refresh_token()
-        
-        r = requests.delete(endpoint + '?access_token=' + auth_stub.authToken)
+
+        headers = {'authorization' : 'Bearer ' + auth_stub.authToken, 'user-agent' : 'FuelSDK-Python-v1.1.1'}
+        r = requests.delete(endpoint, headers=headers)
         
         obj = super(ET_DeleteRest, self).__init__(r, True)
         return obj
@@ -429,8 +433,8 @@ class ET_GetSupportRest(ET_BaseObject):
     def get(self, props = None):
         if props is not None and type(props) is dict:
             self.props = props
-            
-        completeURL = self.endpoint     
+
+        completeURL = self.auth_stub.base_api_url + self.path
         additionalQS = {}
         
         if self.props is not None and type(self.props) is dict:
@@ -497,7 +501,7 @@ class ET_GetSupportRest(ET_BaseObject):
 ##
 ########            
 class ET_CUDSupportRest(ET_GetSupportRest):
-    endpoint = None
+    path = None
     urlProps = None
     urlPropsRequired = None
     
@@ -505,7 +509,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         super
     
     def post(self):
-        completeURL = self.endpoint 
+        completeURL = self.auth_stub.base_api_url + self.path
         
         if self.props is not None and type(self.props) is dict:
             for k, v in self.props.items():
@@ -524,7 +528,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         return obj      
     
     def patch(self):
-        completeURL = self.endpoint
+        completeURL = self.auth_stub.base_api_url + self.path
         # All URL Props are required when doing Patch   
         for value in self.urlProps: 
             if self.props is None or value not in self.props:
@@ -539,7 +543,7 @@ class ET_CUDSupportRest(ET_GetSupportRest):
         return obj
     
     def delete(self):
-        completeURL = self.endpoint     
+        completeURL = self.auth_stub.base_api_url + self.path
         # All URL Props are required when doing Patch   
         for value in self.urlProps: 
             if self.props is None or value not in self.props:

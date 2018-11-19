@@ -57,21 +57,21 @@ class ET_BounceEvent(ET_GetSupport):
 class ET_Campaign(ET_CUDSupportRest):
     def __init__(self):
         super(ET_Campaign, self).__init__()
-        self.endpoint = 'https://www.exacttargetapis.com/hub/v1/campaigns/{id}'
+        self.path = '/hub/v1/campaigns/{id}'
         self.urlProps = ["id"]
         self.urlPropsRequired = []
         
     ##the patch rest service is not implemented for campaigns yet.  use post instead and remove this when patch is implemented on the back end
     def patch(self):
-        self.endpoint = 'https://www.exacttargetapis.com/hub/v1/campaigns'  #don't put the id on the url when patching via post
+        self.path = '/hub/v1/campaigns'  #don't put the id on the url when patching via post
         obj = super(ET_Campaign, self).post()
-        self.endpoint = 'https://www.exacttargetapis.com/hub/v1/campaigns/{id}' #but set it back to the url with id for other operations to continue working
+        self.path = '/hub/v1/campaigns/{id}' #but set it back to the url with id for other operations to continue working
         return obj
     
 class ET_Campaign_Asset(ET_CUDSupportRest):
     def __init__(self):
         super(ET_Campaign_Asset, self).__init__()
-        self.endpoint = 'https://www.exacttargetapis.com/hub/v1/campaigns/{id}/assets/{assetId}'
+        self.path = '/hub/v1/campaigns/{id}/assets/{assetId}'
         self.urlProps = ["id", "assetId"]
         self.urlPropsRequired = ["id"]
         

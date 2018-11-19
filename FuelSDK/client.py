@@ -32,7 +32,9 @@ class ET_Client(object):
     authObj = None
     soap_client = None
     auth_url = None
-        
+    soap_endpoint = None
+    soap_cache_file = "soap_cache_file.json"
+
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
         self.debug = debug
@@ -82,6 +84,15 @@ class ET_Client(object):
         else:
             wsdl_server_url = 'https://webservice.exacttarget.com/etframework.wsdl'
 
+        if params is not None and 'baseapiurl' in params:
+            self.base_api_url = params['baseapiurl']
+        elif config.has_option('Web Services', 'baseapiurl'):
+            self.base_api_url = config.get('Web Services', 'baseapiurl')
+        elif 'FUELSDK_BASE_API_URL' in os.environ:
+            self.base_api_url = os.environ['FUELSDK_BASE_API_URL']
+        else:
+            self.base_api_url = 'https://www.exacttargetapis.com'
+
         if params is not None and 'authenticationurl' in params:
             self.auth_url = params['authenticationurl']
         elif config.has_option('Web Services', 'authenticationurl'):
@@ -90,6 +101,13 @@ class ET_Client(object):
             self.auth_url = os.environ['FUELSDK_AUTH_URL']
         else:
             self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
+
+        if params is not None and 'soapendpoint' in params:
+            self.soap_endpoint = params['soapendpoint']
+        elif config.has_option('Web Services', 'soapendpoint'):
+            self.soap_endpoint = config.get('Web Services', 'soapendpoint')
+        elif 'FUELSDK_SOAP_ENDPOINT' in os.environ:
+            self.soap_endpoint = os.environ['FUELSDK_SOAP_ENDPOINT']
 
         if params is not None and "wsdl_file_local_loc" in params:
             wsdl_file_local_location = params["wsdl_file_local_loc"]
@@ -152,24 +170,22 @@ class ET_Client(object):
         
 
     def build_soap_client(self):
-        if self.endpoint is None: 
-            self.endpoint = self.determineStack()
-        
-        self.authObj = {'oAuth' : {'oAuthToken' : self.internalAuthToken}}          
-        self.authObj['attributes'] = { 'oAuth' : { 'xmlns' : 'http://exacttarget.com' }}                        
+        if self.soap_endpoint is None or not self.soap_endpoint:
+            self.soap_endpoint = self.get_soap_endpoint()
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
-        self.soap_client.set_options(location=self.endpoint)
+        self.soap_client.set_options(location=self.soap_endpoint)
+        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python-v1.1.1'})
 
         element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
         element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
         element_oAuth.append(element_oAuthToken)
-        self.soap_client.set_options(soapheaders=(element_oAuth))               
-        
+        self.soap_client.set_options(soapheaders=(element_oAuth))
+
         security = suds.wsse.Security()
         token = suds.wsse.UsernameToken('*', '*')
         security.tokens.append(token)
-        self.soap_client.set_options(wsse=security)             
+        self.soap_client.set_options(wsse=security)
         
 
     def refresh_token(self, force_refresh = False):
@@ -178,13 +194,18 @@ class ET_Client(object):
         """
         #If we don't already have a token or the token expires within 5 min(300 seconds), get one
         if (force_refresh or self.authToken is None or (self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration)):
-            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python'}
+            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.1.1'}
             if (self.authToken is None):
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'accessType': 'offline'}
             else:
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'refreshToken' : self.refreshKey, 'accessType': 'offline'}
             if self.refreshKey:
                 payload['refreshToken'] = self.refreshKey
+
+            legacyString = "?legacy=1"
+            if legacyString not in self.auth_url:
+                self.auth_url = self.auth_url.strip()
+                self.auth_url = self.auth_url + legacyString
 
             r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
             tokenResponse = r.json()
@@ -199,21 +220,53 @@ class ET_Client(object):
                 self.refreshKey = tokenResponse['refreshToken']
         
             self.build_soap_client()
-            
 
-    def determineStack(self):
+    def get_soap_cache_file(self):
+        json_data = {}
+        if os.path.isfile(self.soap_cache_file):
+            file = open(self.soap_cache_file, "r")
+            json_data = json.load(file)
+            file.close()
+
+        return json_data
+
+    def update_cache_file(self, url):
+        file = open(self.soap_cache_file, "w+")
+
+        data = {}
+        data['url'] = url
+        data['timestamp'] = time.time() + (10 * 60)
+        json.dump(data, file)
+        file.close()
+
+    def get_soap_endpoint(self):
+        default_endpoint = 'https://webservice.exacttarget.com/Service.asmx'
+
+        cache_file_data = self.get_soap_cache_file()
+
+        if 'url' in cache_file_data and 'timestamp' in cache_file_data \
+            and cache_file_data['timestamp'] > time.time():
+            return cache_file_data['url']
+
         """
         find the correct url that data request web calls should go against for the token we have.
         """
         try:
-            r = requests.get('https://www.exacttargetapis.com/platform/v1/endpoints/soap?access_token=' + self.authToken, {'user-agent' : 'FuelSDK-Python'})
+            r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
+                'user-agent': 'FuelSDK-Python-v1.1.1',
+                'authorization': 'Bearer ' + self.authToken
+            })
+
             contextResponse = r.json()
-            if('url' in contextResponse):
-                return str(contextResponse['url'])
+            if ('url' in contextResponse):
+                soap_url = str(contextResponse['url'])
+                self.update_cache_file(soap_url)
+                return soap_url
+            else:
+                return default_endpoint
 
         except Exception as e:
-            raise Exception('Unable to determine stack using /platform/v1/tokenContext: ' + e.message)  
-
+            return default_endpoint
 
     def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
         """
