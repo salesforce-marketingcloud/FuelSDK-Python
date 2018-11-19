@@ -7,3 +7,15 @@ baseapiurl: https://www.exacttargetapis.com
 authenticationurl: https://auth.exacttargetapis.com/v1/requestToken?legacy=1
 soapendpoint: https://webservice.exacttarget.com/Service.asmx
 wsdl_file_local_loc: /tmp/ExactTargetWSDL.s6.xml
+
+[HTTP Proxy]
+enabled: 0
+verify_ssl: 1
+http_url: http://127.0.0.1:8888
+https_url: https://127.0.0.1:8888
+
+[SOAP Proxy]
+enabled: 0
+verify_ssl: 1
+http_url: http://127.0.0.1:8888
+https_url: https://127.0.0.1:8888

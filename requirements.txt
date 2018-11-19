@@ -3,4 +3,4 @@ distribute==0.7.3
 requests>=2.18.4
 suds-jurko==0.6
 wsgiref==0.1.2
-
+suds-requests==0.4.0

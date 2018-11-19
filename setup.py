@@ -17,6 +17,7 @@ setup(
         'pyjwt>=1.5.3',
         'requests>=2.18.4',
         'suds-jurko==0.6',
+        'suds-requests==0.4.0'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
