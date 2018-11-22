@@ -18,6 +18,7 @@ develop-eggs
 lib
 lib64
 __pycache__
+.idea/*
 
 # Installer logs
 pip-log.txt
@@ -31,3 +32,4 @@ objsamples/ET_Client.py
 objsamples/config.python
 objsamples/*.pyc
 config.python
+soap_cache_file.json

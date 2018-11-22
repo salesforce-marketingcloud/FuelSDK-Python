@@ -1,10 +1,11 @@
 from setuptools import setup
+import version
 
 with open('README.md') as f:
     readme = f.read()
 
 setup(
-    version='1.1.1',
+    version=version.get(),
     name='Salesforce-FuelSDK',
     description='Salesforce Marketing Cloud Fuel SDK for Python',
     long_description=readme,

@@ -6,6 +6,10 @@ Salesforce Marketing Cloud Fuel SDK for Python
 
 The Fuel SDK for Python provides easy access to Salesforce Marketing Cloud's Fuel API Family services, including a collection of REST APIs and a SOAP API. These APIs provide access to Salesforce Marketing Cloud functionality via common collection types such as array/hash.
 
+New Features in Version 1.1.1 
+------------
+* Added support for your tenant’s endpoints - [More Details](https://developer.salesforce.com/docs/atlas.en-us.mc-apis.meta/mc-apis/your-subdomain-tenant-specific-endpoints.htm)
+
 ## Installation
 
 The Fuel SDK for python can be easily installed from the [Python Package Index](https://pypi.python.org/pypi) using the [pip](https://pip.readthedocs.org) command. Pip is a tool for installing and managing Python packages.
