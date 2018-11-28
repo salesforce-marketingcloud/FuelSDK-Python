@@ -1,10 +1,14 @@
-# FuelSDK-Python v1.1.1
+# FuelSDK-Python v1.1.2
 
 Salesforce Marketing Cloud Fuel SDK for Python
 
 ## Overview
 
 The Fuel SDK for Python provides easy access to Salesforce Marketing Cloud's Fuel API Family services, including a collection of REST APIs and a SOAP API. These APIs provide access to Salesforce Marketing Cloud functionality via common collection types such as array/hash.
+
+New Features in Version 1.1.2
+------------
+* Fixed an issue with Email creation due to an update in the WSDL file.
 
 New Features in Version 1.1.1 
 ------------
