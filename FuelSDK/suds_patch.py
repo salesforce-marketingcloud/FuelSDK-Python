@@ -1,4 +1,9 @@
-from suds.mx.appender import Appender,Content
+from logging import getLogger
+
+from suds import *
+from suds.mx import *
+from suds.mx.appender import Appender
+from suds.resolver import Frame
 
 
 class _PropertyAppender(Appender):
@@ -57,3 +62,38 @@ def _bodycontent(self, method, args, kwargs):
             p.setPrefix(ns[0], ns[1])
         root.append(p)
     return root
+
+def _start(self, content):
+    log = getLogger(__name__)
+    #
+    # Start marshalling the 'content' by ensuring that both the 'content'
+    # _and_ the resolver are primed with the XSD type information. The
+    # 'content' value is both translated and sorted based on the XSD type.
+    # Only values that are objects have their attributes sorted.
+    #
+    log.debug('starting content:\n%s', content)
+    if content.type is None:
+        name = content.tag
+        content.type = self.resolver.find(name, content.value)
+        if content.type is None:
+            raise TypeNotFound(content.tag)
+    else:
+        known = None
+        if isinstance(content.value, Object):
+            known = self.resolver.known(content.value)
+            if known is None:
+                log.debug('object %s has no type information',
+                    content.value)
+                known = content.type
+        frame = Frame(content.type, resolved=known)
+        self.resolver.push(frame)
+    frame = self.resolver.top()
+    content.real = frame.resolved
+    content.ancestry = frame.ancestry
+    self.translate(content)
+    self.sort(content)
+    if self.skip(content):
+        log.debug('skipping (optional) content:\n%s', content)
+        self.resolver.pop()
+        return False
+    return True
