@@ -1,4 +1,4 @@
-__version__ = '1.1.1'
+__version__ = '1.2.0'
 
 # Runtime patch the suds library
 from FuelSDK.suds_patch import _PropertyAppender
