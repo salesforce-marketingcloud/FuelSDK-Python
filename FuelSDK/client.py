@@ -35,6 +35,8 @@ class ET_Client(object):
     soap_endpoint = None
     soap_cache_file = "soap_cache_file.json"
     use_oAuth2_authentication = None
+    account_id = None
+    scope = None
 
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
@@ -127,8 +129,20 @@ class ET_Client(object):
             self.use_oAuth2_authentication = config.get("Auth Service", "useOAuth2Authentication")
         elif "FUELSDK_USE_OAUTH2" in os.environ:
             self.use_oAuth2_authentication = os.environ["FUELSDK_USE_OAUTH2"]
-        else:
-            self.use_oAuth2_authentication = None
+
+        if params is not None and "accountId" in params:
+            self.account_id = params["accountId"]
+        elif config.has_option("Auth Service", "accountId"):
+            self.account_id = config.get("Auth Service", "accountId")
+        elif "FUELSDK_ACCOUNT_ID" in os.environ:
+            self.account_id = os.environ["FUELSDK_ACCOUNT_ID"]
+
+        if params is not None and "scope" in params:
+            self.scope = params["scope"]
+        elif config.has_option("Auth Service", "scope"):
+            self.scope = config.get("Auth Service", "scope")
+        elif "FUELSDK_SCOPE" in os.environ:
+            self.scope = os.environ["FUELSDK_SCOPE"]
 
         ## get the JWT from the params if passed in...or go to the server to get it
         if(params is not None and 'jwt' in params):
@@ -248,9 +262,19 @@ class ET_Client(object):
         # If we don't already have a token or the token expires within 5 min(300 seconds), get one
         if force_refresh or self.authToken is None \
                 or self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration:
-            headers = {'content-type': 'application/json', 'user-agent': 'FuelSDK-Python-v1.2.0'}
-            payload = {'client_id': self.client_id, 'client_secret': self.client_secret,
-                       'grant_type': 'client_credentials'}
+
+            headers = {'content-type': 'application/json',
+                       'user-agent': 'FuelSDK-Python-v1.2.0'}
+            
+            payload = {'client_id': self.client_id,
+                       'client_secret': self.client_secret,
+                       'grant_type': 'client_credentials'
+                       }
+
+            if self.account_id is not None and self.account_id.strip() != '':
+                payload['account_id'] = self.account_id
+            if self.scope is not None and self.scope.strip() != '':
+                payload['scope'] = self.scope
 
             self.auth_url = self.auth_url.strip() + '/v2/token'
 
