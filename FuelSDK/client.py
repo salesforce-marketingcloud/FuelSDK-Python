@@ -34,6 +34,9 @@ class ET_Client(object):
     auth_url = None
     soap_endpoint = None
     soap_cache_file = "soap_cache_file.json"
+    use_oAuth2_authentication = None
+    account_id = None
+    scope = None
 
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
@@ -99,8 +102,6 @@ class ET_Client(object):
             self.auth_url = config.get('Web Services', 'authenticationurl')
         elif 'FUELSDK_AUTH_URL' in os.environ:
             self.auth_url = os.environ['FUELSDK_AUTH_URL']
-        else:
-            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
         if params is not None and 'soapendpoint' in params:
             self.soap_endpoint = params['soapendpoint']
@@ -120,7 +121,34 @@ class ET_Client(object):
 
         self.wsdl_file_url = self.load_wsdl(wsdl_server_url, wsdl_file_local_location, get_server_wsdl)
 
-        ## get the JWT from the params if passed in...or go to the server to get it             
+        if params is not None and "useOAuth2Authentication" in params:
+            self.use_oAuth2_authentication = params["useOAuth2Authentication"]
+        elif config.has_option("Auth Service", "useOAuth2Authentication"):
+            self.use_oAuth2_authentication = config.get("Auth Service", "useOAuth2Authentication")
+        elif "FUELSDK_USE_OAUTH2" in os.environ:
+            self.use_oAuth2_authentication = os.environ["FUELSDK_USE_OAUTH2"]
+
+        if self.is_none_or_empty_or_blank(self.auth_url) == True:
+            if self.use_oAuth2_authentication == "True":
+                raise Exception('authenticationurl (Auth TSE) is mandatory when using OAuth2 authentication')
+            else:
+                self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
+
+        if params is not None and "accountId" in params:
+            self.account_id = params["accountId"]
+        elif config.has_option("Auth Service", "accountId"):
+            self.account_id = config.get("Auth Service", "accountId")
+        elif "FUELSDK_ACCOUNT_ID" in os.environ:
+            self.account_id = os.environ["FUELSDK_ACCOUNT_ID"]
+
+        if params is not None and "scope" in params:
+            self.scope = params["scope"]
+        elif config.has_option("Auth Service", "scope"):
+            self.scope = config.get("Auth Service", "scope")
+        elif "FUELSDK_SCOPE" in os.environ:
+            self.scope = os.environ["FUELSDK_SCOPE"]
+
+        ## get the JWT from the params if passed in...or go to the server to get it
         if(params is not None and 'jwt' in params):
             decodedJWT = jwt.decode(params['jwt'], self.appsignature)
             self.authToken = decodedJWT['request']['user']['oauthToken']
@@ -175,26 +203,36 @@ class ET_Client(object):
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
         self.soap_client.set_options(location=self.soap_endpoint)
-        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python-v1.1.1'})
+        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python-v1.2.0'})
 
-        element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
-        element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
-        element_oAuth.append(element_oAuthToken)
-        self.soap_client.set_options(soapheaders=(element_oAuth))
+        if self.use_oAuth2_authentication == 'True':
+            element_oAuth = Element('fueloauth', ns=('etns', 'http://exacttarget.com'))
+            element_oAuth.setText(self.authToken);
+            self.soap_client.set_options(soapheaders=(element_oAuth))
+        else:
+            element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
+            element_oAuthToken = Element('oAuthToken').setText(self.internalAuthToken)
+            element_oAuth.append(element_oAuthToken)
+            self.soap_client.set_options(soapheaders=(element_oAuth))
 
-        security = suds.wsse.Security()
-        token = suds.wsse.UsernameToken('*', '*')
-        security.tokens.append(token)
-        self.soap_client.set_options(wsse=security)
+            security = suds.wsse.Security()
+            token = suds.wsse.UsernameToken('*', '*')
+            security.tokens.append(token)
+            self.soap_client.set_options(wsse=security)
         
 
     def refresh_token(self, force_refresh = False):
         """
         Called from many different places right before executing a SOAP call
         """
+
+        if self.use_oAuth2_authentication == "True":
+            self.refresh_token_with_oAuth2(force_refresh)
+            return
+
         #If we don't already have a token or the token expires within 5 min(300 seconds), get one
         if (force_refresh or self.authToken is None or (self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration)):
-            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.1.1'}
+            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.2.0'}
             if (self.authToken is None):
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'accessType': 'offline'}
             else:
@@ -220,6 +258,44 @@ class ET_Client(object):
                 self.refreshKey = tokenResponse['refreshToken']
         
             self.build_soap_client()
+
+    def refresh_token_with_oAuth2(self, force_refresh=False):
+        """
+        Called from many different places right before executing a SOAP call
+        """
+        # If we don't already have a token or the token expires within 5 min(300 seconds), get one
+        if force_refresh or self.authToken is None \
+                or self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration:
+
+            headers = {'content-type': 'application/json',
+                       'user-agent': 'FuelSDK-Python-v1.2.0'}
+            
+            payload = {'client_id': self.client_id,
+                       'client_secret': self.client_secret,
+                       'grant_type': 'client_credentials'
+                       }
+
+            if self.account_id is not None and self.account_id.strip() != '':
+                payload['account_id'] = self.account_id
+            if self.scope is not None and self.scope.strip() != '':
+                payload['scope'] = self.scope
+
+            self.auth_url = self.auth_url.strip() + '/v2/token'
+
+            r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
+            tokenResponse = r.json()
+
+            if 'access_token' not in tokenResponse:
+                raise Exception('Unable to validate App Keys(ClientID/ClientSecret) provided: ' + repr(r.json()))
+
+            self.authToken = tokenResponse['access_token']
+            self.authTokenExpiration = time.time() + tokenResponse['expires_in']
+            self.internalAuthToken = tokenResponse['access_token']
+            self.soap_endpoint = tokenResponse['soap_instance_url'] + 'service.asmx'
+            self.base_api_url = tokenResponse['rest_instance_url']
+
+            self.build_soap_client()
+
 
     def get_soap_cache_file(self):
         json_data = {}
@@ -253,7 +329,7 @@ class ET_Client(object):
         """
         try:
             r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
-                'user-agent': 'FuelSDK-Python-v1.1.1',
+                'user-agent': 'FuelSDK-Python-v1.2.0',
                 'authorization': 'Bearer ' + self.authToken
             })
 
@@ -307,3 +383,8 @@ class ET_Client(object):
         postResponse = newDEs.post()        
         
         return postResponse
+
+    def is_none_or_empty_or_blank(self, str):
+        if str and str.strip():
+            return False
+        return True

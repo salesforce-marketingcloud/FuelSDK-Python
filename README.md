@@ -1,10 +1,54 @@
-# FuelSDK-Python v1.1.1
+# FuelSDK-Python v1.2.0
 
 Salesforce Marketing Cloud Fuel SDK for Python
 
 ## Overview
 
 The Fuel SDK for Python provides easy access to Salesforce Marketing Cloud's Fuel API Family services, including a collection of REST APIs and a SOAP API. These APIs provide access to Salesforce Marketing Cloud functionality via common collection types such as array/hash.
+
+New Features in Version 1.2.0
+------------
+* Added support for OAuth2 authentication - [More Details](https://developer.salesforce.com/docs/atlas.en-us.mc-app-development.meta/mc-app-development/integration-considerations.htm)
+
+  To enable OAuth2 authentication, set `useOAuth2Authentication: True` in the config.python file or pass it in the params argument to the ET_Client constructor.
+  
+  Sample Config for OAuth2:
+  
+  ```
+  [Web Services]
+  appsignature: none
+  clientid: <CLIENT_ID>
+  clientsecret: <CLIENT_SECRET>
+  defaultwsdl: https://webservice.exacttarget.com/etframework.wsdl
+  authenticationurl: <AUTH TENANT SPECIFIC ENDPOINT>
+  baseapiurl: <REST TENANT SPECIFIC ENDPOINT>
+  soapendpoint: <SOAP TENANT SPECIFIC ENDPOINT>
+  wsdl_file_local_loc: <WSDL_PATH>/ExactTargetWSDL.xml
+  
+  [Auth Service]
+  useOAuth2Authentication: True
+  accountId: <TARGET_ACCOUNT_ID>
+  scope: <PERMISSION_LIST>
+  ```
+  
+  Example passing config as a parameter to ET_Client constructor:
+  
+  ```
+  stubObj = ET_Client.ET_Client(
+    False, False,
+    {
+        'clientid': '<CLIENT_ID>',
+        'clientsecret': '<CLIENT_SECRET>',
+        'defaultwsdl': 'https://webservice.exacttarget.com/etframework.wsdl',
+        'authenticationurl': '<AUTH TENANT SPECIFIC ENDPOINT>',
+        'baseapiurl': '<REST TENANT SPECIFIC ENDPOINT>',
+        'soapendpoint': '<SOAP TENANT SPECIFIC ENDPOINT>',
+        'wsdl_file_local_loc': r'<WSDL_PATH>/ExactTargetWSDL.xml',
+        'useOAuth2Authentication': 'True',
+        'accountId': '<TARGET_ACCOUNT_ID>',
+        'scope': '<PERMISSION_LIST>'
+    })
+  ```
 
 New Features in Version 1.1.1 
 ------------
