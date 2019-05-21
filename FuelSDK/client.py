@@ -102,8 +102,6 @@ class ET_Client(object):
             self.auth_url = config.get('Web Services', 'authenticationurl')
         elif 'FUELSDK_AUTH_URL' in os.environ:
             self.auth_url = os.environ['FUELSDK_AUTH_URL']
-        else:
-            self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
         if params is not None and 'soapendpoint' in params:
             self.soap_endpoint = params['soapendpoint']
@@ -129,6 +127,12 @@ class ET_Client(object):
             self.use_oAuth2_authentication = config.get("Auth Service", "useOAuth2Authentication")
         elif "FUELSDK_USE_OAUTH2" in os.environ:
             self.use_oAuth2_authentication = os.environ["FUELSDK_USE_OAUTH2"]
+
+        if self.is_none_or_empty_or_blank(self.auth_url) == True:
+            if self.use_oAuth2_authentication == "True":
+                raise Exception('authenticationurl (Auth TSE) is mandatory when using OAuth2 authentication')
+            else:
+                self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
         if params is not None and "accountId" in params:
             self.account_id = params["accountId"]
@@ -379,3 +383,8 @@ class ET_Client(object):
         postResponse = newDEs.post()        
         
         return postResponse
+
+    def is_none_or_empty_or_blank(self, str):
+        if str and str.strip():
+            return False
+        return True
