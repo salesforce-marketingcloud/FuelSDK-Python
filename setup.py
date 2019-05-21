@@ -8,6 +8,7 @@ setup(
     name='Salesforce-FuelSDK',
     description='Salesforce Marketing Cloud Fuel SDK for Python',
     long_description=readme,
+    long_description_content_type="text/markdown",
     author='ExactTarget',
     py_modules=['ET_Client'],
     packages=['FuelSDK'],
