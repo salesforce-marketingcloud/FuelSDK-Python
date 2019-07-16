@@ -173,6 +173,13 @@ class ET_Client(object):
         if self.is_none_or_empty_or_blank(self.application_type):
             self.application_type = "server"
 
+        if params is not None and "redirectURI" in params:
+            self.redirect_URI = params["redirectURI"]
+        elif config.has_option("Auth Service", "redirectURI"):
+            self.redirect_URI = config.get("Auth Service", "redirectURI")
+        elif "FUELSDK_REDIRECT_URI" in os.environ:
+            self.redirect_URI = os.environ["FUELSDK_AUTHORIZATION_CODE"]
+
         if self.application_type in ["public", "web"]:
             if self.is_none_or_empty_or_blank(self.authorization_code) or self.is_none_or_empty_or_blank(self.redirect_URI):
                 raise Exception('authorizationCode or redirectURI is null: For Public/Web Apps, the authorizationCode and redirectURI must be '
@@ -185,13 +192,6 @@ class ET_Client(object):
             if self.is_none_or_empty_or_blank(self.client_id) or self.is_none_or_empty_or_blank(self.client_secret):
                 raise Exception('clientid or clientsecret is null: clientid and clientsecret must be passed when instantiating ET_Client '
                                 'or must be provided in environment variables / config file')
-
-        if params is not None and "redirectURI" in params:
-            self.redirect_URI = params["redirectURI"]
-        elif config.has_option("Auth Service", "redirectURI"):
-            self.redirect_URI = config.get("Auth Service", "redirectURI")
-        elif "FUELSDK_REDIRECT_URI" in os.environ:
-            self.redirect_URI = os.environ["FUELSDK_AUTHORIZATION_CODE"]
 
         ## get the JWT from the params if passed in...or go to the server to get it
         if (params is not None and 'jwt' in params):
@@ -344,7 +344,7 @@ class ET_Client(object):
 
         if not self.is_none_or_empty_or_blank(self.refreshKey):
             payload['grant_type'] = "refresh_token"
-            payload['refresh_token '] = self.refreshKey
+            payload['refresh_token'] = self.refreshKey
         elif self.application_type in ["public", "web"]:
             payload['grant_type'] = "authorization_code"
             payload['code'] = self.authorization_code

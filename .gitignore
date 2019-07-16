@@ -34,3 +34,4 @@ config.python
 
 soap_cache_file.json
 .idea/
+venv
