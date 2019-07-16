@@ -6,6 +6,18 @@ class TestET_Client(TestCase):
     def setUp(self):
         self.client = ET_Client(False, False)
 
+    def test_authToken_should_differ_if_refresh_token_is_enforced(self):
+        self.authToken1 = self.client.authToken
+        self.refreshKey1 = self.client.refreshKey
+
+        self.client.refresh_token_with_oAuth2(True)
+
+        self.authToken2 = self.client.authToken
+        self.refreshKey2 = self.client.refreshKey
+
+        self.assertNotEqual(self.authToken1, self.authToken2)
+        self.assertNotEqual(self.refreshKey1, self.refreshKey2)
+
     def test_auth_payload_should_have_public_app_attributes(self):
         self.client.application_type = 'public'
 

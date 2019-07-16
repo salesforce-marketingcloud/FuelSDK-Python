@@ -178,7 +178,7 @@ class ET_Client(object):
         elif config.has_option("Auth Service", "redirectURI"):
             self.redirect_URI = config.get("Auth Service", "redirectURI")
         elif "FUELSDK_REDIRECT_URI" in os.environ:
-            self.redirect_URI = os.environ["FUELSDK_AUTHORIZATION_CODE"]
+            self.redirect_URI = os.environ["FUELSDK_REDIRECT_URI"]
 
         if self.application_type in ["public", "web"]:
             if self.is_none_or_empty_or_blank(self.authorization_code) or self.is_none_or_empty_or_blank(self.redirect_URI):
@@ -317,9 +317,9 @@ class ET_Client(object):
 
             payload = self.create_payload()
 
-            self.auth_url = self.auth_url.strip() + '/v2/token'
+            auth_endpoint = self.auth_url.strip() + '/v2/token'
 
-            r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
+            r = requests.post(auth_endpoint, data=json.dumps(payload), headers=headers)
             tokenResponse = r.json()
 
             if 'access_token' not in tokenResponse:
@@ -331,8 +331,8 @@ class ET_Client(object):
             self.soap_endpoint = tokenResponse['soap_instance_url'] + 'service.asmx'
             self.base_api_url = tokenResponse['rest_instance_url']
 
-            if 'refreshToken' in tokenResponse:
-                self.refreshKey = tokenResponse['refreshToken']
+            if 'refresh_token' in tokenResponse:
+                self.refreshKey = tokenResponse['refresh_token']
 
             self.build_soap_client()
 
