@@ -248,7 +248,7 @@ class ET_Client(object):
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
         self.soap_client.set_options(location=self.soap_endpoint)
-        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python-v1.2.0'})
+        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python-v1.3.0'})
 
         if self.use_oAuth2_authentication == 'True':
             element_oAuth = Element('fueloauth', ns=('etns', 'http://exacttarget.com'))
@@ -277,7 +277,7 @@ class ET_Client(object):
 
         #If we don't already have a token or the token expires within 5 min(300 seconds), get one
         if (force_refresh or self.authToken is None or (self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration)):
-            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.2.0'}
+            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.3.0'}
             if (self.authToken is None):
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'accessType': 'offline'}
             else:
@@ -313,7 +313,7 @@ class ET_Client(object):
                 or self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration:
 
             headers = {'content-type': 'application/json',
-                       'user-agent': 'FuelSDK-Python-v1.2.0'}
+                       'user-agent': 'FuelSDK-Python-v1.3.0'}
 
             payload = self.create_payload()
 
@@ -391,7 +391,7 @@ class ET_Client(object):
         """
         try:
             r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
-                'user-agent': 'FuelSDK-Python-v1.2.0',
+                'user-agent': 'FuelSDK-Python-v1.3.0',
                 'authorization': 'Bearer ' + self.authToken
             })
 
