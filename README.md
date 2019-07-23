@@ -57,7 +57,7 @@ New Features in Version 1.3.0
     })
   ```
   
-* applicationType will have one of the following values: `server`, `public`, `web`. The default value of applicationType is `server`.
+* applicationType can have one of the following values: `server`, `public`, `web`. The default value of applicationType is `server`.
   
 New Features in Version 1.2.0
 ------------

@@ -53,9 +53,9 @@ class ET_Client(object):
         else:
             logging.getLogger('suds').setLevel(logging.INFO)
 
-        self.set_class_variables(get_server_wsdl, params, tokenResponse)
+        self.configure_client(get_server_wsdl, params, tokenResponse)
 
-    def set_class_variables(self, get_server_wsdl, params, tokenResponse):
+    def configure_client(self, get_server_wsdl, params, tokenResponse):
 
         ## Read the config information out of config.python
         config = configparser.RawConfigParser()
