@@ -3,11 +3,15 @@ from FuelSDK import ET_Client
 
 
 class TestET_Client(TestCase):
-    """ These tests are specific for OAuth2 Public/Web Apps,
-    so config should be modified accordingly."""
 
-    def setUp(self):
-        self.client = ET_Client(False, False)
+    @classmethod
+    def setUpClass(cls):
+        """
+        test_authToken_and_refreshKey_should_differ_if_refresh_token_is_enforced expects a Public/Web App config.
+        All the other tests require a Server to Server config
+        """
+
+        cls.client = ET_Client(False, False)
 
     def test_authToken_and_refreshKey_should_differ_if_refresh_token_is_enforced(self):
         self.authToken1 = self.client.authToken
