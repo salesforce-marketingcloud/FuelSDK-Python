@@ -1,4 +1,4 @@
-# FuelSDK-Python v1.2.0
+# FuelSDK-Python v1.3.0
 
 Salesforce Marketing Cloud Fuel SDK for Python
 
@@ -6,6 +6,59 @@ Salesforce Marketing Cloud Fuel SDK for Python
 
 The Fuel SDK for Python provides easy access to Salesforce Marketing Cloud's Fuel API Family services, including a collection of REST APIs and a SOAP API. These APIs provide access to Salesforce Marketing Cloud functionality via common collection types such as array/hash.
 
+New Features in Version 1.3.0
+------------
+* Added Refresh Token support for OAuth2 authentication
+* Added Web/Public App support for OAuth2 authentication
+
+   More details on Access Tokens for Web/Public Apps can be found [here](https://developer.salesforce.com/docs/atlas.en-us.mc-app-development.meta/mc-app-development/access-token-app.htm)
+
+   Sample config:
+   
+   ```
+  [Web Services]
+  appsignature: none
+  clientid: <CLIENT_ID>
+  clientsecret: <CLIENT_SECRET>
+  defaultwsdl: https://webservice.exacttarget.com/etframework.wsdl
+  authenticationurl: <AUTH TENANT SPECIFIC ENDPOINT>
+  baseapiurl: <REST TENANT SPECIFIC ENDPOINT>
+  soapendpoint: <SOAP TENANT SPECIFIC ENDPOINT>
+  wsdl_file_local_loc: <WSDL_PATH>/ExactTargetWSDL.xml
+  
+  [Auth Service]
+  useOAuth2Authentication: True
+  accountId: <TARGET_ACCOUNT_ID>
+  scope: <PERMISSION_LIST>
+  applicationType: <APPLICATION_TYPE>
+  redirectURI: <REDIRECT_URI_FOR_PUBLIC/WEB_APP>
+  authorizationCode: <AUTHORIZATION_CODE_FOR_PUBLIC/WEB_APP>
+  ```
+
+  Example passing config as a parameter to ET_Client constructor:
+  
+  ```
+  stubObj = ET_Client.ET_Client(
+    False, False,
+    {
+        'clientid': '<CLIENT_ID>',
+        'clientsecret': '<CLIENT_SECRET>',
+        'defaultwsdl': 'https://webservice.exacttarget.com/etframework.wsdl',
+        'authenticationurl': '<AUTH TENANT SPECIFIC ENDPOINT>',
+        'baseapiurl': '<REST TENANT SPECIFIC ENDPOINT>',
+        'soapendpoint': '<SOAP TENANT SPECIFIC ENDPOINT>',
+        'wsdl_file_local_loc': r'<WSDL_PATH>/ExactTargetWSDL.xml',
+        'useOAuth2Authentication': 'True',
+        'accountId': '<TARGET_ACCOUNT_ID>',
+        'scope': '<PERMISSION_LIST>'
+        'applicationType': '<APPLICATION_TYPE>'
+        'redirectURI': '<REDIRECT_URI_FOR_PUBLIC/WEB_APP>'
+        'authorizationCode': '<AUTHORIZATION_CODE_FOR_PUBLIC/WEB_APP>'
+    })
+  ```
+  
+* applicationType can have one of the following values: `server`, `public`, `web`. The default value of applicationType is `server`.
+  
 New Features in Version 1.2.0
 ------------
 * Added support for OAuth2 authentication - [More Details](https://developer.salesforce.com/docs/atlas.en-us.mc-app-development.meta/mc-app-development/integration-considerations.htm)

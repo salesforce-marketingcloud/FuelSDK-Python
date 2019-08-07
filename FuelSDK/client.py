@@ -37,6 +37,9 @@ class ET_Client(object):
     use_oAuth2_authentication = None
     account_id = None
     scope = None
+    application_type = None
+    authorization_code = None
+    redirect_URI = None
 
     ## get_server_wsdl - if True and a newer WSDL is on the server than the local filesystem retrieve it
     def __init__(self, get_server_wsdl = False, debug = False, params = None, tokenResponse=None):
@@ -50,8 +53,13 @@ class ET_Client(object):
         else:
             logging.getLogger('suds').setLevel(logging.INFO)
 
+        self.configure_client(get_server_wsdl, params, tokenResponse)
+
+    def configure_client(self, get_server_wsdl, params, tokenResponse):
+
         ## Read the config information out of config.python
         config = configparser.RawConfigParser()
+
         if os.path.exists(os.path.expanduser('~/.fuelsdk/config.python')):
             config.read(os.path.expanduser('~/.fuelsdk/config.python'))
         else:
@@ -148,8 +156,45 @@ class ET_Client(object):
         elif "FUELSDK_SCOPE" in os.environ:
             self.scope = os.environ["FUELSDK_SCOPE"]
 
+        if params is not None and "authorizationCode" in params:
+            self.authorization_code = params["authorizationCode"]
+        elif config.has_option("Auth Service", "authorizationCode"):
+            self.authorization_code = config.get("Auth Service", "authorizationCode")
+        elif "FUELSDK_AUTHORIZATION_CODE" in os.environ:
+            self.authorization_code = os.environ["FUELSDK_AUTHORIZATION_CODE"]
+
+        if params is not None and "applicationType" in params:
+            self.application_type = params["applicationType"]
+        elif config.has_option("Auth Service", "applicationType"):
+            self.application_type = config.get("Auth Service", "applicationType")
+        elif "FUELSDK_APPLICATION_TYPE" in os.environ:
+            self.application_type = os.environ["FUELSDK_APPLICATION_TYPE"]
+
+        if self.is_none_or_empty_or_blank(self.application_type):
+            self.application_type = "server"
+
+        if params is not None and "redirectURI" in params:
+            self.redirect_URI = params["redirectURI"]
+        elif config.has_option("Auth Service", "redirectURI"):
+            self.redirect_URI = config.get("Auth Service", "redirectURI")
+        elif "FUELSDK_REDIRECT_URI" in os.environ:
+            self.redirect_URI = os.environ["FUELSDK_REDIRECT_URI"]
+
+        if self.application_type in ["public", "web"]:
+            if self.is_none_or_empty_or_blank(self.authorization_code) or self.is_none_or_empty_or_blank(self.redirect_URI):
+                raise Exception('authorizationCode or redirectURI is null: For Public/Web Apps, the authorizationCode and redirectURI must be '
+                                'passed when instantiating ET_Client or must be provided in environment variables/config file')
+
+        if self.application_type == "public":
+            if self.is_none_or_empty_or_blank(self.client_id):
+                raise Exception('clientid is null: clientid must be passed when instantiating ET_Client or must be provided in environment variables / config file')
+        else: # application_type is server or web
+            if self.is_none_or_empty_or_blank(self.client_id) or self.is_none_or_empty_or_blank(self.client_secret):
+                raise Exception('clientid or clientsecret is null: clientid and clientsecret must be passed when instantiating ET_Client '
+                                'or must be provided in environment variables / config file')
+
         ## get the JWT from the params if passed in...or go to the server to get it
-        if(params is not None and 'jwt' in params):
+        if (params is not None and 'jwt' in params):
             decodedJWT = jwt.decode(params['jwt'], self.appsignature)
             self.authToken = decodedJWT['request']['user']['oauthToken']
             self.authTokenExpiration = time.time() + decodedJWT['request']['user']['expiresIn']
@@ -203,7 +248,7 @@ class ET_Client(object):
 
         self.soap_client = suds.client.Client(self.wsdl_file_url, faults=False, cachingpolicy=1)
         self.soap_client.set_options(location=self.soap_endpoint)
-        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python-v1.2.0'})
+        self.soap_client.set_options(headers={'user-agent' : 'FuelSDK-Python-v1.3.0'})
 
         if self.use_oAuth2_authentication == 'True':
             element_oAuth = Element('fueloauth', ns=('etns', 'http://exacttarget.com'))
@@ -232,7 +277,7 @@ class ET_Client(object):
 
         #If we don't already have a token or the token expires within 5 min(300 seconds), get one
         if (force_refresh or self.authToken is None or (self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration)):
-            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.2.0'}
+            headers = {'content-type' : 'application/json', 'user-agent' : 'FuelSDK-Python-v1.3.0'}
             if (self.authToken is None):
                 payload = {'clientId' : self.client_id, 'clientSecret' : self.client_secret, 'accessType': 'offline'}
             else:
@@ -268,21 +313,13 @@ class ET_Client(object):
                 or self.authTokenExpiration is not None and time.time() + 300 > self.authTokenExpiration:
 
             headers = {'content-type': 'application/json',
-                       'user-agent': 'FuelSDK-Python-v1.2.0'}
-            
-            payload = {'client_id': self.client_id,
-                       'client_secret': self.client_secret,
-                       'grant_type': 'client_credentials'
-                       }
+                       'user-agent': 'FuelSDK-Python-v1.3.0'}
 
-            if self.account_id is not None and self.account_id.strip() != '':
-                payload['account_id'] = self.account_id
-            if self.scope is not None and self.scope.strip() != '':
-                payload['scope'] = self.scope
+            payload = self.create_payload()
 
-            self.auth_url = self.auth_url.strip() + '/v2/token'
+            auth_endpoint = self.auth_url.strip() + '/v2/token'
 
-            r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
+            r = requests.post(auth_endpoint, data=json.dumps(payload), headers=headers)
             tokenResponse = r.json()
 
             if 'access_token' not in tokenResponse:
@@ -294,8 +331,33 @@ class ET_Client(object):
             self.soap_endpoint = tokenResponse['soap_instance_url'] + 'service.asmx'
             self.base_api_url = tokenResponse['rest_instance_url']
 
+            if 'refresh_token' in tokenResponse:
+                self.refreshKey = tokenResponse['refresh_token']
+
             self.build_soap_client()
 
+    def create_payload(self):
+        payload = {'client_id': self.client_id}
+
+        if self.application_type != "public":
+            payload['client_secret'] = self.client_secret
+
+        if not self.is_none_or_empty_or_blank(self.refreshKey):
+            payload['grant_type'] = "refresh_token"
+            payload['refresh_token'] = self.refreshKey
+        elif self.application_type in ["public", "web"]:
+            payload['grant_type'] = "authorization_code"
+            payload['code'] = self.authorization_code
+            payload['redirect_uri'] = self.redirect_URI
+        else:
+            payload['grant_type'] = "client_credentials"
+
+        if not self.is_none_or_empty_or_blank(self.account_id):
+            payload['account_id'] = self.account_id
+        if not self.is_none_or_empty_or_blank(self.scope):
+            payload['scope'] = self.scope
+
+        return payload
 
     def get_soap_cache_file(self):
         json_data = {}
@@ -329,7 +391,7 @@ class ET_Client(object):
         """
         try:
             r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
-                'user-agent': 'FuelSDK-Python-v1.2.0',
+                'user-agent': 'FuelSDK-Python-v1.3.0',
                 'authorization': 'Bearer ' + self.authToken
             })
 
