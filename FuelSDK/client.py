@@ -1,6 +1,11 @@
 import os
 import logging
-import configparser
+
+# Python2.7 compatibility- try loading Python3 library, then fall back to 2.7
+try:
+  import configparser
+except:
+  import ConfigParser as configparser
 import time
 import json
 
