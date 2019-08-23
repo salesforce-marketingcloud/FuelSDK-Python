@@ -17,7 +17,7 @@ try:
     print('MoreResults: ' + str(getResponse.more_results))
     print('RequestID: ' + str(getResponse.request_id))
     print('Results Length: ' + str(len(getResponse.results)))
-    #print 'Results: ' + str(getResponse.results)
+    #print('Results: ' + str(getResponse.results))
 
     # Get all of the DataExtensions in an Account belonging to a specific sub account
     print('>>> Get all of the DataExtensions in an Account belonging to a specific sub account')
@@ -32,7 +32,7 @@ try:
     print('MoreResults: ' + str(getResponse.more_results))
     print('RequestID: ' + str(getResponse.request_id))
     print('Results Length: ' + str(len(getResponse.results)))
-    #print 'Results: ' + str(getResponse.results)
+    #print('Results: ' + str(getResponse.results))
 
     # Specify a name for the data extension that will be used for testing
     # Note: Name and CustomerKey will be the same value
@@ -186,7 +186,7 @@ try:
     print('MoreResults: ' + str(getResponse.more_results))
     print('RequestID: ' + str(getResponse.request_id))
     print('Results Length: ' + str(len(getResponse.results)))
-    #print 'Results: ' + str(getResponse.results)
+    #print('Results: ' + str(getResponse.results))
 
     while getResponse.more_results: 
         print('>>> Continue Retrieve lots of rows with moreResults')
