@@ -74,7 +74,27 @@ class ET_Campaign_Asset(ET_CUDSupportRest):
         self.path = '/hub/v1/campaigns/{id}/assets/{assetId}'
         self.urlProps = ["id", "assetId"]
         self.urlPropsRequired = ["id"]
-        
+
+########
+##
+##  wrap an Exact Target Push Message Contact and Deliveries
+##
+########    
+class ET_PushMessageContact(ET_CUDSupportRest):
+    def __init__(self):
+        super(ET_PushMessageContact, self).__init__()
+        self.endpoint = 'https://www.exacttargetapis.com/push/v1/messageContact/{messageId}/send'
+        self.urlProps = ["messageId"]
+        self.urlPropsRequired = []
+
+class ET_PushMessageContact_Deliveries(ET_CUDSupportRest):
+    def __init__(self):
+        super(ET_PushMessageContact_Deliveries, self).__init__()
+        self.endpoint = 'https://www.exacttargetapis.com/push/v1/messageContact/{messageId}/deliveries/{tokenId}'
+        self.urlProps = ["messageId", "tokenId"]
+        self.urlPropsRequired = []
+
+
 ########
 ##
 ##  wrap an Exact Target Click Event
