@@ -382,7 +382,7 @@ class ET_DataExtension_Row(ET_CUDSupport):
                 de = ET_DataExtension()
                 de.auth_stub = self.auth_stub
                 de.props = ["Name","CustomerKey"]
-                de.search_filter = {'Property' : 'CustomerKey','SimpleOperator' : 'equals','Value' : self.Name}
+                de.search_filter = {'Property' : 'Name','SimpleOperator' : 'equals','Value' : self.Name}
                 getResponse = de.get()
                 if getResponse.status and len(getResponse.results) == 1 and 'CustomerKey' in getResponse.results[0]: 
                     self.CustomerKey = getResponse.results[0]['CustomerKey']
