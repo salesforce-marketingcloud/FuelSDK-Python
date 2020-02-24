@@ -12,6 +12,7 @@ from suds.sax.element import Element
 
 
 from FuelSDK.objects import ET_DataExtension,ET_Subscriber
+from FuelSDK.exceptions import ConfigurationException
 
 
 class ET_Client(object):
@@ -138,7 +139,7 @@ class ET_Client(object):
 
         if self.is_none_or_empty_or_blank(self.auth_url) == True:
             if self.use_oAuth2_authentication == "True":
-                raise Exception('authenticationurl (Auth TSE) is mandatory when using OAuth2 authentication')
+                raise ConfigurationException('authenticationurl (Auth TSE) is mandatory when using OAuth2 authentication')
             else:
                 self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
@@ -170,6 +171,9 @@ class ET_Client(object):
         elif "FUELSDK_APPLICATION_TYPE" in os.environ:
             self.application_type = os.environ["FUELSDK_APPLICATION_TYPE"]
 
+        if not self.is_none_or_empty_or_blank(self.application_type) and self.application_type not in ["public", "web", "server"]:
+            raise ConfigurationException('Unsupported application type')
+            
         if self.is_none_or_empty_or_blank(self.application_type):
             self.application_type = "server"
 
@@ -182,15 +186,15 @@ class ET_Client(object):
 
         if self.application_type in ["public", "web"]:
             if self.is_none_or_empty_or_blank(self.authorization_code) or self.is_none_or_empty_or_blank(self.redirect_URI):
-                raise Exception('authorizationCode or redirectURI is null: For Public/Web Apps, the authorizationCode and redirectURI must be '
+                raise ConfigurationException('authorizationCode or redirectURI is null: For Public/Web Apps, the authorizationCode and redirectURI must be '
                                 'passed when instantiating ET_Client or must be provided in environment variables/config file')
 
         if self.application_type == "public":
             if self.is_none_or_empty_or_blank(self.client_id):
-                raise Exception('clientid is null: clientid must be passed when instantiating ET_Client or must be provided in environment variables / config file')
+                raise ConfigurationException('clientid is null: clientid must be passed when instantiating ET_Client or must be provided in environment variables / config file')
         else: # application_type is server or web
             if self.is_none_or_empty_or_blank(self.client_id) or self.is_none_or_empty_or_blank(self.client_secret):
-                raise Exception('clientid or clientsecret is null: clientid and clientsecret must be passed when instantiating ET_Client '
+                raise ConfigurationException('clientid or clientsecret is null: clientid and clientsecret must be passed when instantiating ET_Client '
                                 'or must be provided in environment variables / config file')
 
         ## get the JWT from the params if passed in...or go to the server to get it
