@@ -266,7 +266,7 @@ class ET_Client(object):
 
         if self.use_oAuth2_authentication == 'True':
             element_oAuth = Element('fueloauth', ns=('etns', 'http://exacttarget.com'))
-            element_oAuth.setText(self.authToken);
+            element_oAuth.setText(self.authToken)
             self.soap_client.set_options(soapheaders=(element_oAuth))
         else:
             element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
@@ -427,7 +427,7 @@ class ET_Client(object):
             else:
                 return default_endpoint
 
-        except Exception as e:
+        except:
             return default_endpoint
 
     def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
