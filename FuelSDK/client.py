@@ -380,16 +380,17 @@ class ET_Client(object):
     def get_soap_endpoint(self):
         default_endpoint = 'https://webservice.exacttarget.com/Service.asmx'
 
-        cache_file_data = self.get_soap_cache_file()
-
-        if 'url' in cache_file_data and 'timestamp' in cache_file_data \
-            and cache_file_data['timestamp'] > time.time():
-            return cache_file_data['url']
-
-        """
-        find the correct url that data request web calls should go against for the token we have.
-        """
         try:
+        	cache_file_data = self.get_soap_cache_file()
+
+	        if 'url' in cache_file_data and 'timestamp' in cache_file_data \
+	            and cache_file_data['timestamp'] > time.time():
+	            return cache_file_data['url']
+
+	        """
+	        find the correct url that data request web calls should go against for the token we have.
+	        """
+        
             r = requests.get(self.base_api_url + '/platform/v1/endpoints/soap', headers={
                 'user-agent': 'FuelSDK-Python-v1.3.0',
                 'authorization': 'Bearer ' + self.authToken
