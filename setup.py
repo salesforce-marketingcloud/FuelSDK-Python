@@ -9,7 +9,7 @@ setup(
     description='Fever Salesforce Marketing Cloud Fuel SDK for Python',
     long_description=readme,
     long_description_content_type="text/markdown",
-    author='ExactTarget',
+    author='Feverup',
     py_modules=['ET_Client'],
     packages=['FuelSDK'],
     url='https://github.com/Feverup/FuelSDK-Python',
