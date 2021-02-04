@@ -361,10 +361,14 @@ class ET_Client(object):
 
     def get_soap_cache_file(self):
         json_data = {}
-        if os.path.isfile(self.soap_cache_file):
-            file = open(self.soap_cache_file, "r")
-            json_data = json.load(file)
-            file.close()
+        
+        try:
+            if os.path.isfile(self.soap_cache_file):
+                file = open(self.soap_cache_file, "r")
+                json_data = json.load(file)
+                file.close()
+        except Exception:
+            return json_data
 
         return json_data
 
