@@ -5,14 +5,14 @@ with open('README.md') as f:
 
 setup(
     version='1.3.1',
-    name='Salesforce-FuelSDK',
-    description='Salesforce Marketing Cloud Fuel SDK for Python',
+    name='Fever-FuelSDK',
+    description='Fever Salesforce Marketing Cloud Fuel SDK for Python',
     long_description=readme,
     long_description_content_type="text/markdown",
-    author='ExactTarget',
+    author='Feverup',
     py_modules=['ET_Client'],
     packages=['FuelSDK'],
-    url='https://github.com/salesforce-marketingcloud/FuelSDK-Python',
+    url='https://github.com/Feverup/FuelSDK-Python',
     license='MIT',
     install_requires=[
         'pyjwt>=1.5.3',
