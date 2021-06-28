@@ -411,7 +411,8 @@ class ET_Client(object):
                 return soap_url
             else:
                 return default_endpoint
-
+        except PermissionError as e:
+            raise e
         except Exception as e:
             return default_endpoint
 
