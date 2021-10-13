@@ -12,6 +12,7 @@ from suds.sax.element import Element
 
 
 from FuelSDK.objects import ET_DataExtension,ET_Subscriber
+from FuelSDK.exceptions import ConfigurationException, AuthException, WSDLException
 
 
 class ET_Client(object):
@@ -138,7 +139,7 @@ class ET_Client(object):
 
         if self.is_none_or_empty_or_blank(self.auth_url) == True:
             if self.use_oAuth2_authentication == "True":
-                raise Exception('authenticationurl (Auth TSE) is mandatory when using OAuth2 authentication')
+                raise ConfigurationException('authenticationurl (Auth TSE) is mandatory when using OAuth2 authentication')
             else:
                 self.auth_url = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
@@ -170,6 +171,9 @@ class ET_Client(object):
         elif "FUELSDK_APPLICATION_TYPE" in os.environ:
             self.application_type = os.environ["FUELSDK_APPLICATION_TYPE"]
 
+        if not self.is_none_or_empty_or_blank(self.application_type) and self.application_type not in ["public", "web", "server"]:
+            raise ConfigurationException('Unsupported application type')
+
         if self.is_none_or_empty_or_blank(self.application_type):
             self.application_type = "server"
 
@@ -182,15 +186,15 @@ class ET_Client(object):
 
         if self.application_type in ["public", "web"]:
             if self.is_none_or_empty_or_blank(self.authorization_code) or self.is_none_or_empty_or_blank(self.redirect_URI):
-                raise Exception('authorizationCode or redirectURI is null: For Public/Web Apps, the authorizationCode and redirectURI must be '
+                raise ConfigurationException('authorizationCode or redirectURI is null: For Public/Web Apps, the authorizationCode and redirectURI must be '
                                 'passed when instantiating ET_Client or must be provided in environment variables/config file')
 
         if self.application_type == "public":
             if self.is_none_or_empty_or_blank(self.client_id):
-                raise Exception('clientid is null: clientid must be passed when instantiating ET_Client or must be provided in environment variables / config file')
+                raise ConfigurationException('clientid is null: clientid must be passed when instantiating ET_Client or must be provided in environment variables / config file')
         else: # application_type is server or web
             if self.is_none_or_empty_or_blank(self.client_id) or self.is_none_or_empty_or_blank(self.client_secret):
-                raise Exception('clientid or clientsecret is null: clientid and clientsecret must be passed when instantiating ET_Client '
+                raise ConfigurationException('clientid or clientsecret is null: clientid and clientsecret must be passed when instantiating ET_Client '
                                 'or must be provided in environment variables / config file')
 
         ## get the JWT from the params if passed in...or go to the server to get it
@@ -223,7 +227,12 @@ class ET_Client(object):
         if not os.path.exists(file_location) or os.path.getsize(file_location) == 0:   #if there is no local copy or local copy is empty then go get it...
             self.retrieve_server_wsdl(wsdl_url, file_location)
         elif get_server_wsdl:
-            r = requests.head(wsdl_url)
+            try:
+                r = requests.head(wsdl_url)
+                r.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                raise WSDLException("Error when getting the WSDL file's metadata: " + str(e))
+
             if r is not None and 'last-modified' in r.headers:
                 server_wsdl_updated = time.strptime(r.headers['last-modified'], '%a, %d %b %Y %H:%M:%S %Z')
                 file_wsdl_updated = time.gmtime(os.path.getmtime(file_location))
@@ -237,7 +246,12 @@ class ET_Client(object):
         """
         get the WSDL from the server and save it locally
         """
-        r = requests.get(wsdl_url)
+        try:
+            r = requests.get(wsdl_url)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            raise WSDLException("Error when getting the WSDL file: " + str(e))
+        
         f = open(file_location, 'w')
         f.write(r.text)
         
@@ -252,7 +266,7 @@ class ET_Client(object):
 
         if self.use_oAuth2_authentication == 'True':
             element_oAuth = Element('fueloauth', ns=('etns', 'http://exacttarget.com'))
-            element_oAuth.setText(self.authToken);
+            element_oAuth.setText(self.authToken)
             self.soap_client.set_options(soapheaders=(element_oAuth))
         else:
             element_oAuth = Element('oAuth', ns=('etns', 'http://exacttarget.com'))
@@ -290,11 +304,16 @@ class ET_Client(object):
                 self.auth_url = self.auth_url.strip()
                 self.auth_url = self.auth_url + legacyString
 
-            r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
+            try:
+                r = requests.post(self.auth_url, data=json.dumps(payload), headers=headers)
+                r.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                raise AuthException('Unable to validate App Keys(ClientID/ClientSecret) provided: ' + str(e))
+            
             tokenResponse = r.json()
             
             if 'accessToken' not in tokenResponse:
-                raise Exception('Unable to validate App Keys(ClientID/ClientSecret) provided: ' + repr(r.json()))
+                raise AuthException('Unable to validate App Keys(ClientID/ClientSecret) provided: ' + repr(r.json()))
             
             self.authToken = tokenResponse['accessToken']
             self.authTokenExpiration = time.time() + tokenResponse['expiresIn']
@@ -319,11 +338,16 @@ class ET_Client(object):
 
             auth_endpoint = self.auth_url.strip() + '/v2/token'
 
-            r = requests.post(auth_endpoint, data=json.dumps(payload), headers=headers)
+            try:
+                r = requests.post(auth_endpoint, data=json.dumps(payload), headers=headers)
+                r.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                raise AuthException('Unable to validate App Keys(ClientID/ClientSecret) provided: ' + str(e))
+            
             tokenResponse = r.json()
 
             if 'access_token' not in tokenResponse:
-                raise Exception('Unable to validate App Keys(ClientID/ClientSecret) provided: ' + repr(r.json()))
+                raise AuthException('Unable to validate App Keys(ClientID/ClientSecret) provided: ' + repr(r.json()))
 
             self.authToken = tokenResponse['access_token']
             self.authTokenExpiration = time.time() + tokenResponse['expires_in']
@@ -403,7 +427,7 @@ class ET_Client(object):
             else:
                 return default_endpoint
 
-        except Exception as e:
+        except:
             return default_endpoint
 
     def AddSubscriberToList(self, emailAddress, listIDs, subscriberKey = None):
