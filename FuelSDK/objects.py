@@ -74,7 +74,19 @@ class ET_Campaign_Asset(ET_CUDSupportRest):
         self.path = '/hub/v1/campaigns/{id}/assets/{assetId}'
         self.urlProps = ["id", "assetId"]
         self.urlPropsRequired = ["id"]
-        
+
+########
+##
+##  wrap an Exact Target Interaction Events
+##
+########    
+class ET_InteractionEvents(ET_CUDSupportRest):
+    def __init__(self):
+        super(ET_InteractionEvents, self).__init__()
+        self.endpoint = 'https://www.exacttargetapis.com/interaction/v1/events'
+        self.urlProps = []
+        self.urlPropsRequired = []
+
 ########
 ##
 ##  wrap an Exact Target Click Event
