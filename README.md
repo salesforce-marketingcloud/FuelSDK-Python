@@ -1,6 +1,6 @@
 # FuelSDK-Python v1.3.0
 
-Salesforce Marketing Cloud Fuel SDK for Python
+Feverup's fork of Salesforce Marketing Cloud Fuel SDK for Python
 
 ## Overview
 
