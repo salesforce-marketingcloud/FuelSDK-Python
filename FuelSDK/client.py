@@ -33,7 +33,7 @@ class ET_Client(object):
     soap_client = None
     auth_url = None
     soap_endpoint = None
-    soap_cache_file = "soap_cache_file.json"
+    soap_cache_file = None
     use_oAuth2_authentication = None
     account_id = None
     scope = None
@@ -117,6 +117,15 @@ class ET_Client(object):
             self.soap_endpoint = config.get('Web Services', 'soapendpoint')
         elif 'FUELSDK_SOAP_ENDPOINT' in os.environ:
             self.soap_endpoint = os.environ['FUELSDK_SOAP_ENDPOINT']
+
+        if params is not None and "soap_cache_file_loc" in params:
+            self.soap_cache_file = params["soap_cache_file_loc"]
+        elif config.has_option("Web Services", "soap_cache_file_loc"):
+            self.soap_cache_file = config.get("Web Services", "soap_cache_file_loc")
+        elif "FUELSDK_SOAP_CACHE_FILE_LOC" in os.environ:
+            self.soap_cache_file = os.environ["FUELSDK_SOAP_CACHE_FILE_LOC"]
+        else:
+            self.soap_cache_file = "soap_cache_file.json"
 
         if params is not None and "wsdl_file_local_loc" in params:
             wsdl_file_local_location = params["wsdl_file_local_loc"]
@@ -402,7 +411,8 @@ class ET_Client(object):
                 return soap_url
             else:
                 return default_endpoint
-
+        except PermissionError as e:
+            raise e
         except Exception as e:
             return default_endpoint
 
