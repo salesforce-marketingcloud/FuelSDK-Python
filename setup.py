@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'pyjwt>=1.5.3',
         'requests>=2.18.4',
-        'suds-jurko==0.6',
+        'suds-community>=0.7',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -25,6 +25,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries',
-        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.7',
     ],
 )
