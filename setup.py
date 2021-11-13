@@ -11,6 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     author='ExactTarget',
     py_modules=['ET_Client'],
+    python_requires='>=3',
     packages=['FuelSDK'],
     url='https://github.com/salesforce-marketingcloud/FuelSDK-Python',
     license='MIT',
