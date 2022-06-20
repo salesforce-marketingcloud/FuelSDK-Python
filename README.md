@@ -1,6 +1,8 @@
 # FuelSDK-Python v1.3.0
-
 Salesforce Marketing Cloud Fuel SDK for Python
+
+This is a fork of the original repo, 
+the original repo is not maintained, so I decided to fork and maintain.
 
 ## Overview
 
