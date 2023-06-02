@@ -4,7 +4,7 @@ with open('README.md') as f:
     readme = f.read()
 
 setup(
-    version='1.3.0',
+    version='1.4.0',
     name='Salesforce-FuelSDK',
     description='Salesforce Marketing Cloud Fuel SDK for Python',
     long_description=readme,
@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'pyjwt>=1.5.3',
         'requests>=2.18.4',
-        'suds-jurko==0.6',
+        'suds==1.1.2',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
