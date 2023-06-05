@@ -1,7 +1,7 @@
 ############
 # Base Image
 ############
-FROM python:x.y.z-alpine as base
+FROM python:3.11.3-alpine as base
 
 WORKDIR /app
 
