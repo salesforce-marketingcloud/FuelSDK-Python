@@ -1,0 +1,6 @@
+# Ignore Everything to minimise docker file size.
+*
+
+# Allow only the required files and directories.
+!.dockerignore
+!README.md
