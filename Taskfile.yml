@@ -1,0 +1,47 @@
+version: 3
+
+silent: true
+
+vars:
+  ECR_LOCATION: 670223297817.dkr.ecr.eu-west-1.amazonaws.com
+  SYSTEM_NAME:  pdg-sfmc-sdk
+
+tasks:
+  docker:login:
+    desc: "Get basic authentication and login to be able to push images to the Private ECR Repository."
+    cmds:
+      - |
+        if [ "${JENKINS_CI}" == true ]
+        then
+          echo "This is the CI server, logging in without a profile..."
+          aws --no-include-email --region eu-west-1 ecr get-login --registry-ids 670223297817 | sh -
+        else
+          echo "This isn't the CI server, logging in with the prodigy-devops profile"
+          aws ecr get-login-password --region eu-west-1 --profile prodigy-devops | docker login --password-stdin --username AWS 670223297817.dkr.ecr.eu-west-1.amazonaws.com
+        fi
+
+  artifact:build:
+    desc: "Build the Docker image for the service."
+    deps: [docker:login]
+    preconditions:
+      - sh: test ! "${PYPI_USERNAME}" = "<no value>"
+        msg: "You must provide a PYPI_USERNAME environment variable"
+      - sh: test ! "${PYPI_PASSWORD}" = "<no value>"
+        msg: "You must provide a PYPI_PASSWORD environment variable"
+    cmds:
+      - echo "Building the Docker image... "
+      - echo
+      - |
+        docker build \
+          --build-arg pypi_username="${PYPI_USERNAME}" \
+          --build-arg pypi_password="${PYPI_PASSWORD}" \
+          --tag {{.ECR_LOCATION}}/{{.SYSTEM_NAME}}:latest \
+          --target base \
+          --file Dockerfile .
+
+  artifact:test:
+    desc: Execute the tests.
+    cmds:
+      - echo "Executing the tests ..."
+      - echo
+      - docker run --rm {{.ECR_LOCATION}}/{{.SYSTEM_NAME}} bash -c "sleep 10 && rake test"
