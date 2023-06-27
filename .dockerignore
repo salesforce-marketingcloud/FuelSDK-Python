@@ -3,7 +3,7 @@
 
 # Allow only the required files and directories.
 ## Folders
-!Fuelsdk/
+!FuelSDK/
 !objsamples/
 !Suds Changes/
 
