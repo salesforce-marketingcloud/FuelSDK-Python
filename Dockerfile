@@ -15,16 +15,14 @@ COPY . ./
 
 RUN pip install tox twine
 
-ENV REPO_NAME="pypi.pdg.io"
-ENV REPO_URL="https://pypi.pdg.io/"
-ENV PYPI_USERNAME=$PYPI_USERNAME
-ENV PYPI_PASSWORD=$PYPI_PASSWORD
+ARG PYPI_PASSWORD
+ARG PYPI_USERNAME
 
 RUN python setup.py sdist
 
-################
+###############
 # Publish Image
-################
+###############
 FROM base as publish
 
 RUN twine --version \
