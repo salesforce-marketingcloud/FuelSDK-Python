@@ -33,8 +33,8 @@ tasks:
       - echo
       - |
         docker build \
-          --build-arg pypi_username="${PYPI_USERNAME}" \
-          --build-arg pypi_password="${PYPI_PASSWORD}" \
+          --build-arg PYPI_USERNAME="${PYPI_USERNAME}" \
+          --build-arg PYPI_PASSWORD="${PYPI_PASSWORD}" \
           --tag {{.ECR_LOCATION}}/{{.SYSTEM_NAME}}:latest \
           --target base \
           --file Dockerfile .
@@ -44,4 +44,5 @@ tasks:
     cmds:
       - echo "Executing the tests ..."
       - echo
-      - docker run --rm {{.ECR_LOCATION}}/{{.SYSTEM_NAME}} bash -c "sleep 10 && rake test"
+      - docker run --rm {{.ECR_LOCATION}}/{{.SYSTEM_NAME}} bash -c "tox -e lint"
+      - docker run --rm {{.ECR_LOCATION}}/{{.SYSTEM_NAME}} bash -c "tox -e base"
