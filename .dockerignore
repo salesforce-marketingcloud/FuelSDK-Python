@@ -2,5 +2,18 @@
 *
 
 # Allow only the required files and directories.
+## Folders
+!Fuelsdk/
+!objsamples/
+!Suds Changes/
+
+
+## Files
 !.dockerignore
 !README.md
+!setup.cfg
+!setup.py
+!tox.ini
+!requirements.txt
+!MANIFEST.in
+!ET_Client.py
