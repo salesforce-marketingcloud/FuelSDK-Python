@@ -404,3 +404,8 @@ class ET_DataExtension_Row(ET_CUDSupport):
                     self.Name = getResponse.results[0]['Name']
                 else:
                     raise Exception('Unable to process DataExtension::Row request due to unable to find DataExtension based on CustomerKey')
+
+class ET_NotSentEvent(ET_GetSupport):
+    def __init__(self):
+        super(ET_NotSentEvent, self).__init__()
+        self.obj_type = 'NotSentEvent'
